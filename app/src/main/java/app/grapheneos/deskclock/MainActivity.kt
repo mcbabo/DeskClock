@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import app.grapheneos.deskclock.core.navigation.NavigationRoot
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.core.theme.SystemBarsTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,6 +17,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DeskClockTheme {
+                SystemBarsTheme()
                 Scaffold { innerPadding ->
                     NavigationRoot(
                         modifier = Modifier.padding(innerPadding)

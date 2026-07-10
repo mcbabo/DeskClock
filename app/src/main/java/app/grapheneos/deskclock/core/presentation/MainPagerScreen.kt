@@ -55,7 +55,7 @@ fun MainPagerScreen() {
                 beyondViewportPageCount = 1
             ) { pageIndex ->
                 when (tabs[pageIndex]) {
-                    ClockTab.Alarms -> {}
+                    ClockTab.Alarm -> {}
                     ClockTab.WorldClock -> {}
                     ClockTab.Timer -> {}
                     ClockTab.Stopwatch -> {}

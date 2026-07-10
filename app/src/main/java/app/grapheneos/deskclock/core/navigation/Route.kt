@@ -19,7 +19,7 @@ sealed interface Route : NavKey {
 }
 
 enum class ClockTab(val title: String, val icon: ImageVector) {
-    Alarms("Alarm", Icons.Outlined.Alarm),
+    Alarm("Alarm", Icons.Outlined.Alarm),
     WorldClock("Clock", Icons.Outlined.AccessTime),
     Timer("Timer", Icons.Outlined.HourglassBottom),
     Stopwatch("Stopwatch", Icons.Outlined.Timer)

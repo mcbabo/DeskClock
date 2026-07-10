@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.core.theme
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -8,11 +9,15 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.WindowCompat
 import com.google.android.material.color.MaterialColors
 
 private val darkScheme = darkColorScheme(
@@ -69,5 +74,24 @@ fun DeskClockTheme(
             typography = Typography,
             content = content
         )
+    }
+}
+
+@Composable
+fun SystemBarsTheme(backgroundColor: Color = MaterialTheme.colorScheme.background) {
+    val activity = LocalActivity.current
+    val insetsController =
+        WindowCompat.getInsetsController(activity?.window!!, activity.window.decorView)
+    val isLightBackground = backgroundColor.luminance() > 0.5f
+
+    LaunchedEffect(backgroundColor) {
+        activity.window?.setBackgroundDrawable(
+            backgroundColor.toArgb().toDrawable()
+        )
+
+        activity.window.setNavigationBarContrastEnforced(false)
+
+        insetsController.isAppearanceLightStatusBars = isLightBackground
+        insetsController.isAppearanceLightNavigationBars = isLightBackground
     }
 }
