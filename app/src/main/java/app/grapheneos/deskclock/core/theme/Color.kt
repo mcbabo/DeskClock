@@ -1,4 +1,4 @@
-package app.grapheneos.deskclock.ui.theme
+package app.grapheneos.deskclock.core.theme
 
 import androidx.compose.ui.graphics.Color
 
