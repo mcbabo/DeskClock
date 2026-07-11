@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.DeskClock" parent="android:Theme.Material.Light.NoActionBar" />
-
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#FFFFFF</item>
+        <item name="windowSplashScreenBackground">#121212</item> <!-- Dark background -->
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
-        <!-- The theme to switch to once the app is loaded -->
         <item name="postSplashScreenTheme">@style/Theme.DeskClock</item>
     </style>
 </resources>
+
