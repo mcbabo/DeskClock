@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.core.navigation
 
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.Alarm
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.outlined.HourglassBottom
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
+import app.grapheneos.deskclock.R
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,9 +20,9 @@ sealed interface Route : NavKey {
     data object Settings : Route
 }
 
-enum class ClockTab(val title: String, val icon: ImageVector) {
-    Alarm("Alarm", Icons.Outlined.Alarm),
-    WorldClock("Clock", Icons.Outlined.AccessTime),
-    Timer("Timer", Icons.Outlined.HourglassBottom),
-    Stopwatch("Stopwatch", Icons.Outlined.Timer)
+enum class ClockTab(@StringRes val titleRes: Int, val icon: ImageVector) {
+    Alarm(R.string.tab_alarm, Icons.Outlined.Alarm),
+    WorldClock(R.string.tab_clock, Icons.Outlined.AccessTime),
+    Timer(R.string.tab_timer, Icons.Outlined.HourglassBottom),
+    Stopwatch(R.string.tab_stopwatch, Icons.Outlined.Timer)
 }

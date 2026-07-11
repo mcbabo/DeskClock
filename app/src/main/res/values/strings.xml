@@ -1,3 +1,32 @@
 <resources>
     <string name="app_name">DeskClock</string>
+    <string name="deskclock_service">Alarm Playback</string>
+    <string name="empty"></string>
+    <string name="tab_alarm">Alarm</string>
+    <string name="tab_clock">Clock</string>
+    <string name="tab_timer">Timer</string>
+    <string name="tab_stopwatch">Stopwatch</string>
+    <string name="reoccurring">Reoccurring</string>
+    <string name="name_of_alarm">Name of alarm</string>
+    <string name="alarm">Alarm</string>
+    <string name="ringtone">Ringtone</string>
+    <string name="vibrate">Vibrate</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="ok">OK</string>
+    <string name="alarm_n">Alarm (%1$s)</string>
+    <string name="snooze">Snooze</string>
+    <string name="n_minutes">%1$d minutes</string>
+    <string name="settings">Settings</string>
+    <string name="add_alarm">Add Alarm</string>
+    <string name="no_alarms_yet">No alarms yet</string>
+    <string name="ringing_dots">Ringing...</string>
+    <string name="one_time">one time</string>
+    <string name="daily">Daily</string>
+    <string name="mon_fri">Mon-Fri</string>
+    <string name="sat_sun">Sat–Sun</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="delete_after_use">Delete after use</string>
+    <string name="edit">Edit</string>
+    <string name="wake_up">Wake up!</string>
 </resources>

@@ -29,7 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.grapheneos.deskclock.alarm.presentation.AlarmScreen
 import app.grapheneos.deskclock.core.navigation.ClockTab
 import kotlinx.coroutines.launch
 
@@ -55,7 +57,10 @@ fun MainPagerScreen() {
                 beyondViewportPageCount = 1
             ) { pageIndex ->
                 when (tabs[pageIndex]) {
-                    ClockTab.Alarm -> {}
+                    ClockTab.Alarm -> {
+                        AlarmScreen({})
+                    }
+
                     ClockTab.WorldClock -> {}
                     ClockTab.Timer -> {}
                     ClockTab.Stopwatch -> {}
@@ -89,7 +94,7 @@ fun MainPagerScreen() {
                             ) {
                                 Icon(
                                     imageVector = tab.icon,
-                                    contentDescription = tab.title,
+                                    contentDescription = stringResource(tab.titleRes),
                                     tint = if (pagerState.currentPage == index) {
                                         MaterialTheme.colorScheme.primary
                                     } else {
