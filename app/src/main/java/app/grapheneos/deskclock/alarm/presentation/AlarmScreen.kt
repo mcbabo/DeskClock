@@ -99,16 +99,14 @@ fun AlarmScreen(
 
     editingAlarm?.let { alarmWithInstance ->
         AlarmDrawer(
-            key = alarmWithInstance.alarm.id,
             alarmWithInstance = alarmWithInstance,
+            ringtones = state.ringtones,
+            onIntent = viewModel::handleIntent,
             onDismissRequest = {
+                viewModel.handleIntent(AlarmAction.StopPreview)
                 editingAlarmId = null
             },
-            onIntent = viewModel::handleIntent,
-            onDelete = {
-                viewModel.handleIntent(AlarmAction.DeleteAlarm(alarmWithInstance.alarm))
-                editingAlarmId = null
-            }
+            onDelete = { /* TODO() */ }
         )
     }
 }

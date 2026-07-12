@@ -1,7 +1,6 @@
 package app.grapheneos.deskclock.alarm.presentation.components
 
 import android.view.HapticFeedbackConstants
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -42,13 +40,17 @@ import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.presentation.AlarmAction
+import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
+import app.grapheneos.deskclock.core.presentation.components.GroupItem
+import app.grapheneos.deskclock.core.presentation.components.GroupRow
+import app.grapheneos.deskclock.core.presentation.components.ListGroup
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmDrawer(
-    key: Long,
     alarmWithInstance: AlarmWithInstance,
+    ringtones: List<RingtoneItem>,
     onDismissRequest: () -> Unit,
     onIntent: (AlarmAction) -> Unit,
     onDelete: () -> Unit
@@ -65,6 +67,7 @@ fun AlarmDrawer(
     ) {
         AlarmDrawerContent(
             alarmWithInstance = alarmWithInstance,
+            ringtones = ringtones,
             onDismissRequest = onDismissRequest,
             onIntent = onIntent,
             onDelete = onDelete
@@ -75,22 +78,28 @@ fun AlarmDrawer(
 @Composable
 fun AlarmDrawerContent(
     alarmWithInstance: AlarmWithInstance,
+    ringtones: List<RingtoneItem>,
     onDismissRequest: () -> Unit,
     onIntent: (AlarmAction) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
+
     var localAlarm by remember(alarmWithInstance.alarm.id) {
         mutableStateOf(alarmWithInstance.alarm)
     }
+    val defaultValue = stringResource(R.string.default_value)
+    val selectedRingtoneName = remember(localAlarm.ringtoneUri, ringtones) {
+        ringtones.find { it.uri == localAlarm.ringtoneUri }?.name ?: defaultValue
+    }
 
     var showTimePicker by remember { mutableStateOf(false) }
+    var showRingtonePicker by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .animateContentSize()
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -113,8 +122,7 @@ fun AlarmDrawerContent(
             Button(
                 onClick = {
                     showTimePicker = true
-                },
-                colors = ButtonDefaults.buttonColors(
+                }, colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     contentColor = MaterialTheme.colorScheme.onSurface
                 )
@@ -124,64 +132,42 @@ fun AlarmDrawerContent(
         }
 
         DayChips(
-            selectedDaysBitmask = localAlarm.daysOfWeek,
-            onBitmaskChange = { newBitmask ->
+            selectedDaysBitmask = localAlarm.daysOfWeek, onBitmaskChange = { newBitmask ->
                 localAlarm = localAlarm.copy(daysOfWeek = newBitmask)
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-            }
-        )
+            })
 
-        GroupedList(
-            listOf(
-                GroupedListItem(
-                    modifier = Modifier.alpha(
-                        if (localAlarm.daysOfWeek == 0) {
-                            1f
+        GroupItem(index = 0, count = 1) {
+            GroupRow(
+                content = { Text(stringResource(R.string.delete_after_use)) },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.delete)
+                    )
+                },
+                trailingContent = {
+                    Switch(
+                        checked = if (localAlarm.daysOfWeek == 0) {
+                            localAlarm.deleteAfterUse
                         } else {
-                            0.38f
-                        }
-                    ),
-                    content = {
-                        Text(
-                            text = stringResource(R.string.delete_after_use),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    },
-                    leadingContent = {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.delete)
-                        )
-                    },
-                    trailingContent = {
-                        Switch(
-                            checked = if (localAlarm.daysOfWeek == 0) {
-                                localAlarm.deleteAfterUse
-                            } else {
-                                false
-                            },
-                            onCheckedChange = { isChecked ->
-                                localAlarm = localAlarm.copy(deleteAfterUse = isChecked)
-                                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                            },
-                            enabled = localAlarm.daysOfWeek == 0
-                        )
-                    }
-                )
-            )
-        )
+                            false
+                        }, onCheckedChange = { isChecked ->
+                            localAlarm = localAlarm.copy(deleteAfterUse = isChecked)
+                            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                        }, enabled = localAlarm.daysOfWeek == 0
+                    )
+                })
+        }
 
         Spacer(modifier.height(0.dp))
 
-        GroupedList(
-            listOf(
-                GroupedListItem(
-                    content = {
-                        Text(
-                            text = stringResource(R.string.name_of_alarm),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    },
+        ListGroup {
+            val rowCount = 3
+
+            GroupItem(index = 0, count = rowCount, onClick = { /* open label editor TODO() */ }) {
+                GroupRow(
+                    content = { Text(stringResource(R.string.name_of_alarm)) },
                     leadingContent = {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Label,
@@ -193,63 +179,46 @@ fun AlarmDrawerContent(
                             text = stringResource(R.string.alarm),
                             style = MaterialTheme.typography.bodyMedium
                         )
-                    }
-                ),
-                GroupedListItem(
-                    content = {
-                        Text(
-                            text = stringResource(R.string.ringtone),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    },
-                    leadingContent = {
-                        Icon(
-                            imageVector = Icons.Default.NotificationsActive,
-                            contentDescription = stringResource(R.string.ringtone)
-                        )
-                    },
-                    trailingContent = {
-                        Text(
-                            text = "Standard (Cesium)",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                ),
-                GroupedListItem(
-                    content = {
-                        Text(
-                            text = stringResource(R.string.vibrate),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    },
-                    trailingContent = {
-                        Switch(
-                            checked = localAlarm.vibrate,
-                            onCheckedChange = { isChecked ->
-                                localAlarm = localAlarm.copy(vibrate = isChecked)
-                                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                            }
-                        )
-                    },
-                    leadingContent = {
-                        Icon(
-                            imageVector = Icons.Default.Vibration,
-                            contentDescription = ""
-                        )
-                    }
-                )
-            )
-        )
+                    })
+            }
+
+            GroupItem(index = 1, count = rowCount, onClick = { showRingtonePicker = true }) {
+                GroupRow(content = { Text(stringResource(R.string.ringtone)) }, leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.NotificationsActive,
+                        contentDescription = stringResource(R.string.ringtone)
+                    )
+                }, trailingContent = {
+                    Text(
+                        text = selectedRingtoneName,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                })
+            }
+
+            GroupItem(index = 2, count = rowCount) {
+                GroupRow(content = { Text(stringResource(R.string.vibrate)) }, leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Vibration,
+                        contentDescription = stringResource(R.string.vibrate)
+                    )
+                }, trailingContent = {
+                    Switch(
+                        checked = localAlarm.vibrate, onCheckedChange = { isChecked ->
+                            localAlarm = localAlarm.copy(vibrate = isChecked)
+                            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                        })
+                })
+            }
+        }
 
         Spacer(modifier.height(16.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(
-                onClick = onDelete,
-                colors = ButtonDefaults.buttonColors(
+                onClick = onDelete, colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colorScheme.error,
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 )
@@ -273,13 +242,27 @@ fun AlarmDrawerContent(
             initialMinute = localAlarm.minute,
             onConfirm = { pickerState ->
                 localAlarm = localAlarm.copy(
-                    hour = pickerState.hour,
-                    minute = pickerState.minute
+                    hour = pickerState.hour, minute = pickerState.minute
                 )
                 showTimePicker = false
             },
-            onDismiss = { showTimePicker = false }
-        )
+            onDismiss = { showTimePicker = false })
+    }
+
+    if (showRingtonePicker) {
+        RingtonePickerDialog(
+            ringtones = ringtones,
+            initialUri = localAlarm.ringtoneUri,
+            onPlayPreview = { uri -> onIntent(AlarmAction.PlayPreview(uri)) },
+            onStopPreview = { onIntent(AlarmAction.StopPreview) },
+            onDismiss = {
+                onIntent(AlarmAction.StopPreview)
+                showRingtonePicker = false
+            },
+            onConfirm = { newUri ->
+                localAlarm = localAlarm.copy(ringtoneUri = newUri)
+                showRingtonePicker = false
+            })
     }
 }
 
@@ -297,12 +280,7 @@ fun AlarmDrawerContentPreview() {
                     isEnabled = true,
                     deleteAfterUse = false,
                     label = ""
-                ),
-                instance = null
-            ),
-            onDismissRequest = {},
-            onIntent = {},
-            onDelete = {}
-        )
+                ), instance = null
+            ), ringtones = emptyList(), onDismissRequest = {}, onIntent = {}, onDelete = {})
     }
 }

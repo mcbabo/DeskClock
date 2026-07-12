@@ -17,7 +17,7 @@ sealed interface Route : NavKey {
     data object Main : Route, NavKey
 
     @Serializable
-    data object Settings : Route
+    data object Settings : Route, NavKey
 }
 
 enum class ClockTab(@StringRes val titleRes: Int, val icon: ImageVector) {

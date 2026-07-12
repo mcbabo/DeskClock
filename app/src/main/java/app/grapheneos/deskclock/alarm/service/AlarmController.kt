@@ -11,7 +11,7 @@ import app.grapheneos.deskclock.alarm.util.AlarmConstants
 class AlarmController(private val context: Context) {
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
-    fun scheduleInstance(instance: AlarmInstance) {
+    fun scheduleInstance(instance: AlarmInstance, alarmId: Long) {
         if (!alarmManager.canScheduleExactAlarms()) {
             val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -19,7 +19,7 @@ class AlarmController(private val context: Context) {
             return
         }
 
-        val pendingIntent = createReceiverPendingIntent(instance.id)
+        val pendingIntent = createReceiverPendingIntent(instance.id, alarmId)
         val alarmInfo = AlarmManager.AlarmClockInfo(instance.timeInMillis, pendingIntent)
 
         try {
@@ -29,20 +29,20 @@ class AlarmController(private val context: Context) {
         }
     }
 
-    fun cancelInstance(instanceId: Long) {
-        val pendingIntent = createReceiverPendingIntent(instanceId)
+    fun cancelInstance(alarmId: Long) {
+        val pendingIntent = createReceiverPendingIntent(-1L, alarmId)
         alarmManager.cancel(pendingIntent)
         pendingIntent.cancel()
     }
 
-    private fun createReceiverPendingIntent(instanceId: Long): PendingIntent {
+    private fun createReceiverPendingIntent(instanceId: Long, alarmId: Long): PendingIntent {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = AlarmConstants.ACTION_FIRE_ALARM
             putExtra(AlarmConstants.EXTRA_INSTANCE_ID, instanceId)
         }
         return PendingIntent.getBroadcast(
             context,
-            instanceId.toInt(),
+            alarmId.toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

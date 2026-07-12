@@ -19,7 +19,9 @@ fun NavigationRoot(
             when (key) {
                 is Route.Main -> {
                     NavEntry(key) {
-                        MainPagerScreen()
+                        MainPagerScreen(
+                            onNavigateToSettings = {}
+                        )
                     }
                 }
 

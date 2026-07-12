@@ -32,10 +32,10 @@ class AlarmService : Service(), KoinComponent {
     private var vibrator: Vibrator? = null
     private var wakeLock: PowerManager.WakeLock? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-
     private val repository: AlarmRepository by inject()
     private val notificationManager: AlarmNotificationManager by inject()
     private val attributedContext: Context by inject(named("AttributedContext"))
+    private var focusRequest: AudioFocusRequest? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val instanceId = intent?.getLongExtra(AlarmConstants.EXTRA_INSTANCE_ID, -1L) ?: -1L
@@ -73,12 +73,12 @@ class AlarmService : Service(), KoinComponent {
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
 
-        val focusRequest =
-            AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
-                .setAudioAttributes(playbackAttributes)
-                .build()
+        focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+            .setAudioAttributes(playbackAttributes)
+            .setAcceptsDelayedFocusGain(false)
+            .build()
 
-        val result = audioManager.requestAudioFocus(focusRequest)
+        val result = audioManager.requestAudioFocus(focusRequest!!)
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             playAlarmSound(customUri, playbackAttributes)
         }
@@ -118,7 +118,15 @@ class AlarmService : Service(), KoinComponent {
         mediaPlayer?.stop()
         mediaPlayer?.release()
         vibrator?.cancel()
-        if (wakeLock?.isHeld == true) wakeLock?.release()
+
+        focusRequest?.let {
+            val audioManager = getSystemService(AudioManager::class.java)
+            audioManager.abandonAudioFocusRequest(it)
+        }
+
+        if (wakeLock?.isHeld == true) {
+            wakeLock?.release()
+        }
         super.onDestroy()
     }
 

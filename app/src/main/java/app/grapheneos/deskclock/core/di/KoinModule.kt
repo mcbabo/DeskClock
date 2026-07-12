@@ -50,7 +50,6 @@ val alarmModule = module {
     }
 
     viewModelOf(::AlarmViewModel)
-
     viewModelOf(::AlarmPopUpViewModel)
 }
 

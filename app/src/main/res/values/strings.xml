@@ -29,4 +29,6 @@
     <string name="delete_after_use">Delete after use</string>
     <string name="edit">Edit</string>
     <string name="wake_up">Wake up!</string>
+    <string name="ringtones">Ringtones</string>
+    <string name="default_value">Default</string>
 </resources>

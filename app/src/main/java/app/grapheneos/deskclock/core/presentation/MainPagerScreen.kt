@@ -36,7 +36,9 @@ import app.grapheneos.deskclock.core.navigation.ClockTab
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainPagerScreen() {
+fun MainPagerScreen(
+    onNavigateToSettings: () -> Unit,
+) {
     val tabs = ClockTab.entries
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
@@ -58,9 +60,8 @@ fun MainPagerScreen() {
             ) { pageIndex ->
                 when (tabs[pageIndex]) {
                     ClockTab.Alarm -> {
-                        AlarmScreen({})
+                        AlarmScreen(onNavigateToSettings = onNavigateToSettings)
                     }
-
                     ClockTab.WorldClock -> {}
                     ClockTab.Timer -> {}
                     ClockTab.Stopwatch -> {}
