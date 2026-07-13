@@ -1,0 +1,145 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "09cd02ee7ac29ae36097136704b545da",
+    "entities": [
+      {
+        "tableName": "alarms",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `daysOfWeek` INTEGER NOT NULL, `isEnabled` INTEGER NOT NULL, `deleteAfterUse` INTEGER NOT NULL, `label` TEXT NOT NULL, `ringtoneUri` TEXT NOT NULL, `vibrate` INTEGER NOT NULL, `snoozeDurationMinutes` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hour",
+            "columnName": "hour",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minute",
+            "columnName": "minute",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "daysOfWeek",
+            "columnName": "daysOfWeek",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "isEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deleteAfterUse",
+            "columnName": "deleteAfterUse",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ringtoneUri",
+            "columnName": "ringtoneUri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vibrate",
+            "columnName": "vibrate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "snoozeDurationMinutes",
+            "columnName": "snoozeDurationMinutes",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "instances",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `alarmId` INTEGER NOT NULL, `timeInMillis` INTEGER NOT NULL, `alarmState` INTEGER NOT NULL, FOREIGN KEY(`alarmId`) REFERENCES `alarms`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alarmId",
+            "columnName": "alarmId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timeInMillis",
+            "columnName": "timeInMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alarmState",
+            "columnName": "alarmState",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_instances_alarmId",
+            "unique": false,
+            "columnNames": [
+              "alarmId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_instances_alarmId` ON `${TABLE_NAME}` (`alarmId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "alarms",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "alarmId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '09cd02ee7ac29ae36097136704b545da')"
+    ]
+  }
+}
