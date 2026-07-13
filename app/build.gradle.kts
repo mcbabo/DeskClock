@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -41,37 +42,30 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+detekt {
+    parallel = true
+    buildUponDefaultConfig = true
+    autoCorrect = true
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(platform(libs.koin.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.material.icons.extended)
-    implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.androidx.navigation3.ui)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    implementation(platform(libs.koin.bom))
-    implementation(libs.koin.core)
-    implementation(libs.koin.androidx.compose)
-    implementation(libs.koin.compose)
-    implementation(libs.koin.compose.viewmodel)
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.koin)
+    implementation(libs.bundles.material)
+    implementation(libs.bundles.navigation)
+    implementation(libs.bundles.room)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.material)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    debugImplementation(libs.androidx.compose.ui.tooling)
 
     ksp(libs.androidx.room.compiler)
+    detektPlugins(libs.bundles.detekt)
+
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.bundles.compose.debug)
 }
