@@ -15,6 +15,7 @@ fun NavigationRoot(
 
     NavDisplay(
         backStack = backStack,
+        modifier = modifier,
         entryProvider = { key ->
             when (key) {
                 is Route.Main -> {

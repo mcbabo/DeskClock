@@ -75,7 +75,6 @@ fun AlarmListItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-
         }
         Switch(
             checked = alarm.isEnabled,
@@ -106,4 +105,3 @@ fun AlarmListItemPreview() {
         }
     }
 }
-

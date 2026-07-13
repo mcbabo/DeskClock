@@ -52,7 +52,9 @@ fun DayChips(
                             modifier = Modifier.size(FilterChipDefaults.IconSize)
                         )
                     }
-                } else null
+                } else {
+                    null
+                }
             )
         }
     }

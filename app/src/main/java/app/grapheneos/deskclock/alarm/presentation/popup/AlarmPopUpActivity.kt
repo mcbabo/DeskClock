@@ -224,7 +224,8 @@ fun AlarmPopUpContent(
                             text = stringResource(R.string.snooze),
                             style = MaterialTheme.typography.titleLarge
                         )
-                        val minutes = alarmWithInstance?.alarm?.snoozeDurationMinutes ?: 5
+                        val minutes = alarmWithInstance?.alarm?.snoozeDurationMinutes
+                            ?: AlarmConstants.DEFAULT_SNOOZE_TIME
                         Text(
                             text = stringResource(R.string.n_minutes, minutes),
                             style = MaterialTheme.typography.bodyMedium

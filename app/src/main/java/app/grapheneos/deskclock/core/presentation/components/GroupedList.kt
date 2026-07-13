@@ -67,7 +67,8 @@ fun GroupRow(
 
 @Composable
 fun ListGroup(
-    title: String? = null, content: @Composable ColumnScope.() -> Unit
+    title: String? = null,
+    content: @Composable ColumnScope.() -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         if (title != null) {
@@ -79,22 +80,28 @@ fun ListGroup(
             )
         }
         Column(
-            verticalArrangement = Arrangement.spacedBy(2.dp), content = content
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            content = content
         )
     }
 }
-
 
 fun getGroupedShapes(index: Int, count: Int, cornerRadius: Dp = 20.dp): Shape {
     val flat = 4.dp
     return when {
         count <= 1 -> RoundedCornerShape(cornerRadius)
         index == 0 -> RoundedCornerShape(
-            topStart = cornerRadius, topEnd = cornerRadius, bottomStart = flat, bottomEnd = flat
+            topStart = cornerRadius,
+            topEnd = cornerRadius,
+            bottomStart = flat,
+            bottomEnd = flat
         )
 
         index == count - 1 -> RoundedCornerShape(
-            topStart = flat, topEnd = flat, bottomStart = cornerRadius, bottomEnd = cornerRadius
+            topStart = flat,
+            topEnd = flat,
+            bottomStart = cornerRadius,
+            bottomEnd = cornerRadius
         )
 
         else -> RoundedCornerShape(flat)
@@ -106,7 +113,8 @@ fun getGroupedShapes(index: Int, count: Int, cornerRadius: Dp = 20.dp): Shape {
 fun GroupedListPreview() {
     DeskClockTheme {
         Surface(
-            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
         ) {
             Column(
                 modifier = Modifier
@@ -131,23 +139,27 @@ fun GroupedListPreview() {
                                 leadingContent = { Icon(Icons.AutoMirrored.Filled.Label, null) },
                                 trailingContent = {
                                     Text(
-                                        "Work", color = MaterialTheme.colorScheme.primary
+                                        "Work",
+                                        color = MaterialTheme.colorScheme.primary
                                     )
-                                })
+                                }
+                            )
                         }
 
                         GroupItem(index = 1, count = items, onClick = {}) {
                             GroupRow(
                                 content = { Text("Ringtone") },
                                 leadingContent = { Icon(Icons.Default.NotificationsActive, null) },
-                                trailingContent = { Text("Cesium") })
+                                trailingContent = { Text("Cesium") }
+                            )
                         }
 
                         GroupItem(index = 2, count = items) {
                             GroupRow(
                                 content = { Text("Vibrate") },
                                 leadingContent = { Icon(Icons.Default.Vibration, null) },
-                                trailingContent = { Switch(checked = true, onCheckedChange = {}) })
+                                trailingContent = { Switch(checked = true, onCheckedChange = {}) }
+                            )
                         }
                     }
                 }
@@ -183,7 +195,8 @@ fun GroupedListPreview() {
                         GroupItem(index = i, count = simpleItems, onClick = {}) {
                             GroupRow(
                                 content = { Text("Simple Item ${i + 1}") },
-                                leadingContent = { Avatar("S") })
+                                leadingContent = { Avatar("S") }
+                            )
                         }
                     }
                 }

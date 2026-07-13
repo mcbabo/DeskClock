@@ -117,11 +117,13 @@ fun RingtonePickerDialogContent(
                     GroupRow(
                         content = { Text(ringtoneItem.name) },
                         trailingContent = {
-                            if (isSelected) Icon(
-                                imageVector =  Icons.Default.Check,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                            if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     )
                 }

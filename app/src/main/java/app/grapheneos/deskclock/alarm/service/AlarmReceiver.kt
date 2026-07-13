@@ -9,7 +9,7 @@ import org.koin.core.component.KoinComponent
 class AlarmReceiver : BroadcastReceiver(), KoinComponent {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != AlarmConstants.ACTION_FIRE_ALARM) return
-        
+
         val instanceId = intent.getLongExtra(AlarmConstants.EXTRA_INSTANCE_ID, -1L)
 
         val serviceIntent = Intent(context, AlarmService::class.java).apply {

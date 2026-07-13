@@ -122,7 +122,8 @@ fun AlarmDrawerContent(
             Button(
                 onClick = {
                     showTimePicker = true
-                }, colors = ButtonDefaults.buttonColors(
+                },
+                colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     contentColor = MaterialTheme.colorScheme.onSurface
                 )
@@ -132,10 +133,12 @@ fun AlarmDrawerContent(
         }
 
         DayChips(
-            selectedDaysBitmask = localAlarm.daysOfWeek, onBitmaskChange = { newBitmask ->
+            selectedDaysBitmask = localAlarm.daysOfWeek,
+            onBitmaskChange = { newBitmask ->
                 localAlarm = localAlarm.copy(daysOfWeek = newBitmask)
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-            })
+            }
+        )
 
         GroupItem(index = 0, count = 1) {
             GroupRow(
@@ -152,12 +155,15 @@ fun AlarmDrawerContent(
                             localAlarm.deleteAfterUse
                         } else {
                             false
-                        }, onCheckedChange = { isChecked ->
+                        },
+                        onCheckedChange = { isChecked ->
                             localAlarm = localAlarm.copy(deleteAfterUse = isChecked)
                             view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                        }, enabled = localAlarm.daysOfWeek == 0
+                        },
+                        enabled = localAlarm.daysOfWeek == 0
                     )
-                })
+                }
+            )
         }
 
         Spacer(modifier.height(0.dp))
@@ -179,7 +185,8 @@ fun AlarmDrawerContent(
                             text = stringResource(R.string.alarm),
                             style = MaterialTheme.typography.bodyMedium
                         )
-                    })
+                    }
+                )
             }
 
             GroupItem(index = 1, count = rowCount, onClick = { showRingtonePicker = true }) {
@@ -204,10 +211,12 @@ fun AlarmDrawerContent(
                     )
                 }, trailingContent = {
                     Switch(
-                        checked = localAlarm.vibrate, onCheckedChange = { isChecked ->
+                        checked = localAlarm.vibrate,
+                        onCheckedChange = { isChecked ->
                             localAlarm = localAlarm.copy(vibrate = isChecked)
                             view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                        })
+                        }
+                    )
                 })
             }
         }
@@ -215,10 +224,12 @@ fun AlarmDrawerContent(
         Spacer(modifier.height(16.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(
-                onClick = onDelete, colors = ButtonDefaults.buttonColors(
+                onClick = onDelete,
+                colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colorScheme.error,
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 )
@@ -246,7 +257,8 @@ fun AlarmDrawerContent(
                 )
                 showTimePicker = false
             },
-            onDismiss = { showTimePicker = false })
+            onDismiss = { showTimePicker = false }
+        )
     }
 
     if (showRingtonePicker) {
@@ -262,7 +274,8 @@ fun AlarmDrawerContent(
             onConfirm = { newUri ->
                 localAlarm = localAlarm.copy(ringtoneUri = newUri)
                 showRingtonePicker = false
-            })
+            }
+        )
     }
 }
 
@@ -280,7 +293,13 @@ fun AlarmDrawerContentPreview() {
                     isEnabled = true,
                     deleteAfterUse = false,
                     label = ""
-                ), instance = null
-            ), ringtones = emptyList(), onDismissRequest = {}, onIntent = {}, onDelete = {})
+                ),
+                instance = null
+            ),
+            ringtones = emptyList(),
+            onDismissRequest = {},
+            onIntent = {},
+            onDelete = {}
+        )
     }
 }

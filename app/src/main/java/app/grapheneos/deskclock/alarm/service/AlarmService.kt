@@ -107,7 +107,14 @@ class AlarmService : Service(), KoinComponent {
     private fun startVibration() {
         val vibratorManager = getSystemService(VibratorManager::class.java)
         vibrator = vibratorManager.defaultVibrator
-        val effect = VibrationEffect.createWaveform(longArrayOf(0, 1000, 1000), 0)
+        val effect = VibrationEffect.createWaveform(
+            longArrayOf(
+                0,
+                AlarmConstants.WAVE_FORM,
+                AlarmConstants.WAVE_FORM
+            ),
+            0
+        )
         val attributes = VibrationAttributes.Builder()
             .setUsage(VibrationAttributes.USAGE_ALARM).build()
         vibrator?.vibrate(effect, attributes)

@@ -10,4 +10,6 @@ object AlarmConstants {
 
     const val PM_TAG = "DeskClock:AlarmService"
     const val WAKE_LOCK_TIMEOUT = 10 * 60 * 1000L
+    const val DEFAULT_SNOOZE_TIME = 5
+    const val WAVE_FORM = 1000L
 }
