@@ -130,7 +130,7 @@ complexity:
   LongMethod:
     active: true
     threshold: 80
-    ignoreAnnotated: [ 'Preview' ]
+    ignoreAnnotated: [ 'Preview', 'Composable' ]
   LongParameterList:
     active: true
     functionThreshold: 8
