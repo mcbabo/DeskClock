@@ -5,13 +5,14 @@ import android.view.HapticFeedbackConstants
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +42,7 @@ import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.presentation.components.AlarmDrawer
 import app.grapheneos.deskclock.alarm.presentation.components.AlarmListItem
 import app.grapheneos.deskclock.alarm.presentation.components.DialWithDialog
-import app.grapheneos.deskclock.core.presentation.LocalBottomClearance
+import app.grapheneos.deskclock.core.presentation.FloatingActionButton
 import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
 
@@ -69,11 +71,11 @@ fun AlarmScreen(
 
     AlarmContent(
         state = state,
+        modifier = modifier,
         onIntent = viewModel::handleIntent,
-        onSettingsClick = onNavigateToSettings,
+        onNavigateToSettings = onNavigateToSettings,
         onAddAlarmClick = { showTimePicker = true },
-        onAlarmClick = { alarmWithInstance -> editingAlarmId = alarmWithInstance.alarm.id },
-        modifier = modifier
+        onAlarmClick = { alarmWithInstance -> editingAlarmId = alarmWithInstance.alarm.id }
     )
 
     if (showTimePicker) {
@@ -115,46 +117,70 @@ fun AlarmScreen(
 @Composable
 fun AlarmContent(
     state: AlarmState,
+    modifier: Modifier = Modifier,
     onIntent: (AlarmAction) -> Unit,
-    onSettingsClick: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     onAddAlarmClick: () -> Unit,
     onAlarmClick: (AlarmWithInstance) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
-    val bottomPadding = LocalBottomClearance.current
     val listState = rememberLazyListState()
+    val expandedFab by remember {
+        derivedStateOf { listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset < 10 }
+    }
+
+    val isFabVisible by remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val totalItemsNumber = layoutInfo.totalItemsCount
+            val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            totalItemsNumber > 0 && lastVisibleItemIndex < totalItemsNumber - 1
+        }
+    }
 
     Scaffold(
         modifier = modifier,
+        contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.tab_alarm)) },
                 navigationIcon = {
-                    IconButton(onClick = onSettingsClick) {
+                    IconButton(onClick = onNavigateToSettings) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(R.string.settings)
                         )
                     }
-                },
-                actions = {
-                    IconButton(onClick = onAddAlarmClick) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(R.string.add_alarm)
-                        )
-                    }
                 }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier,
+                text = {
+                    Text(
+                        text = stringResource(R.string.add_alarm)
+                    )
+                },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.add_alarm)
+                    )
+                },
+                isExpanded = expandedFab,
+                isVisible = isFabVisible,
+                onClick = onAddAlarmClick,
             )
         }
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(16.dp),
             state = listState,
-            contentPadding = PaddingValues(bottom = bottomPadding),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             if (state.alarms.isEmpty()) {
                 item {
@@ -173,18 +199,19 @@ fun AlarmContent(
                 }
             }
 
-            items(state.alarms, key = { it.alarm.id }) { alarmWithInstance ->
+            itemsIndexed(state.alarms) { index, alarmWithInstance ->
                 AlarmListItem(
                     alarmWithInstance = alarmWithInstance,
+                    index = index,
+                    listSize = state.alarms.size,
                     onToggle = {
                         onIntent(AlarmAction.ToggleAlarm(alarmWithInstance.alarm))
                         view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                    },
-                    onClick = {
-                        onAlarmClick(alarmWithInstance)
-                        view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
                     }
-                )
+                ) {
+                    onAlarmClick(alarmWithInstance)
+                    view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                }
             }
         }
     }

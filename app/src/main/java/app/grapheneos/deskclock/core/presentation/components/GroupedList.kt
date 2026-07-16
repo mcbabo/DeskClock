@@ -15,11 +15,13 @@ import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.ListItemDefaults.verticalAlignment
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -54,12 +56,14 @@ fun GroupRow(
     trailingContent: (@Composable () -> Unit)? = null,
     supportingContent: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
+    verticalAlignment: Alignment.Vertical = verticalAlignment()
 ) {
     ListItem(
         modifier = modifier,
         leadingContent = leadingContent,
         trailingContent = trailingContent,
         supportingContent = supportingContent,
+        verticalAlignment = verticalAlignment,
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         content = content
     )

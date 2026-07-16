@@ -1,11 +1,7 @@
 package app.grapheneos.deskclock.alarm.presentation.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,11 +19,15 @@ import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter
+import app.grapheneos.deskclock.core.presentation.components.GroupItem
+import app.grapheneos.deskclock.core.presentation.components.GroupRow
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 
 @Composable
 fun AlarmListItem(
     alarmWithInstance: AlarmWithInstance,
+    index: Int,
+    listSize: Int,
     onToggle: (Boolean) -> Unit,
     onClick: () -> Unit
 ) {
@@ -41,44 +41,52 @@ fun AlarmListItem(
         alarm.minute
     )
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+    GroupItem(
+        index = index,
+        count = listSize,
+        onClick = onClick
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(timeText, style = MaterialTheme.typography.displayLarge)
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        GroupRow(
+            content = {
                 Text(
-                    text = alarm.label.ifBlank { stringResource(R.string.alarm) },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = timeText,
+                    style = MaterialTheme.typography.displayMedium,
                 )
+            },
+            supportingContent = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = alarm.label.ifBlank { stringResource(R.string.alarm) },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
-                Spacer(modifier = Modifier.width(6.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
 
-                Text(
-                    text = "•",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    Text(
+                        text = AlarmDayFormatter.formatDaysOfWeek(context, alarm.daysOfWeek),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            },
+            trailingContent = {
+                Switch(
+                    checked = alarm.isEnabled,
+                    onCheckedChange = onToggle
                 )
-
-                Spacer(modifier = Modifier.width(6.dp))
-
-                Text(
-                    text = AlarmDayFormatter.formatDaysOfWeek(context, alarm.daysOfWeek),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Switch(
-            checked = alarm.isEnabled,
-            onCheckedChange = onToggle
+            },
+            verticalAlignment = Alignment.CenterVertically
         )
     }
 }
@@ -99,6 +107,8 @@ fun AlarmListItemPreview() {
                     ),
                     instance = null
                 ),
+                0,
+                1,
                 {},
                 {}
             )

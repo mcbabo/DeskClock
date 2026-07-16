@@ -5,6 +5,8 @@ import app.grapheneos.deskclock.alarm.presentation.AlarmViewModel
 import app.grapheneos.deskclock.alarm.presentation.popup.AlarmPopUpViewModel
 import app.grapheneos.deskclock.alarm.service.AlarmController
 import app.grapheneos.deskclock.alarm.service.AlarmNotificationManager
+import app.grapheneos.deskclock.clock.data.ClockRepository
+import app.grapheneos.deskclock.clock.presentation.ClockViewModel
 import app.grapheneos.deskclock.core.database.AppDatabase
 import app.grapheneos.deskclock.core.database.getDatabaseBuilder
 import app.grapheneos.deskclock.core.database.getRoomDatabase
@@ -53,6 +55,18 @@ val alarmModule = module {
     viewModelOf(::AlarmPopUpViewModel)
 }
 
+val clockModule = module {
+    single {
+        get<AppDatabase>().clockDao()
+    }
+
+    single {
+        ClockRepository(get())
+    }
+
+    viewModelOf(::ClockViewModel)
+}
+
 fun initializeKoin(
     config: (KoinApplication.() -> Unit)? = null
 ) {
@@ -60,7 +74,8 @@ fun initializeKoin(
         config?.invoke(this)
         modules(
             targetModule,
-            alarmModule
+            alarmModule,
+            clockModule
         )
     }
 }

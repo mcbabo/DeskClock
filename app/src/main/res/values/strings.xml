@@ -31,4 +31,11 @@
     <string name="wake_up">Wake up!</string>
     <string name="ringtones">Ringtones</string>
     <string name="default_value">Default</string>
+    <string name="back">Back</string>
+    <string name="search">Search</string>
+    <string name="add_clock">Add Clock</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="today">Today</string>
+    <string name="same_time">Same time</string>
 </resources>
