@@ -56,7 +56,7 @@ To get your environment ready:
 
 ### Documentation Contributions
 
-* Improve README, CONTRIBUTING, or other markdown files
+* Improve README, CONTRIBUTING, or other Markdown files
 * Add usage examples
 * Update or add Javadoc/KDoc to components
 
