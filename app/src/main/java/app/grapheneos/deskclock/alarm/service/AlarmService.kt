@@ -15,6 +15,7 @@ import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import androidx.core.net.toUri
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.alarm.util.AlarmConstants
@@ -98,6 +99,7 @@ class AlarmService : Service(), KoinComponent {
                 start()
             }
         } catch (e: Exception) {
+            Log.d("AlarmService", e.toString())
             if (uri != RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)) {
                 playAlarmSound(null, attributes)
             }

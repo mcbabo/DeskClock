@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import android.util.Log
 import app.grapheneos.deskclock.alarm.data.AlarmInstance
 import app.grapheneos.deskclock.alarm.util.AlarmConstants
 
@@ -25,6 +26,7 @@ class AlarmController(private val context: Context) {
         try {
             alarmManager.setAlarmClock(alarmInfo, pendingIntent)
         } catch (e: SecurityException) {
+            Log.d("AlarmController", e.toString())
             // TODO()
         }
     }
