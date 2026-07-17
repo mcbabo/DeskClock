@@ -25,13 +25,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
+import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.components.GroupItem
 import app.grapheneos.deskclock.core.presentation.components.GroupRow
+import app.grapheneos.deskclock.core.presentation.screenPadding
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,13 +97,13 @@ fun RingtonePickerDialogContent(
                 }
             )
         }
-    ) { padding ->
+    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
-                .padding(padding)
-                .padding(16.dp),
+                .padding(innerPadding)
+                .screenPadding(),
             state = listState,
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+            verticalArrangement = Arrangement.spacedBy(Layout.GroupedList.ItemSpacing)
         ) {
             itemsIndexed(ringtones) { index, ringtoneItem ->
                 val isSelected = ringtoneItem.uri == selectedUri

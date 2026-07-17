@@ -3,6 +3,7 @@ package app.grapheneos.deskclock.alarm.util
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.core.net.toUri
 
 class AlarmSoundPlayer(private val context: Context) {
@@ -25,7 +26,7 @@ class AlarmSoundPlayer(private val context: Context) {
                 start()
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.d("AlarmSoundPlayer", e.toString())
         }
     }
 

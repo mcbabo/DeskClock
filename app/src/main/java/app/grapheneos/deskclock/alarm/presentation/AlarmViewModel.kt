@@ -23,11 +23,11 @@ class AlarmViewModel(
     val soundPlayer = AlarmSoundPlayer(application)
 
     init {
-        handleIntent(AlarmAction.LoadAlarms)
-        handleIntent(AlarmAction.LoadSystemRingtones)
+        handleAction(AlarmAction.LoadAlarms)
+        handleAction(AlarmAction.LoadSystemRingtones)
     }
 
-    fun handleIntent(intent: AlarmAction) {
+    fun handleAction(intent: AlarmAction) {
         viewModelScope.launch {
             when (intent) {
                 is AlarmAction.LoadAlarms -> observeAlarms()

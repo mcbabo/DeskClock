@@ -6,7 +6,8 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Delete
@@ -24,10 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.grapheneos.deskclock.core.presentation.Layout
+import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 
 @Composable
@@ -41,7 +42,7 @@ fun GroupItem(
     Surface(
         onClick = onClick ?: {},
         enabled = onClick != null,
-        shape = getGroupedShapes(index, count),
+        shape = Layout.getGroupedShapes(index, count),
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         modifier = modifier.fillMaxWidth()
     ) {
@@ -55,8 +56,8 @@ fun GroupRow(
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
     supportingContent: (@Composable () -> Unit)? = null,
-    content: @Composable () -> Unit,
-    verticalAlignment: Alignment.Vertical = verticalAlignment()
+    verticalAlignment: Alignment.Vertical = verticalAlignment(),
+    content: @Composable () -> Unit
 ) {
     ListItem(
         modifier = modifier,
@@ -80,7 +81,7 @@ fun ListGroup(
                 text = title,
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 8.dp)
             )
         }
         Column(
@@ -90,25 +91,59 @@ fun ListGroup(
     }
 }
 
-fun getGroupedShapes(index: Int, count: Int, cornerRadius: Dp = 20.dp): Shape {
-    val flat = 4.dp
-    return when {
-        count <= 1 -> RoundedCornerShape(cornerRadius)
-        index == 0 -> RoundedCornerShape(
-            topStart = cornerRadius,
-            topEnd = cornerRadius,
-            bottomStart = flat,
-            bottomEnd = flat
-        )
+/**
+ * A logical wrapper that adds a header and a set of grouped items to a LazyColumn.
+ */
+fun <T> LazyListScope.lazyGroup(
+    items: List<T>,
+    title: String? = null,
+    key: ((item: T) -> Any)? = null,
+    onClick: (T) -> Unit = {},
+    itemContent: @Composable (Int, T) -> Unit
+) {
+    if (title != null) {
+        groupHeader(title)
+    }
 
-        index == count - 1 -> RoundedCornerShape(
-            topStart = flat,
-            topEnd = flat,
-            bottomStart = cornerRadius,
-            bottomEnd = cornerRadius
-        )
+    itemsIndexed(
+        items = items,
+        key = if (key != null) { _, item -> key(item) } else null
+    ) { index, item ->
+        GroupItem(
+            index = index,
+            count = items.size,
+            onClick = { onClick(item) }
+        ) {
+            itemContent(index, item)
+        }
+    }
+}
 
-        else -> RoundedCornerShape(flat)
+/**
+ * Extension for a single standalone item
+ */
+fun LazyListScope.standaloneGroupItem(
+    onClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    item {
+        GroupItem(index = 0, count = 1, onClick = onClick) {
+            content()
+        }
+    }
+}
+
+/**
+ * Extension for the Header
+ */
+fun LazyListScope.groupHeader(title: String) {
+    item {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 8.dp)
+        )
     }
 }
 
@@ -121,89 +156,101 @@ fun GroupedListPreview() {
             color = MaterialTheme.colorScheme.background
         ) {
             Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                modifier = Modifier.screenPadding(),
+                verticalArrangement = Arrangement.spacedBy(Layout.SectionSpacing)
             ) {
-                Column {
-                    Text(
-                        text = "Alarm Configuration",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                    )
+                val items = 3
+                ListGroup(
+                    "Alarm Configuration",
+                    {
+                        Column(verticalArrangement = Arrangement.spacedBy(Layout.GroupedList.ItemSpacing)) {
+                            GroupItem(index = 0, count = items, onClick = {}) {
+                                GroupRow(
+                                    content = { Text("Alarm Label") },
+                                    supportingContent = { Text("Morning Wakeup") },
+                                    leadingContent = {
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.Label,
+                                            null
+                                        )
+                                    },
+                                    trailingContent = {
+                                        Text(
+                                            "Work",
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                )
+                            }
 
-                    val items = 3
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        GroupItem(index = 0, count = items, onClick = {}) {
-                            GroupRow(
-                                content = { Text("Alarm Label") },
-                                supportingContent = { Text("Morning Wakeup") },
-                                leadingContent = { Icon(Icons.AutoMirrored.Filled.Label, null) },
-                                trailingContent = {
-                                    Text(
-                                        "Work",
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            )
-                        }
+                            GroupItem(index = 1, count = items, onClick = {}) {
+                                GroupRow(
+                                    content = { Text("Ringtone") },
+                                    leadingContent = {
+                                        Icon(
+                                            Icons.Default.NotificationsActive,
+                                            null
+                                        )
+                                    },
+                                    trailingContent = { Text("Cesium") }
+                                )
+                            }
 
-                        GroupItem(index = 1, count = items, onClick = {}) {
-                            GroupRow(
-                                content = { Text("Ringtone") },
-                                leadingContent = { Icon(Icons.Default.NotificationsActive, null) },
-                                trailingContent = { Text("Cesium") }
-                            )
-                        }
-
-                        GroupItem(index = 2, count = items) {
-                            GroupRow(
-                                content = { Text("Vibrate") },
-                                leadingContent = { Icon(Icons.Default.Vibration, null) },
-                                trailingContent = { Switch(checked = true, onCheckedChange = {}) }
-                            )
-                        }
-                    }
-                }
-
-                Column {
-                    Text(
-                        text = "Actions",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                    )
-
-                    GroupItem(index = 0, count = 1, onClick = {}) {
-                        GroupRow(content = { Text("Delete Alarm") }, leadingContent = {
-                            Icon(
-                                Icons.Default.Delete,
-                                null,
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        })
-                    }
-                }
-
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    val simpleItems = 2
-                    repeat(simpleItems) { i ->
-                        GroupItem(index = i, count = simpleItems, onClick = {}) {
-                            GroupRow(content = { Text("Simple Item ${i + 1}") })
+                            GroupItem(index = 2, count = items) {
+                                GroupRow(
+                                    content = { Text("Vibrate") },
+                                    leadingContent = { Icon(Icons.Default.Vibration, null) },
+                                    trailingContent = {
+                                        Switch(
+                                            checked = true,
+                                            onCheckedChange = {}
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
+                )
 
-                    repeat(simpleItems) { i ->
-                        GroupItem(index = i, count = simpleItems, onClick = {}) {
-                            GroupRow(
-                                content = { Text("Simple Item ${i + 1}") },
-                                leadingContent = { Avatar("S") }
-                            )
+                ListGroup(
+                    "Actions",
+                    {
+                        GroupItem(index = 0, count = 1, onClick = {}) {
+                            GroupRow(content = { Text("Delete Alarm") }, leadingContent = {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            })
                         }
                     }
-                }
+                )
+
+                ListGroup(
+                    "Basic items",
+                    {
+                        repeat(2) { i ->
+                            GroupItem(index = i, count = 2, onClick = {}) {
+                                GroupRow(content = { Text("Simple Item ${i + 1}") })
+                            }
+                        }
+                    }
+                )
+
+                ListGroup(
+                    "Items with avatar",
+                    {
+                        repeat(2) { i ->
+                            GroupItem(index = i, count = 2, onClick = {}) {
+                                GroupRow(
+                                    content = { Text("Simple Item ${i + 1}") },
+                                    leadingContent = { Avatar("S") }
+                                )
+                            }
+                        }
+                    }
+                )
             }
         }
     }

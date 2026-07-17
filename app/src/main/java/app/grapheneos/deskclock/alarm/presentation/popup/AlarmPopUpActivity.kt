@@ -43,6 +43,8 @@ import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.service.AlarmService
 import app.grapheneos.deskclock.alarm.util.AlarmConstants
+import app.grapheneos.deskclock.core.presentation.Layout
+import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.core.theme.SystemBarsTheme
 import kotlinx.coroutines.delay
@@ -171,7 +173,7 @@ fun AlarmPopUpContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .screenPadding(),
         ) {
             Column(
                 modifier = Modifier
@@ -204,7 +206,6 @@ fun AlarmPopUpContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
                     .align(Alignment.BottomCenter),
                 horizontalArrangement = Arrangement.spacedBy(32.dp)
             ) {
@@ -213,7 +214,7 @@ fun AlarmPopUpContent(
                     modifier = Modifier
                         .weight(1f)
                         .aspectRatio(1f),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(Layout.RoundedCornerRadius),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -238,7 +239,7 @@ fun AlarmPopUpContent(
                     modifier = Modifier
                         .weight(1f)
                         .aspectRatio(1f),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(Layout.RoundedCornerRadius)
                 ) {
                     Text(
                         text = stringResource(R.string.dismiss),

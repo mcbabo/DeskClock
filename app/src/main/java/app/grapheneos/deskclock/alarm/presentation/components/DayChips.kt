@@ -16,8 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLocale
-import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter
+import app.grapheneos.deskclock.core.presentation.Layout
 
 @Composable
 fun DayChips(
@@ -32,7 +32,7 @@ fun DayChips(
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         state = rowState,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(Layout.ChipSpacing),
         verticalAlignment = Alignment.CenterVertically
     ) {
         items(chipStates) { chip ->

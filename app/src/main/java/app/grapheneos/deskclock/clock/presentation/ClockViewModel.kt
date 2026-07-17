@@ -47,7 +47,7 @@ class ClockViewModel(private val repository: ClockRepository) : ViewModel() {
             } else {
                 allAvailableZones.filter {
                     it.id.contains(query, ignoreCase = true) ||
-                            it.id.replace('_', ' ').contains(query, ignoreCase = true)
+                        it.id.replace('_', ' ').contains(query, ignoreCase = true)
                 }
             }
 

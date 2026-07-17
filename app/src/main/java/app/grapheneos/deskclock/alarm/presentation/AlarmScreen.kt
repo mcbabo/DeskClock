@@ -1,18 +1,13 @@
 package app.grapheneos.deskclock.alarm.presentation
 
-import android.Manifest
 import android.view.HapticFeedbackConstants
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,8 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
@@ -43,6 +35,8 @@ import app.grapheneos.deskclock.alarm.presentation.components.AlarmDrawer
 import app.grapheneos.deskclock.alarm.presentation.components.AlarmListItem
 import app.grapheneos.deskclock.alarm.presentation.components.DialWithDialog
 import app.grapheneos.deskclock.core.presentation.FloatingActionButton
+import app.grapheneos.deskclock.core.presentation.Layout
+import app.grapheneos.deskclock.core.presentation.components.lazyGroup
 import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
 
@@ -61,18 +55,10 @@ fun AlarmScreen(
         state.alarms.find { it.alarm.id == editingAlarmId }
     }
 
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { _ -> }
-
-    LaunchedEffect(Unit) {
-        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-    }
-
     AlarmContent(
         state = state,
         modifier = modifier,
-        onIntent = viewModel::handleIntent,
+        onAction = viewModel::handleAction,
         onNavigateToSettings = onNavigateToSettings,
         onAddAlarmClick = { showTimePicker = true },
         onAlarmClick = { alarmWithInstance -> editingAlarmId = alarmWithInstance.alarm.id }
@@ -84,7 +70,7 @@ fun AlarmScreen(
             initialHour = now.get(Calendar.HOUR_OF_DAY),
             initialMinute = now.get(Calendar.MINUTE),
             onConfirm = { pickerState ->
-                viewModel.handleIntent(
+                viewModel.handleAction(
                     AlarmAction.AddAlarm(
                         hour = pickerState.hour,
                         minute = pickerState.minute,
@@ -103,12 +89,15 @@ fun AlarmScreen(
         AlarmDrawer(
             alarmWithInstance = alarmWithInstance,
             ringtones = state.ringtones,
-            onIntent = viewModel::handleIntent,
             onDismissRequest = {
-                viewModel.handleIntent(AlarmAction.StopPreview)
+                viewModel.handleAction(AlarmAction.StopPreview)
                 editingAlarmId = null
             },
-            onDelete = { /* TODO() */ }
+            onIntent = viewModel::handleAction,
+            onDelete = {
+                viewModel.handleAction(AlarmAction.DeleteAlarm(alarmWithInstance.alarm))
+                editingAlarmId = null
+            }
         )
     }
 }
@@ -118,25 +107,13 @@ fun AlarmScreen(
 fun AlarmContent(
     state: AlarmState,
     modifier: Modifier = Modifier,
-    onIntent: (AlarmAction) -> Unit,
+    onAction: (AlarmAction) -> Unit,
     onNavigateToSettings: () -> Unit,
     onAddAlarmClick: () -> Unit,
     onAlarmClick: (AlarmWithInstance) -> Unit,
 ) {
     val view = LocalView.current
     val listState = rememberLazyListState()
-    val expandedFab by remember {
-        derivedStateOf { listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset < 10 }
-    }
-
-    val isFabVisible by remember {
-        derivedStateOf {
-            val layoutInfo = listState.layoutInfo
-            val totalItemsNumber = layoutInfo.totalItemsCount
-            val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            totalItemsNumber > 0 && lastVisibleItemIndex < totalItemsNumber - 1
-        }
-    }
 
     Scaffold(
         modifier = modifier,
@@ -168,49 +145,48 @@ fun AlarmContent(
                         contentDescription = stringResource(R.string.add_alarm)
                     )
                 },
-                isExpanded = expandedFab,
-                isVisible = isFabVisible,
-                onClick = onAddAlarmClick,
+                onClick = onAddAlarmClick
             )
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            state = listState,
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
             if (state.alarms.isEmpty()) {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.no_alarms_yet),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            }
-
-            itemsIndexed(state.alarms) { index, alarmWithInstance ->
-                AlarmListItem(
-                    alarmWithInstance = alarmWithInstance,
-                    index = index,
-                    listSize = state.alarms.size,
-                    onToggle = {
-                        onIntent(AlarmAction.ToggleAlarm(alarmWithInstance.alarm))
-                        view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                    }
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    onAlarmClick(alarmWithInstance)
-                    view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                    Text(
+                        text = stringResource(R.string.no_alarms_yet),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                }
+            } else {
+                LazyColumn(
+                    state = listState,
+                    verticalArrangement = Arrangement.spacedBy(Layout.GroupedList.ItemSpacing),
+                    contentPadding = Layout.contentPadding(innerPadding)
+                ) {
+                    lazyGroup(
+                        items = state.alarms,
+                        key = { it.alarm.id },
+                        onClick = { onAlarmClick(it) }
+                    ) { index, alarmWithInstance ->
+                        AlarmListItem(
+                            alarmWithInstance = alarmWithInstance,
+                            index = index,
+                            listSize = state.alarms.size,
+                            onToggle = {
+                                onAction(AlarmAction.ToggleAlarm(alarmWithInstance.alarm))
+                                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                            }
+                        ) {
+                            onAlarmClick(alarmWithInstance)
+                            view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                        }
+                    }
                 }
             }
         }

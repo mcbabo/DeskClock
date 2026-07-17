@@ -14,8 +14,8 @@ fun FloatingActionButton(
     modifier: Modifier = Modifier,
     text: @Composable () -> Unit,
     icon: @Composable () -> Unit,
-    isExpanded: Boolean,
-    isVisible: Boolean,
+    isExpanded: Boolean = true,
+    isVisible: Boolean = true,
     onClick: () -> Unit
 ) {
     AnimatedVisibility(

@@ -10,13 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
+import app.grapheneos.deskclock.core.presentation.Layout
 
 @Composable
 fun Avatar(text: String) {
     Box(
         modifier = Modifier
-            .size(32.dp)
+            .size(Layout.AvatarSize)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.primaryContainer),
         contentAlignment = Alignment.Center

@@ -41,9 +41,11 @@ import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.presentation.AlarmAction
 import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
+import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.components.GroupItem
 import app.grapheneos.deskclock.core.presentation.components.GroupRow
 import app.grapheneos.deskclock.core.presentation.components.ListGroup
+import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,7 +102,7 @@ fun AlarmDrawerContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .screenPadding(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Row(
@@ -221,7 +223,7 @@ fun AlarmDrawerContent(
             }
         }
 
-        Spacer(modifier.height(16.dp))
+        Spacer(modifier.height(Layout.ScreenVertical))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
