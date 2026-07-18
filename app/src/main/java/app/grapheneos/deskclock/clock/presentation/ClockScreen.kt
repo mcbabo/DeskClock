@@ -12,7 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -140,7 +140,7 @@ fun ClockContent(
                 text = { Text(text = stringResource(R.string.add_clock)) },
                 icon = {
                     Icon(
-                        imageVector = Icons.Filled.Add,
+                        imageVector = Icons.Outlined.Add,
                         contentDescription = stringResource(R.string.add_alarm)
                     )
                 },

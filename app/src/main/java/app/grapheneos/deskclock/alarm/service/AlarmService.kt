@@ -13,7 +13,6 @@ import org.koin.core.component.inject
 class AlarmService : BaseAlertService(AlarmConstants.PM_TAG) {
     private val repository: AlarmRepository by inject()
     private val notificationManager: AlarmNotificationManager by inject()
-
     private val vibrationManager: VibrationManager by inject()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

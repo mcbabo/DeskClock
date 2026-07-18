@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import app.grapheneos.deskclock.core.presentation.MainPagerScreen
+import app.grapheneos.deskclock.core.presentation.PermissionScreen
 
 @Composable
 fun NavigationRoot(
@@ -20,9 +21,11 @@ fun NavigationRoot(
             when (key) {
                 is Route.Main -> {
                     NavEntry(key) {
-                        MainPagerScreen(
-                            onNavigateToSettings = {}
-                        )
+                        PermissionScreen {
+                            MainPagerScreen(
+                                onNavigateToSettings = {}
+                            )
+                        }
                     }
                 }
 

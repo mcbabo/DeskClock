@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Label
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Vibration
+import androidx.compose.material.icons.automirrored.outlined.Label
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -72,10 +72,15 @@ fun GroupRow(
 
 @Composable
 fun ListGroup(
+    modifier: Modifier = Modifier,
     title: String? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
+    ) {
         if (title != null) {
             Text(
                 text = title,
@@ -161,8 +166,8 @@ fun GroupedListPreview() {
             ) {
                 val items = 3
                 ListGroup(
-                    "Alarm Configuration",
-                    {
+                    title = "Alarm Configuration",
+                    content = {
                         Column(verticalArrangement = Arrangement.spacedBy(Layout.GroupedList.ItemSpacing)) {
                             GroupItem(index = 0, count = items, onClick = {}) {
                                 GroupRow(
@@ -170,7 +175,7 @@ fun GroupedListPreview() {
                                     supportingContent = { Text("Morning Wakeup") },
                                     leadingContent = {
                                         Icon(
-                                            Icons.AutoMirrored.Filled.Label,
+                                            Icons.AutoMirrored.Outlined.Label,
                                             null
                                         )
                                     },
@@ -188,7 +193,7 @@ fun GroupedListPreview() {
                                     content = { Text("Ringtone") },
                                     leadingContent = {
                                         Icon(
-                                            Icons.Default.NotificationsActive,
+                                            Icons.Outlined.NotificationsActive,
                                             null
                                         )
                                     },
@@ -199,7 +204,7 @@ fun GroupedListPreview() {
                             GroupItem(index = 2, count = items) {
                                 GroupRow(
                                     content = { Text("Vibrate") },
-                                    leadingContent = { Icon(Icons.Default.Vibration, null) },
+                                    leadingContent = { Icon(Icons.Outlined.Vibration, null) },
                                     trailingContent = {
                                         Switch(
                                             checked = true,
@@ -213,12 +218,12 @@ fun GroupedListPreview() {
                 )
 
                 ListGroup(
-                    "Actions",
-                    {
+                    title = "Actions",
+                    content = {
                         GroupItem(index = 0, count = 1, onClick = {}) {
                             GroupRow(content = { Text("Delete Alarm") }, leadingContent = {
                                 Icon(
-                                    Icons.Default.Delete,
+                                    Icons.Outlined.Delete,
                                     null,
                                     tint = MaterialTheme.colorScheme.error
                                 )
@@ -228,8 +233,8 @@ fun GroupedListPreview() {
                 )
 
                 ListGroup(
-                    "Basic items",
-                    {
+                    title = "Basic items",
+                    content = {
                         repeat(2) { i ->
                             GroupItem(index = i, count = 2, onClick = {}) {
                                 GroupRow(content = { Text("Simple Item ${i + 1}") })
@@ -239,8 +244,8 @@ fun GroupedListPreview() {
                 )
 
                 ListGroup(
-                    "Items with avatar",
-                    {
+                    title = "Items with avatar",
+                    content = {
                         repeat(2) { i ->
                             GroupItem(index = i, count = 2, onClick = {}) {
                                 GroupRow(

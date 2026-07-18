@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -47,7 +47,7 @@ fun DayChips(
                 leadingIcon = if (chip.isSelected) {
                     {
                         Icon(
-                            imageVector = Icons.Filled.Done,
+                            imageVector = Icons.Outlined.Done,
                             contentDescription = null,
                             modifier = Modifier.size(FilterChipDefaults.IconSize)
                         )

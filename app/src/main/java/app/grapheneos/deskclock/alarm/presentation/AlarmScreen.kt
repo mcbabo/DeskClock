@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -150,7 +151,9 @@ fun AlarmContent(
         }
     ) { innerPadding ->
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             if (uiState.alarms.isEmpty()) {
                 Box(
@@ -167,7 +170,7 @@ fun AlarmContent(
                 LazyColumn(
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(Layout.GroupedList.ItemSpacing),
-                    contentPadding = Layout.contentPadding(innerPadding)
+                    contentPadding = Layout.contentPadding()
                 ) {
                     lazyGroup(
                         items = uiState.alarms,

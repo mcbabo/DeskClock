@@ -89,7 +89,7 @@ fun SystemBarsTheme(backgroundColor: Color = MaterialTheme.colorScheme.backgroun
             backgroundColor.toArgb().toDrawable()
         )
 
-        activity.window.setNavigationBarContrastEnforced(false)
+        activity.window.isNavigationBarContrastEnforced = false
 
         insetsController.isAppearanceLightStatusBars = isLightBackground
         insetsController.isAppearanceLightNavigationBars = isLightBackground

@@ -1,9 +1,6 @@
 package app.grapheneos.deskclock.core.presentation
 
-import android.Manifest
 import android.view.HapticFeedbackConstants
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
@@ -36,14 +33,6 @@ fun MainPagerScreen(
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
     val view = LocalView.current
-
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { _ -> }
-
-    LaunchedEffect(Unit) {
-        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-    }
 
     LaunchedEffect(pagerState) {
         var isInitial = true

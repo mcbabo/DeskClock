@@ -1,8 +1,5 @@
 package app.grapheneos.deskclock.timer.presentation
 
-import android.Manifest
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -29,7 +26,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,14 +44,6 @@ fun TimerScreen(
     viewModel: TimerViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted -> }
-
-    LaunchedEffect(Unit) {
-        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-    }
 
     TimerContent(
         uiState = uiState,
@@ -143,7 +131,7 @@ private fun TimerSetupLayout(
             enabled = uiState.inputTime.toLong() > 0
         ) {
             Icon(
-                imageVector = Icons.Default.PlayArrow,
+                imageVector = Icons.Outlined.PlayArrow,
                 contentDescription = stringResource(R.string.start)
             )
         }

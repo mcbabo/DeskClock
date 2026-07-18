@@ -84,8 +84,11 @@ class AlarmRepository(
         alarmDao.deleteInstancesForAlarm(alarm.id)
 
         val snoozeTimeInMillis = System.currentTimeMillis() + (snoozeMinutes * 60 * 1000)
-        val snoozeInstance =
-            AlarmInstance(alarmId = alarm.id, timeInMillis = snoozeTimeInMillis, alarmState = 2)
+        val snoozeInstance = AlarmInstance(
+            alarmId = alarm.id,
+            timeInMillis = snoozeTimeInMillis,
+            alarmState = 2
+        )
 
         val newInstanceId = alarmDao.insertInstance(snoozeInstance)
         alarmController.scheduleInstance(snoozeInstance.copy(id = newInstanceId), alarm.id)
@@ -94,8 +97,11 @@ class AlarmRepository(
     private suspend fun scheduleInstance(alarm: AlarmEntity) {
         cancelInstanceByAlarmId(alarm.id)
 
-        val triggerTime =
-            AlarmTimeCalculator.calculateNextTriggerTime(alarm.hour, alarm.minute, alarm.daysOfWeek)
+        val triggerTime = AlarmTimeCalculator.calculateNextTriggerTime(
+            alarm.hour,
+            alarm.minute,
+            alarm.daysOfWeek
+        )
         val instance = AlarmInstance(alarmId = alarm.id, timeInMillis = triggerTime, alarmState = 0)
         val instanceId = alarmDao.insertInstance(instance)
 

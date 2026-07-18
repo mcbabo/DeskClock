@@ -44,4 +44,12 @@
     <string name="reset">Reset</string>
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
+    <string name="continue_value">Continue</string>
+    <string name="granted">Granted</string>
+    <string name="notifications">Notifications</string>
+    <string name="perms_notifications_desc">Required to display active timers and persistent alarm alerts.</string>
+    <string name="perms_display_over_apps">Display Over Other Apps</string>
+    <string name="perms_display_over_apps_desc">Allows alarms to wake the screen and display full-screen alerts natively.</string>
+    <string name="perms_battery">Bypass Battery Optimization</string>
+    <string name="perms_battery_desc">Prevents system restriction states from delaying or skipping scheduled alarms.</string>
 </resources>

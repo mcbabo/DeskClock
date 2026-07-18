@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Label
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Vibration
+import androidx.compose.material.icons.automirrored.outlined.Label
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -147,7 +147,7 @@ fun AlarmDrawerContent(
                 content = { Text(stringResource(R.string.delete_after_use)) },
                 leadingContent = {
                     Icon(
-                        imageVector = Icons.Default.Delete,
+                        imageVector = Icons.Outlined.Delete,
                         contentDescription = stringResource(R.string.delete)
                     )
                 },
@@ -178,7 +178,7 @@ fun AlarmDrawerContent(
                     content = { Text(stringResource(R.string.name_of_alarm)) },
                     leadingContent = {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Label,
+                            imageVector = Icons.AutoMirrored.Outlined.Label,
                             contentDescription = stringResource(R.string.name_of_alarm)
                         )
                     },
@@ -194,7 +194,7 @@ fun AlarmDrawerContent(
             GroupItem(index = 1, count = rowCount, onClick = { showRingtonePicker = true }) {
                 GroupRow(content = { Text(stringResource(R.string.ringtone)) }, leadingContent = {
                     Icon(
-                        imageVector = Icons.Default.NotificationsActive,
+                        imageVector = Icons.Outlined.NotificationsActive,
                         contentDescription = stringResource(R.string.ringtone)
                     )
                 }, trailingContent = {
@@ -208,7 +208,7 @@ fun AlarmDrawerContent(
             GroupItem(index = 2, count = rowCount) {
                 GroupRow(content = { Text(stringResource(R.string.vibrate)) }, leadingContent = {
                     Icon(
-                        imageVector = Icons.Default.Vibration,
+                        imageVector = Icons.Outlined.Vibration,
                         contentDescription = stringResource(R.string.vibrate)
                     )
                 }, trailingContent = {
@@ -291,7 +291,7 @@ fun AlarmDrawerContentPreview() {
                     id = 1,
                     hour = 7,
                     minute = 30,
-                    daysOfWeek = 0,
+                    daysOfWeek = 31,
                     isEnabled = true,
                     deleteAfterUse = false,
                     label = ""
