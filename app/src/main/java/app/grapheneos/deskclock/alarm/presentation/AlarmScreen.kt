@@ -46,17 +46,17 @@ fun AlarmScreen(
     modifier: Modifier = Modifier,
     viewModel: AlarmViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     var editingAlarmId by remember { mutableStateOf<Long?>(null) }
     var showTimePicker by remember { mutableStateOf(false) }
 
-    val editingAlarm = remember(editingAlarmId, state.alarms) {
-        state.alarms.find { it.alarm.id == editingAlarmId }
+    val editingAlarm = remember(editingAlarmId, uiState.alarms) {
+        uiState.alarms.find { it.alarm.id == editingAlarmId }
     }
 
     AlarmContent(
-        state = state,
+        uiState = uiState,
         modifier = modifier,
         onAction = viewModel::handleAction,
         onNavigateToSettings = onNavigateToSettings,
@@ -88,12 +88,12 @@ fun AlarmScreen(
     editingAlarm?.let { alarmWithInstance ->
         AlarmDrawer(
             alarmWithInstance = alarmWithInstance,
-            ringtones = state.ringtones,
+            ringtones = uiState.ringtones,
             onDismissRequest = {
                 viewModel.handleAction(AlarmAction.StopPreview)
                 editingAlarmId = null
             },
-            onIntent = viewModel::handleAction,
+            onAction = viewModel::handleAction,
             onDelete = {
                 viewModel.handleAction(AlarmAction.DeleteAlarm(alarmWithInstance.alarm))
                 editingAlarmId = null
@@ -105,7 +105,7 @@ fun AlarmScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmContent(
-    state: AlarmState,
+    uiState: AlarmUiState,
     modifier: Modifier = Modifier,
     onAction: (AlarmAction) -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -152,7 +152,7 @@ fun AlarmContent(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            if (state.alarms.isEmpty()) {
+            if (uiState.alarms.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -170,14 +170,14 @@ fun AlarmContent(
                     contentPadding = Layout.contentPadding(innerPadding)
                 ) {
                     lazyGroup(
-                        items = state.alarms,
+                        items = uiState.alarms,
                         key = { it.alarm.id },
                         onClick = { onAlarmClick(it) }
                     ) { index, alarmWithInstance ->
                         AlarmListItem(
                             alarmWithInstance = alarmWithInstance,
                             index = index,
-                            listSize = state.alarms.size,
+                            listSize = uiState.alarms.size,
                             onToggle = {
                                 onAction(AlarmAction.ToggleAlarm(alarmWithInstance.alarm))
                                 view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)

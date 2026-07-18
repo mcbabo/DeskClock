@@ -1,6 +1,7 @@
 package app.grapheneos.deskclock.alarm.data
 
 import app.grapheneos.deskclock.alarm.service.AlarmController
+import app.grapheneos.deskclock.alarm.util.AlarmConstants
 import app.grapheneos.deskclock.alarm.util.AlarmTimeCalculator
 import kotlinx.coroutines.flow.Flow
 
@@ -72,7 +73,10 @@ class AlarmRepository(
         }
     }
 
-    suspend fun snoozeAlarm(instanceId: Long, snoozeMinutes: Int = 5) {
+    suspend fun snoozeAlarm(
+        instanceId: Long,
+        snoozeMinutes: Int = AlarmConstants.DEFAULT_SNOOZE_TIME
+    ) {
         val alarmWithInstance = alarmDao.getAlarmWithInstanceByInstanceId(instanceId) ?: return
         val alarm = alarmWithInstance.alarm
 

@@ -2,8 +2,6 @@ package app.grapheneos.deskclock.alarm.service
 
 import android.annotation.SuppressLint
 import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -11,26 +9,13 @@ import androidx.core.app.NotificationCompat
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.popup.AlarmPopUpActivity
 import app.grapheneos.deskclock.alarm.util.AlarmConstants
+import app.grapheneos.deskclock.core.notification.NotificationConstants
 
 class AlarmNotificationManager(private val context: Context) {
-    private val notificationManager = context.getSystemService(NotificationManager::class.java)
-
-    fun setupNotificationChannel() {
-        val channel = NotificationChannel(
-            AlarmConstants.CHANNEL_ID,
-            AlarmConstants.CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_HIGH
-        ).apply {
-            setSound(null, null)
-            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-        }
-        notificationManager?.createNotificationChannel(channel)
-    }
-
     @SuppressLint("FullScreenIntentPolicy")
     fun buildAlarmNotification(instanceId: Long): Notification {
         val fullScreenIntent = getFullScreenIntent(instanceId)
-        return NotificationCompat.Builder(context, AlarmConstants.CHANNEL_ID)
+        return NotificationCompat.Builder(context, NotificationConstants.Alarm.CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentTitle(context.getString(R.string.alarm))
             .setContentText(context.getString(R.string.ringing_dots))

@@ -23,18 +23,18 @@ class ClockViewModel(private val repository: ClockRepository) : ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     private val _isSearchActive = MutableStateFlow(false)
 
-    val timeState: StateFlow<TimeState> = flow {
+    val timeUiState: StateFlow<TimeUiState> = flow {
         while (true) {
             val now = ZonedDateTime.now()
             emit(
-                TimeState(
+                TimeUiState(
                     localTime = now.format(DateTimeFormatter.ofPattern("HH:mm:ss")),
                     localDate = now.format(DateTimeFormatter.ofPattern("EEE, d. MMM"))
                 )
             )
             delay(1.seconds)
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TimeState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TimeUiState())
 
     private val allAvailableZones = ZoneId.getAvailableZoneIds()
         .map { ZoneId.of(it) }
@@ -55,28 +55,28 @@ class ClockViewModel(private val repository: ClockRepository) : ViewModel() {
                 .toSortedMap()
         }
 
-    val state: StateFlow<ClockScreenState> = combine(
+    val uiState: StateFlow<ClockUiState> = combine(
         repository.getSelectedClocks(),
         _searchQuery,
         _isSearchActive,
         filteredZonesFlow
     ) { selectedZones, query, isSearch, filtered ->
         val now = ZonedDateTime.now()
-        ClockScreenState(
+        ClockUiState(
             zoneClocks = selectedZones.map { formatToClockUiModel(now, it.zoneId) },
             searchQuery = query,
             isSearchActive = isSearch,
             filteredZones = filtered
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ClockScreenState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ClockUiState())
 
-    fun onAction(action: ClockAction) {
+    fun handleAction(action: ClockAction) {
         when (action) {
             is ClockAction.UpdateSearchQuery -> _searchQuery.value = action.query
             is ClockAction.ToggleSearch -> _isSearchActive.value = action.isActive
             is ClockAction.AddTimeZone -> viewModelScope.launch {
                 repository.addZone(action.zoneId)
-                onAction(ClockAction.ToggleSearch(false))
+                handleAction(ClockAction.ToggleSearch(false))
             }
 
             is ClockAction.RemoveTimeZone -> viewModelScope.launch {

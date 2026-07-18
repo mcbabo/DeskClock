@@ -5,7 +5,7 @@ import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 
 data class RingtoneItem(val name: String, val uri: String)
 
-data class AlarmState(
+data class AlarmUiState(
     val alarms: List<AlarmWithInstance> = emptyList(),
     val ringtones: List<RingtoneItem> = emptyList(),
     val isLoading: Boolean = false

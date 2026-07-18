@@ -5,7 +5,7 @@ import android.media.RingtoneManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
-import app.grapheneos.deskclock.alarm.util.AlarmSoundPlayer
+import app.grapheneos.deskclock.core.audio.AudioPlayer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,13 +14,12 @@ import kotlinx.coroutines.launch
 
 class AlarmViewModel(
     private val repository: AlarmRepository,
-    private val application: Application
+    private val application: Application,
+    private val audioPlayer: AudioPlayer
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AlarmState())
-    val state: StateFlow<AlarmState> = _state.asStateFlow()
-
-    val soundPlayer = AlarmSoundPlayer(application)
+    private val _uiState = MutableStateFlow(AlarmUiState())
+    val uiState: StateFlow<AlarmUiState> = _uiState.asStateFlow()
 
     init {
         handleAction(AlarmAction.LoadAlarms)
@@ -45,17 +44,17 @@ class AlarmViewModel(
                 }
 
                 is AlarmAction.LoadSystemRingtones -> loadRingtones()
-                is AlarmAction.PlayPreview -> soundPlayer.playPreview(intent.uri)
-                is AlarmAction.StopPreview -> soundPlayer.stop()
+                is AlarmAction.PlayPreview -> audioPlayer.playAlarm(intent.uri, false)
+                is AlarmAction.StopPreview -> audioPlayer.stop()
             }
         }
     }
 
     private fun observeAlarms() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true) }
             repository.allAlarms.collect { alarmList ->
-                _state.update { it.copy(alarms = alarmList, isLoading = false) }
+                _uiState.update { it.copy(alarms = alarmList, isLoading = false) }
             }
         }
     }
@@ -71,11 +70,11 @@ class AlarmViewModel(
             val uri = manager.getRingtoneUri(cursor.position).toString()
             list.add(RingtoneItem(title, uri))
         }
-        _state.update { it.copy(ringtones = list) }
+        _uiState.update { it.copy(ringtones = list) }
     }
 
     override fun onCleared() {
-        soundPlayer.stop()
+        audioPlayer.stop()
         super.onCleared()
     }
 }

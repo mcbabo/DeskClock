@@ -1,6 +1,7 @@
 package app.grapheneos.deskclock.core.presentation
 
 import android.Manifest
+import android.view.HapticFeedbackConstants
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,11 +18,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import app.grapheneos.deskclock.alarm.presentation.AlarmScreen
 import app.grapheneos.deskclock.clock.presentation.ClockScreen
 import app.grapheneos.deskclock.core.navigation.ClockTab
+import app.grapheneos.deskclock.timer.presentation.TimerScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -31,6 +35,7 @@ fun MainPagerScreen(
     val tabs = ClockTab.entries
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
+    val view = LocalView.current
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -38,6 +43,16 @@ fun MainPagerScreen(
 
     LaunchedEffect(Unit) {
         launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
+    LaunchedEffect(pagerState) {
+        var isInitial = true
+        snapshotFlow { pagerState.currentPage }.collect { _ ->
+            if (!isInitial) {
+                view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_FREQUENT_TICK)
+            }
+            isInitial = false
+        }
     }
 
     Scaffold(
@@ -79,7 +94,10 @@ fun MainPagerScreen(
                     ClockScreen(onNavigateToSettings = onNavigateToSettings)
                 }
 
-                ClockTab.Timer -> {}
+                ClockTab.Timer -> {
+                    TimerScreen(onNavigateToSettings = onNavigateToSettings)
+                }
+
                 ClockTab.Stopwatch -> {}
             }
         }

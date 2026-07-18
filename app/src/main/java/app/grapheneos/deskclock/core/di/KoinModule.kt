@@ -7,9 +7,17 @@ import app.grapheneos.deskclock.alarm.service.AlarmController
 import app.grapheneos.deskclock.alarm.service.AlarmNotificationManager
 import app.grapheneos.deskclock.clock.data.ClockRepository
 import app.grapheneos.deskclock.clock.presentation.ClockViewModel
+import app.grapheneos.deskclock.core.audio.AudioPlayer
+import app.grapheneos.deskclock.core.audio.VibrationManager
 import app.grapheneos.deskclock.core.database.AppDatabase
 import app.grapheneos.deskclock.core.database.getDatabaseBuilder
 import app.grapheneos.deskclock.core.database.getRoomDatabase
+import app.grapheneos.deskclock.core.notification.ChannelManager
+import app.grapheneos.deskclock.timer.data.TimerRepository
+import app.grapheneos.deskclock.timer.presentation.TimerViewModel
+import app.grapheneos.deskclock.timer.presentation.popup.TimerPopUpViewModel
+import app.grapheneos.deskclock.timer.service.TimerController
+import app.grapheneos.deskclock.timer.service.TimerNotificationManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
@@ -17,7 +25,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val targetModule = module {
+val coreModule = module {
     single {
         getDatabaseBuilder(context = get())
     }
@@ -29,6 +37,10 @@ val targetModule = module {
     single(named("AttributedContext")) {
         androidContext().createAttributionContext("deskclock_service")
     }
+
+    single { ChannelManager(get()) }
+    single { AudioPlayer(get()) }
+    single { VibrationManager(get()) }
 }
 
 val alarmModule = module {
@@ -67,15 +79,28 @@ val clockModule = module {
     viewModelOf(::ClockViewModel)
 }
 
+val timerModule = module {
+    single { TimerController(get(named("AttributedContext"))) }
+    single { TimerNotificationManager(get(named("AttributedContext"))) }
+
+    single {
+        TimerRepository(get<TimerController>())
+    }
+
+    viewModelOf(::TimerViewModel)
+    viewModelOf(::TimerPopUpViewModel)
+}
+
 fun initializeKoin(
     config: (KoinApplication.() -> Unit)? = null
 ) {
     startKoin {
         config?.invoke(this)
         modules(
-            targetModule,
+            coreModule,
             alarmModule,
-            clockModule
+            clockModule,
+            timerModule
         )
     }
 }

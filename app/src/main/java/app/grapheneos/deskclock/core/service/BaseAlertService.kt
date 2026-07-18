@@ -1,0 +1,39 @@
+package app.grapheneos.deskclock.core.service
+
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
+import android.os.PowerManager
+import app.grapheneos.deskclock.core.audio.AudioPlayer
+import app.grapheneos.deskclock.core.notification.NotificationConstants
+import app.grapheneos.deskclock.core.util.ServiceUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+abstract class BaseAlertService(private val tag: String) : Service(), KoinComponent {
+    protected var wakeLock: PowerManager.WakeLock? = null
+    protected val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    protected val audioPlayer: AudioPlayer by inject()
+
+    override fun onCreate() {
+        super.onCreate()
+        wakeLock = ServiceUtils.acquireWakeLock(
+            this,
+            tag,
+            NotificationConstants.WAKE_LOCK_TIMEOUT
+        )
+    }
+
+    override fun onDestroy() {
+        audioPlayer.stop()
+        serviceScope.cancel()
+        wakeLock?.release()
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+}

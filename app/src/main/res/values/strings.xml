@@ -38,4 +38,10 @@
     <string name="yesterday">Yesterday</string>
     <string name="today">Today</string>
     <string name="same_time">Same time</string>
+    <string name="timer_finished">Timer Finished</string>
+    <string name="timer">Timer</string>
+    <string name="start">Start</string>
+    <string name="reset">Reset</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
 </resources>

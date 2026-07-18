@@ -2,12 +2,12 @@ package app.grapheneos.deskclock.clock.presentation
 
 import java.time.ZoneId
 
-data class TimeState(
+data class TimeUiState(
     val localTime: String = "--:--:--",
     val localDate: String = ""
 )
 
-data class ClockScreenState(
+data class ClockUiState(
     val zoneClocks: List<ClockUiModel> = emptyList(),
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,

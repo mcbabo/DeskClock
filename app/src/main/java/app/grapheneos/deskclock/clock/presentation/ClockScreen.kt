@@ -51,14 +51,14 @@ fun ClockScreen(
     modifier: Modifier = Modifier,
     viewModel: ClockViewModel = koinViewModel()
 ) {
-    val timeState by viewModel.timeState.collectAsStateWithLifecycle()
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val timeUiState by viewModel.timeUiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ClockContent(
         modifier = modifier,
-        state = state,
-        timeState = timeState,
-        onAction = viewModel::onAction,
+        uiState = uiState,
+        timeUiState = timeUiState,
+        onAction = viewModel::handleAction,
         onNavigateToSettings = onNavigateToSettings
     )
 }
@@ -67,8 +67,8 @@ fun ClockScreen(
 @Composable
 fun ClockContent(
     modifier: Modifier,
-    state: ClockScreenState,
-    timeState: TimeState,
+    uiState: ClockUiState,
+    timeUiState: TimeUiState,
     onAction: (ClockAction) -> Unit,
     onNavigateToSettings: () -> Unit
 ) {
@@ -83,8 +83,8 @@ fun ClockContent(
         }
     }
 
-    LaunchedEffect(state.isSearchActive) {
-        if (state.isSearchActive) {
+    LaunchedEffect(uiState.isSearchActive) {
+        if (uiState.isSearchActive) {
             searchBarState.animateToExpanded()
         } else {
             searchBarState.animateToCollapsed()
@@ -107,6 +107,7 @@ fun ClockContent(
             }
         )
     }
+
     Scaffold(
         modifier = modifier,
         contentWindowInsets = WindowInsets.statusBars,
@@ -125,7 +126,7 @@ fun ClockContent(
                 }
             )
             ClockSearch(
-                state.filteredZones,
+                uiState.filteredZones,
                 searchListState,
                 searchBarState,
                 inputField
@@ -161,10 +162,13 @@ fun ClockContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = timeState.localTime,
+                    text = timeUiState.localTime,
                     style = MaterialTheme.typography.displayLarge,
                 )
-                Text(text = timeState.localDate, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = timeUiState.localDate,
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = Layout.ScreenHorizontal))
@@ -176,13 +180,13 @@ fun ClockContent(
                 contentPadding = Layout.contentPadding()
             ) {
                 lazyGroup(
-                    items = state.zoneClocks,
+                    items = uiState.zoneClocks,
                     key = { it.zoneId },
                 ) { index, clock ->
                     ClockListItem(
                         display = clock,
                         index = index,
-                        listSize = state.zoneClocks.size,
+                        listSize = uiState.zoneClocks.size,
                         onDelete = { onAction(ClockAction.RemoveTimeZone(clock.zoneId)) }
                     )
                 }
@@ -197,11 +201,11 @@ fun ClockContentPreview() {
     DeskClockTheme {
         ClockContent(
             modifier = Modifier,
-            timeState = TimeState(
+            timeUiState = TimeUiState(
                 localTime = "12:00:00",
                 localDate = "Mon, 1 Jan",
             ),
-            state = ClockScreenState(
+            uiState = ClockUiState(
                 zoneClocks = listOf(
                     ClockUiModel(
                         ZoneId.of("Europe/Vienna"),

@@ -13,6 +13,6 @@ sealed interface AlarmPopUpAction {
     object Dismiss : AlarmPopUpAction
 }
 
-sealed interface AlarmEffect {
-    object FinishAndStopService : AlarmEffect
+sealed interface AlarmPopUpEffect {
+    object FinishAndStopService : AlarmPopUpEffect
 }

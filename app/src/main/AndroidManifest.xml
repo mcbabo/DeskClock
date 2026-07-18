@@ -59,6 +59,19 @@
             android:theme="@style/Theme.DeskClock"
             android:turnScreenOn="true" />
 
+        <activity
+            android:name=".timer.presentation.popup.TimerPopUpActivity"
+            android:attributionTags="deskclock_service"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:icon="@mipmap/ic_launcher"
+            android:launchMode="singleInstance"
+            android:showOnLockScreen="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.DeskClock"
+            android:turnScreenOn="true" />
+
         <receiver
             android:name=".alarm.service.AlarmReceiver"
             android:attributionTags="deskclock_service"
@@ -84,6 +97,24 @@
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Alarm ringing and audio playback" />
+        </service>
+
+        <receiver
+            android:name=".timer.data.TimerReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="TIMER_PAUSE_RESUME" />
+                <action android:name="TIMER_RESET" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".timer.service.TimerService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Timer running" />
         </service>
 
     </application>

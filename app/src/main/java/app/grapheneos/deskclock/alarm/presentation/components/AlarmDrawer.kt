@@ -54,7 +54,7 @@ fun AlarmDrawer(
     alarmWithInstance: AlarmWithInstance,
     ringtones: List<RingtoneItem>,
     onDismissRequest: () -> Unit,
-    onIntent: (AlarmAction) -> Unit,
+    onAction: (AlarmAction) -> Unit,
     onDelete: () -> Unit
 ) {
     val sheetState = rememberBottomSheetState(
@@ -71,7 +71,7 @@ fun AlarmDrawer(
             alarmWithInstance = alarmWithInstance,
             ringtones = ringtones,
             onDismissRequest = onDismissRequest,
-            onIntent = onIntent,
+            onAction = onAction,
             onDelete = onDelete
         )
     }
@@ -82,7 +82,7 @@ fun AlarmDrawerContent(
     alarmWithInstance: AlarmWithInstance,
     ringtones: List<RingtoneItem>,
     onDismissRequest: () -> Unit,
-    onIntent: (AlarmAction) -> Unit,
+    onAction: (AlarmAction) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -240,7 +240,7 @@ fun AlarmDrawerContent(
             }
             Button(
                 onClick = {
-                    onIntent(AlarmAction.UpdateAlarm(localAlarm))
+                    onAction(AlarmAction.UpdateAlarm(localAlarm))
                     onDismissRequest()
                 },
             ) {
@@ -267,10 +267,10 @@ fun AlarmDrawerContent(
         RingtonePickerDialog(
             ringtones = ringtones,
             initialUri = localAlarm.ringtoneUri,
-            onPlayPreview = { uri -> onIntent(AlarmAction.PlayPreview(uri)) },
-            onStopPreview = { onIntent(AlarmAction.StopPreview) },
+            onPlayPreview = { uri -> onAction(AlarmAction.PlayPreview(uri)) },
+            onStopPreview = { onAction(AlarmAction.StopPreview) },
             onDismiss = {
-                onIntent(AlarmAction.StopPreview)
+                onAction(AlarmAction.StopPreview)
                 showRingtonePicker = false
             },
             onConfirm = { newUri ->
@@ -300,7 +300,7 @@ fun AlarmDrawerContentPreview() {
             ),
             ringtones = emptyList(),
             onDismissRequest = {},
-            onIntent = {},
+            onAction = {},
             onDelete = {}
         )
     }
