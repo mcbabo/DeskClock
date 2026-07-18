@@ -40,6 +40,7 @@ import app.grapheneos.deskclock.clock.presentation.components.SearchBarInput
 import app.grapheneos.deskclock.core.presentation.FloatingActionButton
 import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.components.lazyGroup
+import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import org.koin.androidx.compose.koinViewModel
 import java.time.ZoneId
@@ -155,7 +156,7 @@ fun ClockContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(Layout.contentPadding()),
+                    .screenPadding(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
