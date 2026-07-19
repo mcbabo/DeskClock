@@ -8,7 +8,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.rememberNavBackStack
 import app.grapheneos.deskclock.core.navigation.NavigationRoot
+import app.grapheneos.deskclock.core.navigation.Route
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.core.theme.SystemBarsTheme
 import app.grapheneos.deskclock.settings.data.AppSettings
@@ -24,6 +26,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val backStack = rememberNavBackStack(Route.Main)
+
             val settings by settingsRepository.settings.collectAsStateWithLifecycle(
                 initialValue = AppSettings()
             )
@@ -40,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 dynamicColor = settings.dynamicColors
             ) {
                 SystemBarsTheme()
-                NavigationRoot()
+                NavigationRoot(backStack)
             }
         }
     }
