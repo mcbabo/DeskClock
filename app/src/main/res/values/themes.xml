@@ -5,8 +5,7 @@
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#FFFFFF</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
-        <!-- The theme to switch to once the app is loaded -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_monochrome</item>
         <item name="postSplashScreenTheme">@style/Theme.DeskClock</item>
     </style>
 </resources>
