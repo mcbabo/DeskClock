@@ -1,6 +1,5 @@
 package app.grapheneos.deskclock.clock.data
 
-import app.grapheneos.deskclock.clock.domain.ClockEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.ZoneId
 

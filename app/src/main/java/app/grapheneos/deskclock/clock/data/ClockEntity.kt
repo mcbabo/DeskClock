@@ -1,4 +1,4 @@
-package app.grapheneos.deskclock.clock.domain
+package app.grapheneos.deskclock.clock.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
