@@ -17,7 +17,8 @@ data class ClockUiState(
 data class ClockUiModel(
     val zoneId: ZoneId,
     val cityName: String,
-    val timeText: String,
+    val hours: Int,
+    val minutes: Int,
     val dayResId: Int,
     val hoursDiff: Long
 )

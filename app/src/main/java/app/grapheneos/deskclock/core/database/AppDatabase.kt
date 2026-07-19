@@ -8,7 +8,7 @@ import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmInstance
 import app.grapheneos.deskclock.clock.data.ClockConverters
 import app.grapheneos.deskclock.clock.data.ClockDao
-import app.grapheneos.deskclock.clock.domain.ClockEntity
+import app.grapheneos.deskclock.clock.data.ClockEntity
 import kotlinx.coroutines.Dispatchers
 
 @Database(

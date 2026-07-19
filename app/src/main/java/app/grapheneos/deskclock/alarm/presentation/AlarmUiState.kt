@@ -2,7 +2,9 @@ package app.grapheneos.deskclock.alarm.presentation
 
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class RingtoneItem(val name: String, val uri: String)
 
 data class AlarmUiState(

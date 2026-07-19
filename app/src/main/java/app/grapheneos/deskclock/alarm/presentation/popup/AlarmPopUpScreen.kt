@@ -23,7 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +34,7 @@ import app.grapheneos.deskclock.alarm.util.AlarmConstants
 import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.core.util.formatSystemTime
 import kotlinx.coroutines.delay
 import java.util.Calendar
 import kotlin.time.Duration.Companion.milliseconds
@@ -62,7 +63,7 @@ fun AlarmPopUpContent(
     onDismiss: () -> Unit,
     onSnooze: () -> Unit
 ) {
-    val locale = LocalLocale.current.platformLocale
+    val context = LocalContext.current
     var currentCalendar by remember { mutableStateOf(Calendar.getInstance()) }
 
     LaunchedEffect(Unit) {
@@ -72,15 +73,14 @@ fun AlarmPopUpContent(
         }
     }
 
-    val currentTimeText = String.format(
-        locale,
-        "%02d:%02d",
+    val currentTimeText = formatSystemTime(
+        context,
         currentCalendar.get(Calendar.HOUR_OF_DAY),
         currentCalendar.get(Calendar.MINUTE)
     )
 
     val scheduledTimeText = alarmWithInstance?.let {
-        String.format(locale, "%02d:%02d", it.alarm.hour, it.alarm.minute)
+        formatSystemTime(context, it.alarm.hour, it.alarm.minute)
     }
 
     val headerText = when {

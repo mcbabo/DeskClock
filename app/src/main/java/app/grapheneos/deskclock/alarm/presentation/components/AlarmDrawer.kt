@@ -31,7 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +47,7 @@ import app.grapheneos.deskclock.core.presentation.components.GroupRow
 import app.grapheneos.deskclock.core.presentation.components.ListGroup
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.core.util.formatSystemTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,6 +87,7 @@ fun AlarmDrawerContent(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val view = LocalView.current
 
     var localAlarm by remember(alarmWithInstance.alarm.id) {
@@ -111,12 +113,7 @@ fun AlarmDrawerContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = String.format(
-                    LocalLocale.current.platformLocale,
-                    "%02d:%02d",
-                    localAlarm.hour,
-                    localAlarm.minute
-                ),
+                text = formatSystemTime(context, localAlarm.hour, localAlarm.minute),
                 modifier = Modifier.padding(horizontal = 4.dp),
                 style = MaterialTheme.typography.displayMedium
             )

@@ -7,6 +7,9 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import app.grapheneos.deskclock.core.presentation.MainPagerScreen
 import app.grapheneos.deskclock.core.presentation.PermissionScreen
+import app.grapheneos.deskclock.core.theme.motion.clockDefaultTransitions
+import app.grapheneos.deskclock.core.theme.motion.clockPopTransitions
+import app.grapheneos.deskclock.settings.presentation.SettingsScreen
 
 @Composable
 fun NavigationRoot(
@@ -17,13 +20,22 @@ fun NavigationRoot(
     NavDisplay(
         backStack = backStack,
         modifier = modifier,
+        transitionSpec = {
+            clockDefaultTransitions()
+        },
+        popTransitionSpec = {
+            clockPopTransitions()
+        },
+        predictivePopTransitionSpec = {
+            clockPopTransitions()
+        },
         entryProvider = { key ->
             when (key) {
                 is Route.Main -> {
                     NavEntry(key) {
                         PermissionScreen {
                             MainPagerScreen(
-                                onNavigateToSettings = {}
+                                onNavigateToSettings = { backStack.add(Route.Settings) }
                             )
                         }
                     }
@@ -31,6 +43,9 @@ fun NavigationRoot(
 
                 is Route.Settings -> {
                     NavEntry(key) {
+                        SettingsScreen(
+                            onBack = { backStack.removeLastOrNull() }
+                        )
                     }
                 }
 

@@ -210,7 +210,8 @@ fun ClockContentPreview() {
                     ClockUiModel(
                         ZoneId.of("Europe/Vienna"),
                         cityName = "Vienna",
-                        timeText = "12:00",
+                        hours = 12,
+                        minutes = 0,
                         dayResId = R.string.today,
                         hoursDiff = 4L
                     )

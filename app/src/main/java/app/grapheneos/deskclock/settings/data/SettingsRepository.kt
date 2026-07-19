@@ -1,0 +1,35 @@
+package app.grapheneos.deskclock.settings.data
+
+import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
+import app.grapheneos.deskclock.core.database.SettingsDataStore
+import kotlinx.coroutines.flow.Flow
+
+class SettingsRepository(
+    private val dataStore: SettingsDataStore
+) {
+    val settings: Flow<AppSettings> = dataStore.settingsFlow
+
+    suspend fun setTheme(themeMode: ThemeMode) {
+        dataStore.updateSettings { it.copy(themeMode = themeMode) }
+    }
+
+    suspend fun setDynamicColors(enabled: Boolean) {
+        dataStore.updateSettings { it.copy(dynamicColors = enabled) }
+    }
+
+    suspend fun setSnoozeTime(minutes: Int) {
+        dataStore.updateSettings { it.copy(snoozeDurationMinutes = minutes) }
+    }
+
+    suspend fun setDefaultRingtone(ringtone: RingtoneItem) {
+        dataStore.updateSettings { it.copy(defaultRingtone = ringtone) }
+    }
+
+    suspend fun setDefaultVibration(enabled: Boolean) {
+        dataStore.updateSettings { it.copy(vibrate = enabled) }
+    }
+
+    suspend fun resetToDefaults() {
+        dataStore.updateSettings { AppSettings() }
+    }
+}

@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,6 +21,7 @@ import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter
 import app.grapheneos.deskclock.core.presentation.components.GroupItem
 import app.grapheneos.deskclock.core.presentation.components.GroupRow
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.core.util.formatSystemTime
 
 @Composable
 fun AlarmListItem(
@@ -31,15 +31,10 @@ fun AlarmListItem(
     onToggle: (Boolean) -> Unit,
     onClick: () -> Unit
 ) {
-    val alarm = alarmWithInstance.alarm
     val context = LocalContext.current
+    val alarm = alarmWithInstance.alarm
 
-    val timeText = String.format(
-        LocalLocale.current.platformLocale,
-        "%02d:%02d",
-        alarm.hour,
-        alarm.minute
-    )
+    val timeText = formatSystemTime(context, alarm.hour, alarm.minute)
 
     GroupItem(
         index = index,

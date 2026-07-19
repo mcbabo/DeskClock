@@ -52,4 +52,16 @@
     <string name="perms_display_over_apps_desc">Allows alarms to wake the screen and display full-screen alerts natively.</string>
     <string name="perms_battery">Bypass Battery Optimization</string>
     <string name="perms_battery_desc">Prevents system restriction states from delaying or skipping scheduled alarms.</string>
+    <string name="general">General</string>
+    <string name="settings_dynamic_colors">Dynamic Colors</string>
+    <string name="settings_dynamic_colors_desc">Use dynamic colors</string>
+    <string name="setting_theme">App theme</string>
+    <string name="setting_theme_desc">Set the theme for the app</string>
+    <string name="settings_alarm_and_timer">Alarm and Timer</string>
+    <string name="settings_snooze_duration">Default snooze duration</string>
+    <string name="settings_snooze_duration_desc">Set the snooze duration for alarms</string>
+    <string name="settings_alarm_sound">Alarm sound</string>
+    <string name="settings_alarm_sound_desc">Set the default sound for alarms and timers</string>
+    <string name="settings_vibration">Vibration</string>
+    <string name="settings_vibration_desc">Default preference for alarms</string>
 </resources>

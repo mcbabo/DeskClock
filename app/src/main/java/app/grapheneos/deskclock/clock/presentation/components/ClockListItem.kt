@@ -6,6 +6,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import app.grapheneos.deskclock.R
@@ -13,6 +14,7 @@ import app.grapheneos.deskclock.clock.presentation.ClockUiModel
 import app.grapheneos.deskclock.core.presentation.components.GroupItem
 import app.grapheneos.deskclock.core.presentation.components.GroupRow
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.core.util.formatSystemTime
 import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,6 +25,8 @@ fun ClockListItem(
     listSize: Int,
     onDelete: () -> Unit
 ) {
+    val context = LocalContext.current
+
     val dayLabel = stringResource(display.dayResId)
     val hourLabel = if (display.hoursDiff == 0L) {
         stringResource(R.string.same_time)
@@ -51,7 +55,7 @@ fun ClockListItem(
             },
             trailingContent = {
                 Text(
-                    text = display.timeText,
+                    text = formatSystemTime(context, display.hours, display.minutes),
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.displaySmall,
                 )
@@ -70,7 +74,8 @@ fun ClockListItemPreview() {
                 ClockUiModel(
                     zoneId = ZoneId.systemDefault(),
                     cityName = "Vienna",
-                    timeText = "08:30",
+                    hours = 8,
+                    minutes = 30,
                     dayResId = R.string.yesterday,
                     hoursDiff = 4L
                 ),

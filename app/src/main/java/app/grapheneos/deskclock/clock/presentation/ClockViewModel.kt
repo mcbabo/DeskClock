@@ -99,7 +99,8 @@ class ClockViewModel(private val repository: ClockRepository) : ViewModel() {
         return ClockUiModel(
             zoneId = targetZone,
             cityName = targetZone.id.substringAfter('/').replace('_', ' '),
-            timeText = targetTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+            hours = targetTime.hour,
+            minutes = targetTime.minute,
             dayResId = dayResId,
             hoursDiff = (targetTime.offset.totalSeconds - now.offset.totalSeconds) / 3600L
         )

@@ -10,9 +10,12 @@ import app.grapheneos.deskclock.clock.presentation.ClockViewModel
 import app.grapheneos.deskclock.core.audio.AudioPlayer
 import app.grapheneos.deskclock.core.audio.VibrationManager
 import app.grapheneos.deskclock.core.database.AppDatabase
+import app.grapheneos.deskclock.core.database.SettingsDataStore
 import app.grapheneos.deskclock.core.database.getDatabaseBuilder
 import app.grapheneos.deskclock.core.database.getRoomDatabase
 import app.grapheneos.deskclock.core.notification.ChannelManager
+import app.grapheneos.deskclock.settings.data.SettingsRepository
+import app.grapheneos.deskclock.settings.presentation.SettingsViewModel
 import app.grapheneos.deskclock.timer.data.TimerRepository
 import app.grapheneos.deskclock.timer.presentation.TimerViewModel
 import app.grapheneos.deskclock.timer.presentation.popup.TimerPopUpViewModel
@@ -41,6 +44,13 @@ val coreModule = module {
     single { ChannelManager(get()) }
     single { AudioPlayer(get()) }
     single { VibrationManager(get()) }
+}
+
+val settingsModule = module {
+    single { SettingsDataStore(androidContext()) }
+    single { SettingsRepository(get()) }
+
+    viewModelOf(::SettingsViewModel)
 }
 
 val alarmModule = module {
@@ -98,6 +108,7 @@ fun initializeKoin(
         config?.invoke(this)
         modules(
             coreModule,
+            settingsModule,
             alarmModule,
             clockModule,
             timerModule

@@ -14,11 +14,17 @@ class AudioPlayer(private val context: Context) {
     private var focusRequest: AudioFocusRequest? = null
     private val audioManager = context.getSystemService(AudioManager::class.java)
 
-    fun playAlarm(uriString: String?, loop: Boolean = true) {
+    fun playAlarm(uriString: String?, loop: Boolean = true, alarm: Boolean = true) {
         stop()
 
         val attributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_ALARM)
+            .setUsage(
+                if (alarm) {
+                    AudioAttributes.USAGE_ALARM
+                } else {
+                    AudioAttributes.USAGE_MEDIA
+                }
+            )
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
 

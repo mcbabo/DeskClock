@@ -20,7 +20,10 @@ class AlarmRepository(
         minute: Int,
         daysOfWeek: Int,
         deleteAfterUse: Boolean,
-        label: String
+        label: String,
+        ringtoneUri: String,
+        vibrate: Boolean,
+        snoozeDurationMinutes: Int
     ) {
         val alarm = AlarmEntity(
             hour = hour,
@@ -28,7 +31,10 @@ class AlarmRepository(
             daysOfWeek = daysOfWeek,
             isEnabled = true,
             deleteAfterUse = deleteAfterUse,
-            label = label
+            label = label,
+            ringtoneUri = ringtoneUri,
+            vibrate = vibrate,
+            snoozeDurationMinutes = snoozeDurationMinutes
         )
         val alarmId = alarmDao.insertAlarm(alarm)
         scheduleInstance(alarm.copy(id = alarmId))
