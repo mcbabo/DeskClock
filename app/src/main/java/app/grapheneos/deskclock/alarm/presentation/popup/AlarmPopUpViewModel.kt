@@ -24,15 +24,15 @@ class AlarmPopUpViewModel(
 
     private var currentInstanceId: Long = -1L
 
-    fun handleAction(intent: AlarmPopUpAction) {
+    fun handleIntent(intent: AlarmPopUpIntent) {
         when (intent) {
-            is AlarmPopUpAction.Init -> {
+            is AlarmPopUpIntent.Init -> {
                 currentInstanceId = intent.instanceId
                 loadAlarmData()
             }
 
-            AlarmPopUpAction.Dismiss -> dismissAlarm()
-            AlarmPopUpAction.Snooze -> snoozeAlarm()
+            AlarmPopUpIntent.Dismiss -> dismissAlarm()
+            AlarmPopUpIntent.Snooze -> snoozeAlarm()
         }
     }
 

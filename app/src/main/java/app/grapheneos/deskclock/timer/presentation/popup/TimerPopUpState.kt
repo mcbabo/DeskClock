@@ -4,8 +4,8 @@ data class TimerPopUpUiState(
     val remainingTime: Long = 0L
 )
 
-sealed interface TimerPopUpAction {
-    object Stop : TimerPopUpAction
+sealed interface TimerPopUpIntent {
+    object Stop : TimerPopUpIntent
 }
 
 sealed interface TimerPopUpEffect {

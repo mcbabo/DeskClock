@@ -70,13 +70,13 @@ class ClockViewModel(private val repository: ClockRepository) : ViewModel() {
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ClockUiState())
 
-    fun handleAction(action: ClockAction) {
+    fun handleIntent(action: ClockAction) {
         when (action) {
             is ClockAction.UpdateSearchQuery -> _searchQuery.value = action.query
             is ClockAction.ToggleSearch -> _isSearchActive.value = action.isActive
             is ClockAction.AddTimeZone -> viewModelScope.launch {
                 repository.addZone(action.zoneId)
-                handleAction(ClockAction.ToggleSearch(false))
+                handleIntent(ClockAction.ToggleSearch(false))
             }
 
             is ClockAction.RemoveTimeZone -> viewModelScope.launch {

@@ -42,7 +42,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun AlarmPopUpScreen(
     uiState: AlarmPopUpUiState,
-    onAction: (AlarmPopUpAction) -> Unit
+    onIntent: (AlarmPopUpIntent) -> Unit
 ) {
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -51,8 +51,8 @@ fun AlarmPopUpScreen(
     } else {
         AlarmPopUpContent(
             alarmWithInstance = uiState.alarmWithInstance,
-            onDismiss = { onAction(AlarmPopUpAction.Dismiss) },
-            onSnooze = { onAction(AlarmPopUpAction.Snooze) }
+            onDismiss = { onIntent(AlarmPopUpIntent.Dismiss) },
+            onSnooze = { onIntent(AlarmPopUpIntent.Snooze) }
         )
     }
 }

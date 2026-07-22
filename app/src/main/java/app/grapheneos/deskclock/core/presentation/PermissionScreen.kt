@@ -40,9 +40,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import app.grapheneos.deskclock.R
-import app.grapheneos.deskclock.core.presentation.components.GroupItem
-import app.grapheneos.deskclock.core.presentation.components.GroupRow
-import app.grapheneos.deskclock.core.presentation.components.ListGroup
+import app.grapheneos.deskclock.core.presentation.components.groupitems.GroupRow
+import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
 
 @Composable
 fun PermissionScreen(
@@ -124,10 +123,8 @@ fun PermissionContent(
                 .screenPadding(),
             title = "Permissions"
         ) {
-            permissions.forEachIndexed { index, permission ->
-                GroupItem(
-                    index = index,
-                    count = permissions.size,
+            permissions.forEach { permission ->
+                item(
                     onClick = if (!permission.isGranted) {
                         permission.launchAction
                     } else {

@@ -13,22 +13,22 @@ data class AlarmUiState(
     val isLoading: Boolean = false
 )
 
-sealed interface AlarmAction {
+sealed interface AlarmIntent {
     // Alarm
-    object LoadAlarms : AlarmAction
-    data class ToggleAlarm(val alarm: AlarmEntity) : AlarmAction
-    data class UpdateAlarm(val alarm: AlarmEntity) : AlarmAction
-    data class DeleteAlarm(val alarm: AlarmEntity) : AlarmAction
+    object LoadAlarms : AlarmIntent
+    data class ToggleAlarm(val alarm: AlarmEntity) : AlarmIntent
+    data class UpdateAlarm(val alarm: AlarmEntity) : AlarmIntent
+    data class DeleteAlarm(val alarm: AlarmEntity) : AlarmIntent
     data class AddAlarm(
         val hour: Int,
         val minute: Int,
         val daysOfWeek: Int,
         val deleteAfterUse: Boolean,
         val label: String
-    ) : AlarmAction
+    ) : AlarmIntent
 
     // Ringtones
-    object LoadSystemRingtones : AlarmAction
-    data class PlayPreview(val uri: String) : AlarmAction
-    object StopPreview : AlarmAction
+    object LoadSystemRingtones : AlarmIntent
+    data class PlayPreview(val uri: String) : AlarmIntent
+    object StopPreview : AlarmIntent
 }

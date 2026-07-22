@@ -41,7 +41,7 @@ class AlarmPopUpActivity : ComponentActivity(), KoinComponent {
 
                 AlarmPopUpScreen(
                     uiState = uiState,
-                    onAction = { action -> viewModel.handleAction(action) }
+                    onIntent = { action -> viewModel.handleIntent(action) }
                 )
             }
         }
@@ -55,6 +55,6 @@ class AlarmPopUpActivity : ComponentActivity(), KoinComponent {
 
     private fun handleAlarmIntent(intent: Intent) {
         val instanceId = intent.getLongExtra(AlarmConstants.EXTRA_INSTANCE_ID, -1L)
-        viewModel.handleAction(AlarmPopUpAction.Init(instanceId))
+        viewModel.handleIntent(AlarmPopUpIntent.Init(instanceId))
     }
 }

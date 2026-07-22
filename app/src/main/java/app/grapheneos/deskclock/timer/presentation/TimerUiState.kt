@@ -10,10 +10,10 @@ data class TimerUiState(
     val progress: Float = 0f
 )
 
-sealed interface TimerAction {
-    data class EnterDigit(val digit: Int) : TimerAction
-    object Backspace : TimerAction
-    object Start : TimerAction
-    object TogglePauseResume : TimerAction
-    object Reset : TimerAction
+sealed interface TimerIntent {
+    data class EnterDigit(val digit: Int) : TimerIntent
+    object Backspace : TimerIntent
+    object Start : TimerIntent
+    object TogglePauseResume : TimerIntent
+    object Reset : TimerIntent
 }

@@ -1,6 +1,5 @@
 package app.grapheneos.deskclock.alarm.presentation
 
-import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.grapheneos.deskclock.R
@@ -37,7 +35,7 @@ import app.grapheneos.deskclock.alarm.presentation.components.AlarmListItem
 import app.grapheneos.deskclock.alarm.presentation.components.DialWithDialog
 import app.grapheneos.deskclock.core.presentation.FloatingActionButton
 import app.grapheneos.deskclock.core.presentation.Layout
-import app.grapheneos.deskclock.core.presentation.components.lazyGroup
+import app.grapheneos.deskclock.core.presentation.components.groupitems.lazyGroup
 import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
 
@@ -59,7 +57,7 @@ fun AlarmScreen(
     AlarmContent(
         uiState = uiState,
         modifier = modifier,
-        onAction = viewModel::handleAction,
+        onIntent = viewModel::handleIntent,
         onNavigateToSettings = onNavigateToSettings,
         onAddAlarmClick = { showTimePicker = true },
         onAlarmClick = { alarmWithInstance -> editingAlarmId = alarmWithInstance.alarm.id }
@@ -71,8 +69,8 @@ fun AlarmScreen(
             initialHour = now.get(Calendar.HOUR_OF_DAY),
             initialMinute = now.get(Calendar.MINUTE),
             onConfirm = { pickerState ->
-                viewModel.handleAction(
-                    AlarmAction.AddAlarm(
+                viewModel.handleIntent(
+                    AlarmIntent.AddAlarm(
                         hour = pickerState.hour,
                         minute = pickerState.minute,
                         daysOfWeek = 0,
@@ -91,12 +89,12 @@ fun AlarmScreen(
             alarmWithInstance = alarmWithInstance,
             ringtones = uiState.ringtones,
             onDismissRequest = {
-                viewModel.handleAction(AlarmAction.StopPreview)
+                viewModel.handleIntent(AlarmIntent.StopPreview)
                 editingAlarmId = null
             },
-            onAction = viewModel::handleAction,
+            onIntent = viewModel::handleIntent,
             onDelete = {
-                viewModel.handleAction(AlarmAction.DeleteAlarm(alarmWithInstance.alarm))
+                viewModel.handleIntent(AlarmIntent.DeleteAlarm(alarmWithInstance.alarm))
                 editingAlarmId = null
             }
         )
@@ -108,12 +106,11 @@ fun AlarmScreen(
 fun AlarmContent(
     uiState: AlarmUiState,
     modifier: Modifier = Modifier,
-    onAction: (AlarmAction) -> Unit,
+    onIntent: (AlarmIntent) -> Unit,
     onNavigateToSettings: () -> Unit,
     onAddAlarmClick: () -> Unit,
     onAlarmClick: (AlarmWithInstance) -> Unit,
 ) {
-    val view = LocalView.current
     val listState = rememberLazyListState()
 
     Scaffold(
@@ -176,18 +173,14 @@ fun AlarmContent(
                         items = uiState.alarms,
                         key = { it.alarm.id },
                         onClick = { onAlarmClick(it) }
-                    ) { index, alarmWithInstance ->
+                    ) { alarmWithInstance ->
                         AlarmListItem(
                             alarmWithInstance = alarmWithInstance,
-                            index = index,
-                            listSize = uiState.alarms.size,
                             onToggle = {
-                                onAction(AlarmAction.ToggleAlarm(alarmWithInstance.alarm))
-                                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                                onIntent(AlarmIntent.ToggleAlarm(alarmWithInstance.alarm))
                             }
                         ) {
                             onAlarmClick(alarmWithInstance)
-                            view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
                         }
                     }
                 }

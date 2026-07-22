@@ -7,10 +7,10 @@ data class AlarmPopUpUiState(
     val isLoading: Boolean = true
 )
 
-sealed interface AlarmPopUpAction {
-    data class Init(val instanceId: Long) : AlarmPopUpAction
-    object Snooze : AlarmPopUpAction
-    object Dismiss : AlarmPopUpAction
+sealed interface AlarmPopUpIntent {
+    data class Init(val instanceId: Long) : AlarmPopUpIntent
+    object Snooze : AlarmPopUpIntent
+    object Dismiss : AlarmPopUpIntent
 }
 
 sealed interface AlarmPopUpEffect {

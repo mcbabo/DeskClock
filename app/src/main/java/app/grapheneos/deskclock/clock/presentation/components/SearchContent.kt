@@ -24,9 +24,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.presentation.Layout
-import app.grapheneos.deskclock.core.presentation.components.GroupRow
-import app.grapheneos.deskclock.core.presentation.components.groupHeader
-import app.grapheneos.deskclock.core.presentation.components.lazyGroup
+import app.grapheneos.deskclock.core.presentation.components.groupitems.GroupRow
+import app.grapheneos.deskclock.core.presentation.components.groupitems.groupHeader
+import app.grapheneos.deskclock.core.presentation.components.groupitems.lazyGroup
 import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,13 +51,13 @@ fun ClockSearch(
             contentPadding = Layout.contentPadding()
         ) {
             filteredZones.forEach { (char, zones) ->
-                groupHeader(title = char.toString())
+                groupHeader(title = char.toString(), key = "header_$char")
 
                 lazyGroup(
                     items = zones,
                     key = { it.id },
                     onClick = { onClick(it) }
-                ) { _, zone ->
+                ) { zone ->
                     GroupRow(
                         content = {
                             Text(zone.id.substringAfter('/').replace('_', ' '))

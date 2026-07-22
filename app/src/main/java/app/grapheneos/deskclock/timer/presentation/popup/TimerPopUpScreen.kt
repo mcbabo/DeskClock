@@ -22,7 +22,7 @@ import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.timer.util.TimerUtils
 
 @Composable
-fun TimerPopUpScreen(uiState: TimerPopUpUiState, onAction: (TimerPopUpAction) -> Unit) {
+fun TimerPopUpScreen(uiState: TimerPopUpUiState, onIntent: (TimerPopUpIntent) -> Unit) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = Modifier
@@ -42,7 +42,7 @@ fun TimerPopUpScreen(uiState: TimerPopUpUiState, onAction: (TimerPopUpAction) ->
             )
             Spacer(Modifier.height(48.dp))
             Button(
-                onClick = { onAction(TimerPopUpAction.Stop) },
+                onClick = { onIntent(TimerPopUpIntent.Stop) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp),

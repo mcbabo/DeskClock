@@ -1,56 +1,43 @@
 package app.grapheneos.deskclock.settings.presentation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.Colorize
+import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.material.icons.outlined.Vibration
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.exitUntilCollapsedScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.components.RingtonePickerDialog
-import app.grapheneos.deskclock.core.presentation.components.GroupItem
-import app.grapheneos.deskclock.core.presentation.components.GroupRow
-import app.grapheneos.deskclock.core.presentation.components.ListGroup
+import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
+import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGroupRow
+import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGroupRow
 import app.grapheneos.deskclock.core.presentation.screenPadding
+import app.grapheneos.deskclock.settings.presentation.components.SnoozeDrawer
+import app.grapheneos.deskclock.settings.presentation.components.ThemeDrawer
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -74,9 +61,12 @@ fun SettingsContent(
     onIntent: (SettingsIntent) -> Unit,
     onBack: () -> Unit
 ) {
+    val view = LocalView.current
+
     val scrollBehavior = exitUntilCollapsedScrollBehavior()
     var showSnoozeDialog by remember { mutableStateOf(false) }
     var showRingtoneDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -84,9 +74,7 @@ fun SettingsContent(
             LargeTopAppBar(
                 title = { Text(text = stringResource(R.string.settings)) },
                 navigationIcon = {
-                    IconButton(
-                        onClick = onBack
-                    ) {
+                    IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                             contentDescription = stringResource(R.string.back)
@@ -103,186 +91,104 @@ fun SettingsContent(
                 .padding(innerPadding)
                 .screenPadding()
         ) {
-            ListGroup(
-                title = stringResource(R.string.general)
-            ) {
-                GroupItem(
-                    index = 0,
-                    count = 2,
-                    onClick = {}
-                ) {
-                    GroupRow(
-                        leadingContent = {
-                            Icon(
-                                imageVector = Icons.Outlined.ColorLens,
-                                contentDescription = null
-                            )
-                        },
-                        trailingContent = {
-                            Switch(
-                                checked = state.settings.dynamicColors,
-                                onCheckedChange = {
-                                    onIntent(SettingsIntent.SetDynamicColors(!state.settings.dynamicColors))
-                                }
-                            )
-                        },
+            ListGroup(title = stringResource(R.string.general)) {
+                item {
+                    SwitchGroupRow(
+                        label = stringResource(R.string.settings_dynamic_colors),
                         supportingContent = {
-                            Text(
-                                text = stringResource(R.string.settings_dynamic_colors_desc),
-                            )
+                            Text(text = stringResource(R.string.settings_dynamic_colors_desc))
                         },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.settings_dynamic_colors),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                        checked = state.settings.dynamicColors,
+                        onCheckedChange = { newChecked ->
+                            onIntent(SettingsIntent.SetDynamicColors(newChecked))
+                        },
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Outlined.ColorLens, contentDescription = null)
+                        }
+                    )
                 }
 
-                GroupItem(
-                    index = 1,
-                    count = 2,
-                    onClick = {}
-                ) {
-                    GroupRow(
-                        leadingContent = {
-                            Icon(
-                                imageVector = Icons.Outlined.Colorize,
-                                contentDescription = null
-                            )
-                        },
-                        trailingContent = {
-                            Text(
-                                text = state.settings.themeMode.displayName
-                            )
-                        },
+                item(onClick = { showThemeDialog = true }) {
+                    ValueGroupRow(
+                        label = stringResource(R.string.setting_theme),
+                        value = state.settings.themeMode.displayName,
                         supportingContent = {
-                            Text(
-                                text = stringResource(R.string.setting_theme_desc),
-                            )
+                            Text(text = stringResource(R.string.setting_theme_desc))
                         },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.setting_theme),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                        onClick = { showThemeDialog = true },
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Outlined.Colorize, contentDescription = null)
+                        }
+                    )
                 }
             }
 
-            ListGroup(
-                title = stringResource(R.string.settings_alarm_and_timer)
-            ) {
-                val items = 3
-
-                GroupItem(
-                    index = 0,
-                    count = items,
-                    onClick = {
-                        showSnoozeDialog = true
-                    }
-                ) {
-                    GroupRow(
-                        leadingContent = {
+            ListGroup(title = stringResource(R.string.settings_alarm_and_timer)) {
+                item(onClick = { showSnoozeDialog = true }) {
+                    ValueGroupRow(
+                        label = stringResource(R.string.settings_snooze_duration),
+                        value = stringResource(
+                            R.string.n_minutes,
+                            state.settings.snoozeDurationMinutes
+                        ),
+                        supportingContent = {
+                            Text(text = stringResource(R.string.settings_snooze_duration_desc))
+                        },
+                        onClick = { showSnoozeDialog = true },
+                        leadingIcon = {
                             Icon(
                                 imageVector = Icons.Outlined.Snooze,
-                                contentDescription = null
+                                contentDescription = stringResource(R.string.settings_snooze_duration)
                             )
-                        },
-                        trailingContent = {
-                            Text(
-                                text = "${state.settings.snoozeDurationMinutes} min"
-                            )
-                        },
-                        supportingContent = {
-                            Text(
-                                text = stringResource(R.string.settings_snooze_duration_desc),
-                            )
-                        },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.settings_snooze_duration),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                        }
+                    )
                 }
 
-                GroupItem(
-                    index = 1,
-                    count = items,
-                    onClick = { showRingtoneDialog = true }
-                ) {
-                    GroupRow(
-                        leadingContent = {
+                item(onClick = { showRingtoneDialog = true }) {
+                    ValueGroupRow(
+                        label = stringResource(R.string.settings_alarm_sound),
+                        value = state.settings.defaultRingtone.name,
+                        supportingContent = {
+                            Text(text = stringResource(R.string.settings_alarm_sound_desc))
+                        },
+                        onClick = { showRingtoneDialog = true },
+                        leadingIcon = {
                             Icon(
-                                imageVector = Icons.Outlined.Snooze,
-                                contentDescription = null
+                                imageVector = Icons.Outlined.MusicNote,
+                                contentDescription = stringResource(R.string.settings_alarm_sound)
                             )
-                        },
-                        trailingContent = {
-                            Text(
-                                text = state.settings.defaultRingtone.name
-                            )
-                        },
-                        supportingContent = {
-                            Text(
-                                text = stringResource(R.string.settings_alarm_sound_desc),
-                            )
-                        },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.settings_alarm_sound),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                        }
+                    )
                 }
 
-                GroupItem(
-                    index = 2,
-                    count = items,
-                    onClick = { showRingtoneDialog = true }
-                ) {
-                    GroupRow(
-                        leadingContent = {
+                item {
+                    SwitchGroupRow(
+                        label = stringResource(R.string.settings_vibration),
+                        supportingContent = {
+                            Text(text = stringResource(R.string.settings_vibration_desc))
+                        },
+                        checked = state.settings.vibrate,
+                        onCheckedChange = { newChecked ->
+                            onIntent(SettingsIntent.SetDefaultVibration(newChecked))
+                        },
+                        leadingIcon = {
                             Icon(
                                 imageVector = Icons.Outlined.Vibration,
-                                contentDescription = null
+                                stringResource(R.string.settings_vibration)
                             )
-                        },
-                        trailingContent = {
-                            Switch(
-                                checked = state.settings.vibrate,
-                                onCheckedChange = {
-                                    onIntent(SettingsIntent.SetDynamicColors(!state.settings.vibrate))
-                                }
-                            )
-                        },
-                        supportingContent = {
-                            Text(
-                                text = stringResource(R.string.settings_vibration_desc),
-                            )
-                        },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.settings_vibration),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                        }
+                    )
                 }
             }
         }
     }
 
     if (showSnoozeDialog) {
-        SnoozeDialog(
+        SnoozeDrawer(
             state.settings.snoozeDurationMinutes,
             onConfirm = {
                 onIntent(SettingsIntent.SetSnoozeTime(it))
+                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
                 showSnoozeDialog = false
             }
         ) {
@@ -294,102 +200,29 @@ fun SettingsContent(
         RingtonePickerDialog(
             ringtones = state.ringtones,
             initialUri = state.settings.defaultRingtone.uri,
-            {
-                onIntent(SettingsIntent.PlayPreview(it))
-            },
-            {
-                onIntent(SettingsIntent.StopPreview)
-            },
-            {
+            onPlayPreview = { onIntent(SettingsIntent.PlayPreview(it)) },
+            onStopPreview = { onIntent(SettingsIntent.StopPreview) },
+            onDismiss = {
                 onIntent(SettingsIntent.StopPreview)
                 showRingtoneDialog = false
             },
-            {
+            onConfirm = {
                 onIntent(SettingsIntent.SetDefaultRingtone(it))
                 showRingtoneDialog = false
             }
         )
     }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SnoozeDialog(
-    snoozeMinutes: Int,
-    onConfirm: (Int) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    val predefinedSnoozeIntervals = listOf(2, 5, 10, 15, 20, 30)
-
-    var selectedInterval by remember { mutableIntStateOf(snoozeMinutes) }
-
-    BasicAlertDialog(
-        onDismissRequest = onDismiss
-    ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(16.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .selectableGroup(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .padding(2.dp),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        8.dp,
-                        Alignment.CenterHorizontally
-                    ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Snooze,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Snooze Duration",
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
-
-                predefinedSnoozeIntervals.forEach { interval ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 8.dp)
-                            .selectable(
-                                selected = (selectedInterval == interval),
-                                onClick = {
-                                    selectedInterval = interval
-                                    onConfirm(selectedInterval)
-                                },
-                                role = Role.RadioButton
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (selectedInterval == interval),
-                            onClick = null
-                        )
-                        Text(
-                            text = "$interval minutes",
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }
-                }
-            }
-        }
+    if (showThemeDialog) {
+        ThemeDrawer(
+            state.settings.themeMode,
+            onThemeChange = {
+                onIntent(SettingsIntent.UpdateTheme(it))
+                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                showThemeDialog = false
+            },
+            onDismissRequest = { showThemeDialog = false }
+        )
     }
 }
 
@@ -397,8 +230,8 @@ fun SnoozeDialog(
 @Composable
 fun SettingsScreenPreview() {
     SettingsContent(
-        SettingsUiState(),
-        {},
-        {}
+        state = SettingsUiState(),
+        onIntent = {},
+        onBack = {}
     )
 }

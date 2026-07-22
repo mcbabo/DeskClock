@@ -33,7 +33,7 @@ class TimerPopUpActivity : ComponentActivity(), KoinComponent {
             DeskClockTheme {
                 SystemBarsTheme()
                 val uiState by viewModel.uiState.collectAsState()
-                TimerPopUpScreen(uiState) { viewModel.handleAction(it) }
+                TimerPopUpScreen(uiState) { viewModel.handleIntent(it) }
             }
         }
     }

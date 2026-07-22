@@ -48,7 +48,7 @@ fun TimerScreen(
     TimerContent(
         uiState = uiState,
         onNavigateToSettings = onNavigateToSettings,
-        onAction = viewModel::handleAction,
+        onIntent = viewModel::handleIntent,
         modifier = modifier
     )
 }
@@ -58,7 +58,7 @@ fun TimerScreen(
 fun TimerContent(
     uiState: TimerUiState,
     onNavigateToSettings: () -> Unit,
-    onAction: (TimerAction) -> Unit,
+    onIntent: (TimerIntent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -91,15 +91,15 @@ fun TimerContent(
                 if (isStarted) {
                     TimerRunningLayout(
                         uiState,
-                        { onAction(TimerAction.TogglePauseResume) },
-                        { onAction(TimerAction.Reset) }
+                        { onIntent(TimerIntent.TogglePauseResume) },
+                        { onIntent(TimerIntent.Reset) }
                     )
                 } else {
                     TimerSetupLayout(
                         uiState,
-                        { digit -> onAction(TimerAction.EnterDigit(digit)) },
-                        { onAction(TimerAction.Backspace) },
-                        { onAction(TimerAction.Start) }
+                        { digit -> onIntent(TimerIntent.EnterDigit(digit)) },
+                        { onIntent(TimerIntent.Backspace) },
+                        { onIntent(TimerIntent.Start) }
                     )
                 }
             }

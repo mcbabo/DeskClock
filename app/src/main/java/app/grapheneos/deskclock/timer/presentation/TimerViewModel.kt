@@ -10,13 +10,13 @@ class TimerViewModel(
 
     val uiState: StateFlow<TimerUiState> = repository.timerState
 
-    fun handleAction(intent: TimerAction) {
+    fun handleIntent(intent: TimerIntent) {
         when (intent) {
-            is TimerAction.EnterDigit -> repository.enterDigit(intent.digit)
-            TimerAction.Backspace -> repository.backspace()
-            TimerAction.Start -> repository.start()
-            TimerAction.TogglePauseResume -> repository.togglePauseResume()
-            TimerAction.Reset -> repository.reset()
+            is TimerIntent.EnterDigit -> repository.enterDigit(intent.digit)
+            TimerIntent.Backspace -> repository.backspace()
+            TimerIntent.Start -> repository.start()
+            TimerIntent.TogglePauseResume -> repository.togglePauseResume()
+            TimerIntent.Reset -> repository.reset()
         }
     }
 }

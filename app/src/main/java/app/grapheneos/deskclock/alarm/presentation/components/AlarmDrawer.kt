@@ -21,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -39,12 +38,13 @@ import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
-import app.grapheneos.deskclock.alarm.presentation.AlarmAction
+import app.grapheneos.deskclock.alarm.presentation.AlarmIntent
 import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.core.presentation.Layout
-import app.grapheneos.deskclock.core.presentation.components.GroupItem
-import app.grapheneos.deskclock.core.presentation.components.GroupRow
-import app.grapheneos.deskclock.core.presentation.components.ListGroup
+import app.grapheneos.deskclock.core.presentation.components.groupitems.InlineEditableValueGroupRow
+import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
+import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGroupRow
+import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGroupRow
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.core.util.formatSystemTime
@@ -55,7 +55,7 @@ fun AlarmDrawer(
     alarmWithInstance: AlarmWithInstance,
     ringtones: List<RingtoneItem>,
     onDismissRequest: () -> Unit,
-    onAction: (AlarmAction) -> Unit,
+    onIntent: (AlarmIntent) -> Unit,
     onDelete: () -> Unit
 ) {
     val sheetState = rememberBottomSheetState(
@@ -72,7 +72,7 @@ fun AlarmDrawer(
             alarmWithInstance = alarmWithInstance,
             ringtones = ringtones,
             onDismissRequest = onDismissRequest,
-            onAction = onAction,
+            onIntent = onIntent,
             onDelete = onDelete
         )
     }
@@ -83,7 +83,7 @@ fun AlarmDrawerContent(
     alarmWithInstance: AlarmWithInstance,
     ringtones: List<RingtoneItem>,
     onDismissRequest: () -> Unit,
-    onAction: (AlarmAction) -> Unit,
+    onIntent: (AlarmIntent) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -139,84 +139,71 @@ fun AlarmDrawerContent(
             }
         )
 
-        GroupItem(index = 0, count = 1) {
-            GroupRow(
-                content = { Text(stringResource(R.string.delete_after_use)) },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = stringResource(R.string.delete)
-                    )
-                },
-                trailingContent = {
-                    Switch(
-                        checked = if (localAlarm.daysOfWeek == 0) {
-                            localAlarm.deleteAfterUse
-                        } else {
-                            false
-                        },
-                        onCheckedChange = { isChecked ->
-                            localAlarm = localAlarm.copy(deleteAfterUse = isChecked)
-                            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                        },
-                        enabled = localAlarm.daysOfWeek == 0
-                    )
-                }
-            )
-        }
-
-        Spacer(modifier.height(0.dp))
-
         ListGroup {
-            val rowCount = 3
-
-            GroupItem(index = 0, count = rowCount, onClick = { /* open label editor TODO() */ }) {
-                GroupRow(
-                    content = { Text(stringResource(R.string.name_of_alarm)) },
-                    leadingContent = {
+            item {
+                SwitchGroupRow(
+                    label = stringResource(R.string.delete_after_use),
+                    checked = if (localAlarm.daysOfWeek == 0) {
+                        localAlarm.deleteAfterUse
+                    } else {
+                        false
+                    },
+                    onCheckedChange = { isChecked ->
+                        localAlarm = localAlarm.copy(deleteAfterUse = isChecked)
+                    },
+                    leadingIcon = {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.Label,
-                            contentDescription = stringResource(R.string.name_of_alarm)
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = stringResource(R.string.delete)
                         )
                     },
-                    trailingContent = {
-                        Text(
-                            text = stringResource(R.string.alarm),
-                            style = MaterialTheme.typography.bodyMedium
+                    enabled = localAlarm.daysOfWeek == 0
+                )
+            }
+        }
+
+        ListGroup {
+            item {
+                InlineEditableValueGroupRow(
+                    label = stringResource(R.string.name_of_alarm),
+                    value = localAlarm.label,
+                    onValueChange = { newLabel -> localAlarm = localAlarm.copy(label = newLabel) },
+                    placeholder = stringResource(R.string.alarm),
+                    leadingIcon = {
+                        Icon(
+                            Icons.AutoMirrored.Outlined.Label,
+                            contentDescription = stringResource(R.string.name_of_alarm)
                         )
                     }
                 )
             }
-
-            GroupItem(index = 1, count = rowCount, onClick = { showRingtonePicker = true }) {
-                GroupRow(content = { Text(stringResource(R.string.ringtone)) }, leadingContent = {
-                    Icon(
-                        imageVector = Icons.Outlined.NotificationsActive,
-                        contentDescription = stringResource(R.string.ringtone)
-                    )
-                }, trailingContent = {
-                    Text(
-                        text = selectedRingtoneName,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                })
+            item {
+                ValueGroupRow(
+                    label = stringResource(R.string.ringtone),
+                    value = selectedRingtoneName,
+                    onClick = { showRingtonePicker = true },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.NotificationsActive,
+                            contentDescription = stringResource(R.string.ringtone)
+                        )
+                    }
+                )
             }
-
-            GroupItem(index = 2, count = rowCount) {
-                GroupRow(content = { Text(stringResource(R.string.vibrate)) }, leadingContent = {
-                    Icon(
-                        imageVector = Icons.Outlined.Vibration,
-                        contentDescription = stringResource(R.string.vibrate)
-                    )
-                }, trailingContent = {
-                    Switch(
-                        checked = localAlarm.vibrate,
-                        onCheckedChange = { isChecked ->
-                            localAlarm = localAlarm.copy(vibrate = isChecked)
-                            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                        }
-                    )
-                })
+            item {
+                SwitchGroupRow(
+                    label = stringResource(R.string.vibrate),
+                    checked = localAlarm.vibrate,
+                    onCheckedChange = {
+                        localAlarm = localAlarm.copy(vibrate = it)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.Vibration,
+                            contentDescription = stringResource(R.string.vibrate)
+                        )
+                    }
+                )
             }
         }
 
@@ -227,7 +214,10 @@ fun AlarmDrawerContent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(
-                onClick = onDelete,
+                onClick = {
+                    view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                    onDelete()
+                },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colorScheme.error,
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
@@ -237,7 +227,8 @@ fun AlarmDrawerContent(
             }
             Button(
                 onClick = {
-                    onAction(AlarmAction.UpdateAlarm(localAlarm))
+                    view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                    onIntent(AlarmIntent.UpdateAlarm(localAlarm))
                     onDismissRequest()
                 },
             ) {
@@ -264,10 +255,10 @@ fun AlarmDrawerContent(
         RingtonePickerDialog(
             ringtones = ringtones,
             initialUri = localAlarm.ringtoneUri,
-            onPlayPreview = { uri -> onAction(AlarmAction.PlayPreview(uri)) },
-            onStopPreview = { onAction(AlarmAction.StopPreview) },
+            onPlayPreview = { uri -> onIntent(AlarmIntent.PlayPreview(uri)) },
+            onStopPreview = { onIntent(AlarmIntent.StopPreview) },
             onDismiss = {
-                onAction(AlarmAction.StopPreview)
+                onIntent(AlarmIntent.StopPreview)
                 showRingtonePicker = false
             },
             onConfirm = { newUri ->
@@ -297,7 +288,7 @@ fun AlarmDrawerContentPreview() {
             ),
             ringtones = emptyList(),
             onDismissRequest = {},
-            onAction = {},
+            onIntent = {},
             onDelete = {}
         )
     }

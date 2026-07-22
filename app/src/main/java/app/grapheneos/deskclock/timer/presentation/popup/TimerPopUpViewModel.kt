@@ -27,9 +27,9 @@ class TimerPopUpViewModel(
     private val _effect = Channel<TimerPopUpEffect>(Channel.BUFFERED)
     val effect = _effect.receiveAsFlow()
 
-    fun handleAction(action: TimerPopUpAction) {
+    fun handleIntent(action: TimerPopUpIntent) {
         when (action) {
-            TimerPopUpAction.Stop -> {
+            TimerPopUpIntent.Stop -> {
                 viewModelScope.launch {
                     repository.reset()
                     _effect.send(TimerPopUpEffect.Finish)

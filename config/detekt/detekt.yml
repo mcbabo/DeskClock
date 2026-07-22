@@ -362,6 +362,7 @@ naming:
       - 'macosX64'
       - 'mingwX64'
       - 'linuxX64'
+    excludes: [ "**/components/**" ]
   MemberNameEqualsClassName:
     active: true
     ignoreOverridden: true
