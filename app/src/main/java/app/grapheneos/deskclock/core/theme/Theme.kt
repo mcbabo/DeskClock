@@ -3,6 +3,7 @@ package app.grapheneos.deskclock.core.theme
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -71,6 +72,7 @@ fun DeskClockTheme(
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
+            motionScheme = MotionScheme.expressive(),
             content = content
         )
     }

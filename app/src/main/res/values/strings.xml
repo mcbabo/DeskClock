@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">DeskClock</string>
-    <string name="deskclock_service">Alarm Playback</string>
-    <string name="empty"></string>
+    <string name="app_name" translatable="false">DeskClock</string>
+    <string name="deskclock_service" translatable="false">Alarm Playback</string>
+    <string name="empty" translatable="false"></string>
     <string name="tab_alarm">Alarm</string>
     <string name="tab_clock">Clock</string>
     <string name="tab_timer">Timer</string>
@@ -64,4 +64,5 @@
     <string name="settings_alarm_sound_desc">Set the default sound for alarms and timers</string>
     <string name="settings_vibration">Vibration</string>
     <string name="settings_vibration_desc">Default preference for alarms</string>
+    <string name="lap">Lap</string>
 </resources>

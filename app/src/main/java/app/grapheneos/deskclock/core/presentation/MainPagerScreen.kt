@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import app.grapheneos.deskclock.alarm.presentation.AlarmScreen
 import app.grapheneos.deskclock.clock.presentation.ClockScreen
 import app.grapheneos.deskclock.core.navigation.ClockTab
+import app.grapheneos.deskclock.stopwatch.presentation.StopwatchScreen
 import app.grapheneos.deskclock.timer.presentation.TimerScreen
 import kotlinx.coroutines.launch
 
@@ -87,7 +88,9 @@ fun MainPagerScreen(
                     TimerScreen(onNavigateToSettings = onNavigateToSettings)
                 }
 
-                ClockTab.Stopwatch -> {}
+                ClockTab.Stopwatch -> {
+                    StopwatchScreen(onNavigateToSettings = onNavigateToSettings)
+                }
             }
         }
     }

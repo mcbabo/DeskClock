@@ -16,6 +16,8 @@ import app.grapheneos.deskclock.core.database.getRoomDatabase
 import app.grapheneos.deskclock.core.notification.ChannelManager
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.settings.presentation.SettingsViewModel
+import app.grapheneos.deskclock.stopwatch.data.StopwatchRepository
+import app.grapheneos.deskclock.stopwatch.presentation.StopwatchViewModel
 import app.grapheneos.deskclock.timer.data.TimerRepository
 import app.grapheneos.deskclock.timer.presentation.TimerViewModel
 import app.grapheneos.deskclock.timer.presentation.popup.TimerPopUpViewModel
@@ -101,6 +103,12 @@ val timerModule = module {
     viewModelOf(::TimerPopUpViewModel)
 }
 
+val stopwatchModule = module {
+    single { StopwatchRepository() }
+
+    viewModelOf(::StopwatchViewModel)
+}
+
 fun initializeKoin(
     config: (KoinApplication.() -> Unit)? = null
 ) {
@@ -111,7 +119,8 @@ fun initializeKoin(
             settingsModule,
             alarmModule,
             clockModule,
-            timerModule
+            timerModule,
+            stopwatchModule
         )
     }
 }

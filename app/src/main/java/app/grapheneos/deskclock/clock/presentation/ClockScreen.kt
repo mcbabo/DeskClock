@@ -192,7 +192,9 @@ fun ClockContent(
             ) {
                 Text(
                     text = timeUiState.localTime,
-                    style = MaterialTheme.typography.displayLarge,
+                    style = MaterialTheme.typography.displayLarge.copy(
+                        fontFeatureSettings = "tnum"
+                    ),
                 )
                 Text(
                     text = timeUiState.localDate,
@@ -248,12 +250,12 @@ fun ClockContent(
 
 @Preview
 @Composable
-fun ClockContentPreview() {
+fun ClockScreenPreview() {
     DeskClockTheme {
         ClockContent(
             modifier = Modifier,
             timeUiState = TimeUiState(
-                localTime = "12:00:00",
+                localTime = "12:11:01",
                 localDate = "Mon, 1 Jan",
             ),
             uiState = ClockUiState(
