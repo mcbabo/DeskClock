@@ -24,6 +24,12 @@ class ChannelManager(private val context: Context) {
             NotificationManager.IMPORTANCE_DEFAULT
         )
 
-        nm?.createNotificationChannels(listOf(alarmChannel, timerChannel))
+        val stopwatchChannel = NotificationChannel(
+            NotificationConstants.Stopwatch.CHANNEL_ID,
+            NotificationConstants.Stopwatch.CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+
+        nm?.createNotificationChannels(listOf(alarmChannel, timerChannel, stopwatchChannel))
     }
 }

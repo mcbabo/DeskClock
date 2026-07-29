@@ -18,6 +18,8 @@ import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.settings.presentation.SettingsViewModel
 import app.grapheneos.deskclock.stopwatch.data.StopwatchRepository
 import app.grapheneos.deskclock.stopwatch.presentation.StopwatchViewModel
+import app.grapheneos.deskclock.stopwatch.service.StopwatchController
+import app.grapheneos.deskclock.stopwatch.service.StopwatchNotificationManager
 import app.grapheneos.deskclock.timer.data.TimerRepository
 import app.grapheneos.deskclock.timer.presentation.TimerViewModel
 import app.grapheneos.deskclock.timer.presentation.popup.TimerPopUpViewModel
@@ -104,7 +106,9 @@ val timerModule = module {
 }
 
 val stopwatchModule = module {
-    single { StopwatchRepository() }
+    single { StopwatchController(get()) }
+    single { StopwatchNotificationManager(get()) }
+    single { StopwatchRepository(get()) }
 
     viewModelOf(::StopwatchViewModel)
 }

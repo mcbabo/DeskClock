@@ -50,6 +50,8 @@ import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.clock.presentation.components.ClockListItem
 import app.grapheneos.deskclock.clock.presentation.components.ClockSearch
 import app.grapheneos.deskclock.clock.presentation.components.SearchBarInput
+import app.grapheneos.deskclock.core.navigation.LocalNavBackStack
+import app.grapheneos.deskclock.core.navigation.Route
 import app.grapheneos.deskclock.core.presentation.FloatingActionButton
 import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.components.groupitems.GroupItem
@@ -60,19 +62,19 @@ import java.time.ZoneId
 
 @Composable
 fun ClockScreen(
-    onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ClockViewModel = koinViewModel()
 ) {
     val timeUiState by viewModel.timeUiState.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val backStack = LocalNavBackStack.current
 
     ClockContent(
         modifier = modifier,
         uiState = uiState,
         timeUiState = timeUiState,
         onIntent = viewModel::handleIntent,
-        onNavigateToSettings = onNavigateToSettings
+        onNavigateToSettings = { backStack.add(Route.Settings) }
     )
 }
 
@@ -82,7 +84,7 @@ fun ClockContent(
     modifier: Modifier,
     uiState: ClockUiState,
     timeUiState: TimeUiState,
-    onIntent: (ClockAction) -> Unit,
+    onIntent: (ClockIntent) -> Unit,
     onNavigateToSettings: () -> Unit
 ) {
     val textFieldState = rememberTextFieldState()
@@ -94,7 +96,7 @@ fun ClockContent(
 
     LaunchedEffect(textFieldState.text) {
         snapshotFlow { textFieldState.text.toString() }.collect { text ->
-            onIntent(ClockAction.UpdateSearchQuery(text))
+            onIntent(ClockIntent.UpdateSearchQuery(text))
         }
     }
 
@@ -109,7 +111,7 @@ fun ClockContent(
 
     LaunchedEffect(searchBarState.currentValue) {
         if (searchBarState.currentValue == SearchBarValue.Collapsed) {
-            onIntent(ClockAction.ToggleSearch(false))
+            onIntent(ClockIntent.ToggleSearch(false))
         }
     }
 
@@ -118,7 +120,7 @@ fun ClockContent(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
             onBack = {
-                onIntent(ClockAction.ToggleSearch(false))
+                onIntent(ClockIntent.ToggleSearch(false))
             }
         )
     }
@@ -160,7 +162,7 @@ fun ClockContent(
                 searchBarState,
                 inputField
             ) {
-                onIntent(ClockAction.AddTimeZone(it))
+                onIntent(ClockIntent.AddTimeZone(it))
             }
         },
         floatingActionButton = {
@@ -173,7 +175,7 @@ fun ClockContent(
                         contentDescription = stringResource(R.string.add_alarm)
                     )
                 },
-                onClick = { onIntent(ClockAction.ToggleSearch(true)) },
+                onClick = { onIntent(ClockIntent.ToggleSearch(true)) },
             )
         }
     ) { innerPadding ->
@@ -224,7 +226,7 @@ fun ClockContent(
                             exit = fadeOut() + shrinkHorizontally()
                         ) {
                             IconButton(
-                                onClick = { onIntent(ClockAction.RemoveTimeZone(clock.zoneId)) },
+                                onClick = { onIntent(ClockIntent.RemoveTimeZone(clock.zoneId)) },
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.DeleteOutline,
@@ -255,8 +257,8 @@ fun ClockScreenPreview() {
         ClockContent(
             modifier = Modifier,
             timeUiState = TimeUiState(
-                localTime = "12:11:01",
-                localDate = "Mon, 1 Jan",
+                localTime = "12:45:00",
+                localDate = "Wed, 29. Jul",
             ),
             uiState = ClockUiState(
                 zoneClocks = listOf(
@@ -264,9 +266,17 @@ fun ClockScreenPreview() {
                         ZoneId.of("Europe/Vienna"),
                         cityName = "Vienna",
                         hours = 12,
-                        minutes = 0,
+                        minutes = 45,
                         dayResId = R.string.today,
-                        hoursDiff = 4L
+                        hoursDiff = 0L
+                    ),
+                    ClockUiModel(
+                        ZoneId.of("America/New_York"),
+                        cityName = "New York",
+                        hours = 6,
+                        minutes = 45,
+                        dayResId = R.string.today,
+                        hoursDiff = -6L
                     )
                 )
             ),

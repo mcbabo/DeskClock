@@ -32,25 +32,27 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.components.RingtonePickerDialog
+import app.grapheneos.deskclock.core.navigation.LocalNavBackStack
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
 import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGroupRow
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGroupRow
 import app.grapheneos.deskclock.core.presentation.screenPadding
+import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.settings.presentation.components.SnoozeDrawer
 import app.grapheneos.deskclock.settings.presentation.components.ThemeDrawer
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsScreen(
-    onBack: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val backStack = LocalNavBackStack.current
 
     SettingsContent(
         state = state,
         onIntent = { intent -> viewModel.handleIntent(intent) },
-        onBack = onBack
+        onBack = { backStack.removeLastOrNull() }
     )
 }
 
@@ -229,9 +231,11 @@ fun SettingsContent(
 @Preview
 @Composable
 fun SettingsScreenPreview() {
-    SettingsContent(
-        state = SettingsUiState(),
-        onIntent = {},
-        onBack = {}
-    )
+    DeskClockTheme {
+        SettingsContent(
+            state = SettingsUiState(),
+            onIntent = {},
+            onBack = {}
+        )
+    }
 }

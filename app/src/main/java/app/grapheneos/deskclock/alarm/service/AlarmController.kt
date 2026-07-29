@@ -27,7 +27,6 @@ class AlarmController(private val context: Context) {
             alarmManager.setAlarmClock(alarmInfo, pendingIntent)
         } catch (e: SecurityException) {
             Log.d("AlarmController", e.toString())
-            // TODO()
         }
     }
 

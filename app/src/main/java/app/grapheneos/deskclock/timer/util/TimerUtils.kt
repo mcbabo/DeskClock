@@ -27,4 +27,12 @@ object TimerUtils {
 
         return if (isNegative) "-$timeString" else timeString
     }
+
+    fun parseInputToMillis(input: String): Long {
+        val cleanInput = input.padStart(6, '0')
+        val hours = cleanInput.substring(0, 2).toIntOrNull() ?: 0
+        val minutes = cleanInput.substring(2, 4).toIntOrNull() ?: 0
+        val seconds = cleanInput.substring(4, 6).toIntOrNull() ?: 0
+        return ((hours * 3_600) + (minutes * 60) + seconds) * 1_000L
+    }
 }

@@ -1,10 +1,12 @@
 package app.grapheneos.deskclock.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import app.grapheneos.deskclock.core.presentation.MainPagerScreen
 import app.grapheneos.deskclock.core.presentation.PermissionScreen
@@ -12,45 +14,45 @@ import app.grapheneos.deskclock.core.theme.motion.clockDefaultTransitions
 import app.grapheneos.deskclock.core.theme.motion.clockPopTransitions
 import app.grapheneos.deskclock.settings.presentation.SettingsScreen
 
+private const val METADATA_PERMISSIONS_REQUIRED = "permissions_required"
+
 @Composable
 fun NavigationRoot(
     backStack: NavBackStack<NavKey>,
     modifier: Modifier = Modifier
 ) {
-    NavDisplay(
-        backStack = backStack,
-        modifier = modifier,
-        transitionSpec = {
-            clockDefaultTransitions()
-        },
-        popTransitionSpec = {
-            clockPopTransitions()
-        },
-        predictivePopTransitionSpec = {
-            clockPopTransitions()
-        },
-        entryProvider = { key ->
-            when (key) {
-                is Route.Main -> {
-                    NavEntry(key) {
-                        PermissionScreen {
-                            MainPagerScreen(
-                                onNavigateToSettings = { backStack.add(Route.Settings) }
-                            )
-                        }
+    CompositionLocalProvider(LocalNavBackStack provides backStack) {
+        NavDisplay(
+            backStack = backStack,
+            modifier = modifier,
+            onBack = { backStack.removeLastOrNull() },
+            entryDecorators = listOf(
+                NavEntryDecorator { entry ->
+                    val permissionsRequired =
+                        entry.metadata[METADATA_PERMISSIONS_REQUIRED] as? Boolean ?: false
+                    if (permissionsRequired) {
+                        PermissionScreen { entry.Content() }
+                    } else {
+                        entry.Content()
                     }
                 }
-
-                is Route.Settings -> {
-                    NavEntry(key) {
-                        SettingsScreen(
-                            onBack = { backStack.removeLastOrNull() }
-                        )
-                    }
+            ),
+            entryProvider = entryProvider {
+                entry<Route.Main>(
+                    metadata = NavDisplay.transitionSpec { clockDefaultTransitions() } +
+                        NavDisplay.popTransitionSpec { clockPopTransitions() } +
+                        mapOf(METADATA_PERMISSIONS_REQUIRED to true)
+                ) {
+                    MainPagerScreen()
                 }
 
-                else -> error("Unknown Navkey: $key")
+                entry<Route.Settings>(
+                    metadata = NavDisplay.transitionSpec { clockDefaultTransitions() } +
+                        NavDisplay.popTransitionSpec { clockPopTransitions() }
+                ) {
+                    SettingsScreen()
+                }
             }
-        }
-    )
+        )
+    }
 }

@@ -21,33 +21,37 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.WavyProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.grapheneos.deskclock.R
+import app.grapheneos.deskclock.core.navigation.LocalNavBackStack
+import app.grapheneos.deskclock.core.navigation.Route
+import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.timer.presentation.components.TimerKeypad
 import app.grapheneos.deskclock.timer.util.TimerUtils
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TimerScreen(
-    onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TimerViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val backStack = LocalNavBackStack.current
 
     TimerContent(
         uiState = uiState,
-        onNavigateToSettings = onNavigateToSettings,
+        onNavigateToSettings = { backStack.add(Route.Settings) },
         onIntent = viewModel::handleIntent,
         modifier = modifier
     )
@@ -147,7 +151,8 @@ private fun TimerRunningLayout(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerIndicator(
             progress = uiState.progress,
-            remainingTime = TimerUtils.formatRemainingTime(uiState.remainingTime)
+            remainingTime = TimerUtils.formatRemainingTime(uiState.remainingTime),
+            isRunning = uiState.isRunning
         )
         Spacer(modifier = Modifier.height(48.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
@@ -172,22 +177,60 @@ private fun TimerRunningLayout(
 @Composable
 private fun TimerIndicator(
     progress: Float,
-    remainingTime: String
+    remainingTime: String,
+    isRunning: Boolean
 ) {
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        animationSpec = WavyProgressIndicatorDefaults.ProgressAnimationSpec,
         label = "TimerProgressAnimation"
     )
+
+    val wavelength = WavyProgressIndicatorDefaults.CircularWavelength
 
     Box(contentAlignment = Alignment.Center) {
         CircularWavyProgressIndicator(
             progress = { animatedProgress },
-            modifier = Modifier.size(240.dp)
+            modifier = Modifier.size(240.dp),
+            amplitude = if (isRunning) {
+                WavyProgressIndicatorDefaults.indicatorAmplitude
+            } else {
+                { 0f }
+            },
+            waveSpeed = if (isRunning) wavelength else 0.dp
         )
         Text(
             text = remainingTime,
             style = MaterialTheme.typography.displayMedium
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TimerSetupPreview() {
+    DeskClockTheme {
+        TimerContent(
+            uiState = TimerUiState(inputTime = "001000"),
+            onNavigateToSettings = {},
+            onIntent = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TimerRunningPreview() {
+    DeskClockTheme {
+        TimerContent(
+            uiState = TimerUiState(
+                isStarted = true,
+                isRunning = true,
+                remainingTime = 45000,
+                progress = 0.75f
+            ),
+            onNavigateToSettings = {},
+            onIntent = {}
         )
     }
 }

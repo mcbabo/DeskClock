@@ -7,17 +7,20 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.notification.NotificationConstants
+import app.grapheneos.deskclock.timer.data.TimerData
 import app.grapheneos.deskclock.timer.data.TimerReceiver
-import app.grapheneos.deskclock.timer.presentation.TimerUiState
 import app.grapheneos.deskclock.timer.util.TimerConstants
 import app.grapheneos.deskclock.timer.util.TimerUtils
 
 class TimerNotificationManager(private val context: Context) {
-    fun buildTimerNotification(state: TimerUiState): Notification {
+    fun buildTimerNotification(state: TimerData): Notification {
+        val remaining = state.getRemainingTime()
+        val formattedTime = TimerUtils.formatRemainingTime(remaining)
+
         return NotificationCompat.Builder(context, NotificationConstants.Timer.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification_timer)
             .setContentTitle(context.getString(R.string.timer))
-            .setContentText(TimerUtils.formatRemainingTime(state.remainingTime))
+            .setContentText(formattedTime)
             .setOngoing(state.isRunning)
             .setOnlyAlertOnce(true)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
@@ -32,12 +35,11 @@ class TimerNotificationManager(private val context: Context) {
     }
 
     private fun buildPauseAction(isRunning: Boolean): NotificationCompat.Action {
-        val icon =
-            if (isRunning) {
-                android.R.drawable.ic_media_pause
-            } else {
-                android.R.drawable.ic_media_play
-            }
+        val icon = if (isRunning) {
+            android.R.drawable.ic_media_pause
+        } else {
+            android.R.drawable.ic_media_play
+        }
         val title = if (isRunning) {
             context.getString(R.string.pause)
         } else {

@@ -1,9 +1,17 @@
 package app.grapheneos.deskclock.stopwatch.data
 
 import android.os.SystemClock
+import app.grapheneos.deskclock.stopwatch.service.StopwatchController
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration.Companion.milliseconds
 
 data class StopwatchData(
     val isRunning: Boolean = false,
@@ -11,10 +19,6 @@ data class StopwatchData(
     val accumulatedMillis: Long = 0L,
     val laps: List<Lap> = emptyList()
 ) {
-    /**
-     * Calculates the total elapsed time.
-     * If running, it adds the time since [startTime] to [accumulatedMillis].
-     */
     fun getElapsedMillis(now: Long = SystemClock.elapsedRealtime()): Long {
         return if (isRunning && startTime != null) {
             accumulatedMillis + (now - startTime)
@@ -24,9 +28,25 @@ data class StopwatchData(
     }
 }
 
-class StopwatchRepository {
+class StopwatchRepository(
+    private val stopwatchController: StopwatchController
+) {
     private val _state = MutableStateFlow(StopwatchData())
     val state = _state.asStateFlow()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val elapsedMillis: Flow<Long> = state.flatMapLatest { d ->
+        if (d.isRunning) {
+            flow {
+                while (true) {
+                    emit(d.getElapsedMillis())
+                    delay(TICK_INTERVAL_MILLIS.milliseconds)
+                }
+            }
+        } else {
+            flowOf(d.accumulatedMillis)
+        }
+    }
 
     fun start() {
         _state.update { current ->
@@ -36,6 +56,7 @@ class StopwatchRepository {
                 startTime = SystemClock.elapsedRealtime()
             )
         }
+        stopwatchController.startService()
     }
 
     fun pause() {
@@ -52,6 +73,7 @@ class StopwatchRepository {
 
     fun reset() {
         _state.value = StopwatchData()
+        stopwatchController.stopService()
     }
 
     fun lap() {
@@ -67,5 +89,9 @@ class StopwatchRepository {
             )
             current.copy(laps = listOf(newLap) + current.laps)
         }
+    }
+
+    companion object {
+        private const val TICK_INTERVAL_MILLIS = 100L
     }
 }

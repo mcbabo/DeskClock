@@ -27,25 +27,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.grapheneos.deskclock.R
+import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.presentation.components.AlarmDrawer
 import app.grapheneos.deskclock.alarm.presentation.components.AlarmListItem
 import app.grapheneos.deskclock.alarm.presentation.components.DialWithDialog
+import app.grapheneos.deskclock.core.navigation.LocalNavBackStack
+import app.grapheneos.deskclock.core.navigation.Route
 import app.grapheneos.deskclock.core.presentation.FloatingActionButton
 import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.components.groupitems.lazyGroup
+import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
 
 @Composable
 fun AlarmScreen(
-    onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AlarmViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val backStack = LocalNavBackStack.current
 
     var editingAlarmId by remember { mutableStateOf<Long?>(null) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -58,7 +63,7 @@ fun AlarmScreen(
         uiState = uiState,
         modifier = modifier,
         onIntent = viewModel::handleIntent,
-        onNavigateToSettings = onNavigateToSettings,
+        onNavigateToSettings = { backStack.add(Route.Settings) },
         onAddAlarmClick = { showTimePicker = true },
         onAlarmClick = { alarmWithInstance -> editingAlarmId = alarmWithInstance.alarm.id }
     )
@@ -186,5 +191,44 @@ fun AlarmContent(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun AlarmScreenPreview() {
+    DeskClockTheme {
+        AlarmContent(
+            uiState = AlarmUiState(
+                alarms = listOf(
+                    AlarmWithInstance(
+                        alarm = AlarmEntity(
+                            id = 1,
+                            hour = 7,
+                            minute = 30,
+                            daysOfWeek = 31, // Mon-Fri
+                            isEnabled = true,
+                            label = "Wake up"
+                        ),
+                        instance = null
+                    ),
+                    AlarmWithInstance(
+                        alarm = AlarmEntity(
+                            id = 2,
+                            hour = 9,
+                            minute = 0,
+                            daysOfWeek = 64, // Sat
+                            isEnabled = false,
+                            label = "Gym"
+                        ),
+                        instance = null
+                    )
+                )
+            ),
+            onIntent = {},
+            onNavigateToSettings = {},
+            onAddAlarmClick = {},
+            onAlarmClick = {}
+        )
     }
 }

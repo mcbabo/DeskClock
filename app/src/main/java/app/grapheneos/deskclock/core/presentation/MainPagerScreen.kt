@@ -1,6 +1,8 @@
 package app.grapheneos.deskclock.core.presentation
 
 import android.view.HapticFeedbackConstants
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
@@ -14,9 +16,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import app.grapheneos.deskclock.alarm.presentation.AlarmScreen
@@ -27,9 +31,7 @@ import app.grapheneos.deskclock.timer.presentation.TimerScreen
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainPagerScreen(
-    onNavigateToSettings: () -> Unit,
-) {
+fun MainPagerScreen() {
     val tabs = ClockTab.entries
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
@@ -51,15 +53,28 @@ fun MainPagerScreen(
         bottomBar = {
             NavigationBar {
                 ClockTab.entries.forEachIndexed { index, tab ->
+                    val selected = pagerState.currentPage == index
+
+                    val scale = remember { Animatable(1f) }
+
+                    LaunchedEffect(key1 = selected) {
+                        if (!selected) return@LaunchedEffect
+
+                        scale.snapTo(1f)
+                        scale.animateTo(1.15f, tween(120))
+                        scale.animateTo(1f, tween(120))
+                    }
+
                     NavigationBarItem(
                         icon = {
                             Icon(
-                                imageVector = tab.icon,
+                                imageVector = if (selected) tab.selectedIcon else tab.icon,
                                 contentDescription = stringResource(tab.titleRes),
+                                modifier = Modifier.scale(scale.value)
                             )
                         },
                         label = { Text(stringResource(tab.titleRes)) },
-                        selected = pagerState.currentPage == index,
+                        selected = selected,
                         onClick = {
                             scope.launch { pagerState.animateScrollToPage(index) }
                         }
@@ -77,19 +92,19 @@ fun MainPagerScreen(
         ) { pageIndex ->
             when (tabs[pageIndex]) {
                 ClockTab.Alarm -> {
-                    AlarmScreen(onNavigateToSettings = onNavigateToSettings)
+                    AlarmScreen()
                 }
 
                 ClockTab.WorldClock -> {
-                    ClockScreen(onNavigateToSettings = onNavigateToSettings)
+                    ClockScreen()
                 }
 
                 ClockTab.Timer -> {
-                    TimerScreen(onNavigateToSettings = onNavigateToSettings)
+                    TimerScreen()
                 }
 
                 ClockTab.Stopwatch -> {
-                    StopwatchScreen(onNavigateToSettings = onNavigateToSettings)
+                    StopwatchScreen()
                 }
             }
         }

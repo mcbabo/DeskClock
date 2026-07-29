@@ -3,7 +3,7 @@ package app.grapheneos.deskclock.timer.presentation
 data class TimerUiState(
     val remainingTime: Long = 0L,
     val totalTime: Long = 0L,
-    val inputTime: String = "0000000", // HHMMSS
+    val inputTime: String = "000000", // HHMMSS
     val isStarted: Boolean = false,
     val isRunning: Boolean = false,
     val isFinished: Boolean = false,
@@ -12,8 +12,8 @@ data class TimerUiState(
 
 sealed interface TimerIntent {
     data class EnterDigit(val digit: Int) : TimerIntent
-    object Backspace : TimerIntent
-    object Start : TimerIntent
-    object TogglePauseResume : TimerIntent
-    object Reset : TimerIntent
+    data object Backspace : TimerIntent
+    data object Start : TimerIntent
+    data object TogglePauseResume : TimerIntent
+    data object Reset : TimerIntent
 }

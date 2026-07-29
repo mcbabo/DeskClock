@@ -65,4 +65,5 @@
     <string name="settings_vibration">Vibration</string>
     <string name="settings_vibration_desc">Default preference for alarms</string>
     <string name="lap">Lap</string>
+    <string name="stop">Stop</string>
 </resources>

@@ -14,4 +14,10 @@ object NotificationConstants {
         const val CHANNEL_NAME = "Timer"
         const val NOTIFICATION_ID = 2001
     }
+
+    object Stopwatch {
+        const val CHANNEL_ID = "STOPWATCH_CHANNEL"
+        const val CHANNEL_NAME = "Stopwatch"
+        const val NOTIFICATION_ID = 3001
+    }
 }

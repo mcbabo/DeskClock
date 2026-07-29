@@ -8,10 +8,12 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import app.grapheneos.deskclock.core.notification.NotificationConstants
 import app.grapheneos.deskclock.core.service.BaseAlertService
+import app.grapheneos.deskclock.timer.data.TimerData
 import app.grapheneos.deskclock.timer.data.TimerRepository
-import app.grapheneos.deskclock.timer.presentation.TimerUiState
 import app.grapheneos.deskclock.timer.presentation.popup.TimerPopUpActivity
 import app.grapheneos.deskclock.timer.util.TimerConstants
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 
@@ -28,20 +30,26 @@ class TimerService : BaseAlertService(TimerConstants.PM_TAG) {
 
     private fun observeTimer() {
         serviceScope.launch {
-            repository.timerState.collect { state ->
-                if (state.isStarted && state.remainingTime > 0) {
-                    showNotification(state)
-                } else if (state.isFinished) {
-                    if (!isSoundPlaying) {
-                        isSoundPlaying = true
-                        launchPopUp()
-                        audioPlayer.playAlarm(null, loop = true)
-                    }
-                    showNotification(state)
-                } else {
-                    stopSelf()
-                }
+            combine(repository.state, repository.remainingMillis) { state, remaining ->
+                state to (remaining / 1000)
             }
+                .distinctUntilChanged()
+                .collect { (state, _) ->
+                    val remaining = state.getRemainingTime()
+
+                    if (state.isStarted && remaining > 0) {
+                        showNotification(state)
+                    } else if (state.isFinished) {
+                        if (!isSoundPlaying) {
+                            isSoundPlaying = true
+                            launchPopUp()
+                            startAlert()
+                        }
+                        showNotification(state)
+                    } else {
+                        stopSelf()
+                    }
+                }
         }
     }
 
@@ -52,7 +60,7 @@ class TimerService : BaseAlertService(TimerConstants.PM_TAG) {
         startActivity(intent)
     }
 
-    private fun showNotification(state: TimerUiState) {
+    private fun showNotification(state: TimerData) {
         val notification = notificationManager.buildTimerNotification(state)
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)

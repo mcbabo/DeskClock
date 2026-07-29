@@ -23,9 +23,9 @@ data class ClockUiModel(
     val hoursDiff: Long
 )
 
-sealed interface ClockAction {
-    data class UpdateSearchQuery(val query: String) : ClockAction
-    data class ToggleSearch(val isActive: Boolean) : ClockAction
-    data class AddTimeZone(val zoneId: ZoneId) : ClockAction
-    data class RemoveTimeZone(val zoneId: ZoneId) : ClockAction
+sealed interface ClockIntent {
+    data class UpdateSearchQuery(val query: String) : ClockIntent
+    data class ToggleSearch(val isActive: Boolean) : ClockIntent
+    data class AddTimeZone(val zoneId: ZoneId) : ClockIntent
+    data class RemoveTimeZone(val zoneId: ZoneId) : ClockIntent
 }

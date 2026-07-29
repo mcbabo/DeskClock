@@ -22,8 +22,13 @@ import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.timer.util.TimerUtils
 
 @Composable
-fun TimerPopUpScreen(uiState: TimerPopUpUiState, onIntent: (TimerPopUpIntent) -> Unit) {
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+fun TimerPopUpScreen(
+    uiState: TimerPopUpUiState,
+    onIntent: (TimerPopUpIntent) -> Unit
+) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -36,11 +41,14 @@ fun TimerPopUpScreen(uiState: TimerPopUpUiState, onIntent: (TimerPopUpIntent) ->
                 text = stringResource(R.string.timer_finished),
                 style = MaterialTheme.typography.headlineMedium
             )
+
             Text(
                 text = TimerUtils.formatRemainingTime(uiState.remainingTime),
                 style = MaterialTheme.typography.displayLarge
             )
+
             Spacer(Modifier.height(48.dp))
+
             Button(
                 onClick = { onIntent(TimerPopUpIntent.Stop) },
                 modifier = Modifier
@@ -48,7 +56,10 @@ fun TimerPopUpScreen(uiState: TimerPopUpUiState, onIntent: (TimerPopUpIntent) ->
                     .height(80.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text("Stop", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = stringResource(R.string.stop),
+                    style = MaterialTheme.typography.titleLarge
+                )
             }
         }
     }

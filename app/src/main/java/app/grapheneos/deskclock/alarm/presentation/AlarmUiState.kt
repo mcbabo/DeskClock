@@ -15,7 +15,7 @@ data class AlarmUiState(
 
 sealed interface AlarmIntent {
     // Alarm
-    object LoadAlarms : AlarmIntent
+    data object LoadAlarms : AlarmIntent
     data class ToggleAlarm(val alarm: AlarmEntity) : AlarmIntent
     data class UpdateAlarm(val alarm: AlarmEntity) : AlarmIntent
     data class DeleteAlarm(val alarm: AlarmEntity) : AlarmIntent
@@ -28,7 +28,7 @@ sealed interface AlarmIntent {
     ) : AlarmIntent
 
     // Ringtones
-    object LoadSystemRingtones : AlarmIntent
+    data object LoadSystemRingtones : AlarmIntent
     data class PlayPreview(val uri: String) : AlarmIntent
-    object StopPreview : AlarmIntent
+    data object StopPreview : AlarmIntent
 }

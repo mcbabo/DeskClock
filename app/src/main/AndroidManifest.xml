@@ -104,8 +104,17 @@
             android:name=".timer.data.TimerReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="TIMER_PAUSE_RESUME" />
-                <action android:name="TIMER_RESET" />
+                <action android:name="app.grapheneos.deskclock.TIMER_PAUSE_RESUME" />
+                <action android:name="app.grapheneos.deskclock.TIMER_RESET" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".stopwatch.data.StopwatchReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="app.grapheneos.deskclock.STOPWATCH_START_PAUSE" />
+                <action android:name="app.grapheneos.deskclock.STOPWATCH_LAP_RESET" />
             </intent-filter>
         </receiver>
 
@@ -116,6 +125,15 @@
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Timer running" />
+        </service>
+
+        <service
+            android:name=".stopwatch.service.StopwatchService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Stopwatch running" />
         </service>
 
     </application>
