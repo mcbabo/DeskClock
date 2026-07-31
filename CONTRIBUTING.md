@@ -4,6 +4,9 @@ Welcome! We're excited that you're interested in contributing to our Jetpack Com
 Contributions of all kinds are welcome - from bug fixes and documentation improvements to new
 features.
 
+> [!IMPORTANT]  
+> Please do not submit a pull request if you mainly vibe-coded your changes. There is no problem if you use AI to review your own written code. If you do so, please make sure you mention it in your pull-request.
+
 ## Table of Contents
 
 * [Code of Conduct](#code-of-conduct)
