@@ -11,26 +11,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.rememberNavBackStack
 import app.grapheneos.deskclock.core.navigation.NavigationRoot
 import app.grapheneos.deskclock.core.navigation.Route
+import app.grapheneos.deskclock.core.presentation.MainActivityViewModel
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.core.theme.SystemBarsTheme
-import app.grapheneos.deskclock.settings.data.AppSettings
-import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.settings.data.ThemeMode
-import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
-    private val settingsRepository: SettingsRepository by inject()
+    private val viewModel: MainActivityViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val settings by viewModel.settings.collectAsStateWithLifecycle()
             val backStack = rememberNavBackStack(Route.Main)
-
-            val settings by settingsRepository.settings.collectAsStateWithLifecycle(
-                initialValue = AppSettings()
-            )
 
             val isDarkTheme =
                 when (settings.themeMode) {

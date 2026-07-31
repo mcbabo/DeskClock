@@ -26,6 +26,9 @@ fun NavigationRoot(
             backStack = backStack,
             modifier = modifier,
             onBack = { backStack.removeLastOrNull() },
+            transitionSpec = { clockDefaultTransitions() },
+            popTransitionSpec = { clockPopTransitions() },
+            predictivePopTransitionSpec = { clockPopTransitions() },
             entryDecorators = listOf(
                 NavEntryDecorator { entry ->
                     val permissionsRequired =
@@ -39,17 +42,12 @@ fun NavigationRoot(
             ),
             entryProvider = entryProvider {
                 entry<Route.Main>(
-                    metadata = NavDisplay.transitionSpec { clockDefaultTransitions() } +
-                        NavDisplay.popTransitionSpec { clockPopTransitions() } +
-                        mapOf(METADATA_PERMISSIONS_REQUIRED to true)
+                    metadata = mapOf(METADATA_PERMISSIONS_REQUIRED to true)
                 ) {
                     MainPagerScreen()
                 }
 
-                entry<Route.Settings>(
-                    metadata = NavDisplay.transitionSpec { clockDefaultTransitions() } +
-                        NavDisplay.popTransitionSpec { clockPopTransitions() }
-                ) {
+                entry<Route.Settings> {
                     SettingsScreen()
                 }
             }

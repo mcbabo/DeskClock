@@ -14,6 +14,7 @@ import app.grapheneos.deskclock.core.database.SettingsDataStore
 import app.grapheneos.deskclock.core.database.getDatabaseBuilder
 import app.grapheneos.deskclock.core.database.getRoomDatabase
 import app.grapheneos.deskclock.core.notification.ChannelManager
+import app.grapheneos.deskclock.core.presentation.MainActivityViewModel
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.settings.presentation.SettingsViewModel
 import app.grapheneos.deskclock.stopwatch.data.StopwatchRepository
@@ -48,6 +49,9 @@ val coreModule = module {
     single { ChannelManager(get()) }
     single { AudioPlayer(get()) }
     single { VibrationManager(get()) }
+
+    viewModelOf(::MainActivityViewModel)
+    viewModelOf(::SettingsViewModel)
 }
 
 val settingsModule = module {

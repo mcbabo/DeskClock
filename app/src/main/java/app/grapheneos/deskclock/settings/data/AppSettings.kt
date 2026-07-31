@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
-    val dynamicColors: Boolean = false,
+    val dynamicColors: Boolean = true,
 
     val snoozeDurationMinutes: Int = AlarmConstants.DEFAULT_SNOOZE_TIME,
     val defaultRingtone: RingtoneItem = RingtoneItem(
