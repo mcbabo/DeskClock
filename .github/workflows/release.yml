@@ -6,6 +6,7 @@ on:
       - 'v*.*.*'
 
 jobs:
+  # Need to add hash later
   release:
     runs-on: ubuntu-latest
     permissions:

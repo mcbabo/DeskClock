@@ -10,10 +10,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      versionCode: ${{ steps.versioncode.outputs.versionCode }}
+      versionName: ${{ steps.versionname.outputs.versionName }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Get versionCode
+        id: versioncode
+        run: echo "versionCode=$(grep -E '^\s+versionCode\s*=' app/build.gradle.kts | awk '{ print $3 }' | head -n 1)" >> $GITHUB_OUTPUT
+      - name: Get versionName
+        id: versionname
+        run: echo "versionName=$(grep -E '^\s+versionName\s*=' app/build.gradle.kts | head -1 | awk -F\" '{ print $2 }')" >> $GITHUB_OUTPUT
+
+  # Need to add hash later
   nightly:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      VERSION: ${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}
 
     steps:
       - name: Checkout code
@@ -51,7 +69,7 @@ jobs:
         uses: softprops/action-gh-release@v3.0.2
         with:
           tag_name: nightly
-          name: "Nightly Build"
+          name: ${{ env.VERSION }} Nightly Release
           body: "Automated rolling build from the latest master branch commit."
           prerelease: true
           files: app/build/outputs/apk/release/DeskClock-*.apk
