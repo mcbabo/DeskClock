@@ -17,7 +17,7 @@ jobs:
       versionCode: ${{ steps.versioncode.outputs.versionCode }}
       versionName: ${{ steps.versionname.outputs.versionName }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
       - name: Get versionCode
         id: versioncode
         run: echo "versionCode=$(grep -E '^\s+versionCode\s*=' app/build.gradle.kts | awk '{ print $3 }' | head -n 1)" >> $GITHUB_OUTPUT
@@ -27,6 +27,7 @@ jobs:
 
   # Need to add hash later
   nightly:
+    needs: [ prepare ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -71,5 +72,5 @@ jobs:
           tag_name: nightly
           name: ${{ env.VERSION }} Nightly Release
           body: "Automated rolling build from the latest master branch commit."
-          prerelease: true
           files: app/build/outputs/apk/release/DeskClock-*.apk
+          prerelease: true

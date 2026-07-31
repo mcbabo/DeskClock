@@ -6,11 +6,29 @@ on:
       - 'v*.*.*'
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      versionCode: ${{ steps.versioncode.outputs.versionCode }}
+      versionName: ${{ steps.versionname.outputs.versionName }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Get versionCode
+        id: versioncode
+        run: echo "versionCode=$(grep -E '^\s+versionCode\s*=' app/build.gradle.kts | awk '{ print $3 }' | head -n 1)" >> $GITHUB_OUTPUT
+      - name: Get versionName
+        id: versionname
+        run: echo "versionName=$(grep -E '^\s+versionName\s*=' app/build.gradle.kts | head -1 | awk -F\" '{ print $2 }')" >> $GITHUB_OUTPUT
+
   # Need to add hash later
   release:
+    needs: [ prepare ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      VERSION: ${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}
 
     steps:
       - name: Checkout code
@@ -47,5 +65,7 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v3.0.2
         with:
+          tag_name: ${{ needs.prepare.outputs.versionName }}
+          name: ${{ env.VERSION }} Release
           files: app/build/outputs/apk/release/DeskClock-*.apk
-          prerelease: ${{ contains(github.ref_name, '-') }}
+          prerelease: false
