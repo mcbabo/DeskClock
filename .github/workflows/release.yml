@@ -46,5 +46,5 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v3.0.2
         with:
-          files: app/build/outputs/apk/release/DeskClock-release.apk
+          files: app/build/outputs/apk/release/DeskClock-*.apk
           prerelease: ${{ contains(github.ref_name, '-') }}

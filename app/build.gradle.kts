@@ -1,3 +1,4 @@
+import com.android.build.api.variant.FilterConfiguration
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
@@ -30,6 +31,14 @@ android {
         targetSdk = 37
         versionCode = 1_00_00
         versionName = "1.0.0"
+
+        ndk {
+            if (project.hasProperty("ABI_FILTER")) {
+                abiFilters.add(project.property("ABI_FILTER") as String)
+            } else {
+                abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86_64"))
+            }
+        }
     }
 
     val storePath = keystoreProperties.getProperty("storeFile")
@@ -43,19 +52,14 @@ android {
         ?: System.getenv("RELEASE_KEY_PASSWORD")
 
     val keystoreFile = rootProject.file(storePath)
-    val hasValidKeystore = keystoreFile.exists() && !storePasswordVal.isNullOrEmpty()
 
     signingConfigs {
         create("release") {
-            if (hasValidKeystore) {
-                storeFile = keystoreFile
-                storePassword = storePasswordVal
-                keyAlias = keyAliasVal
-                keyPassword = keyPasswordVal
-                enableV4Signing = true
-            } else {
-                initWith(getByName("debug"))
-            }
+            storeFile = keystoreFile
+            storePassword = storePasswordVal
+            keyAlias = keyAliasVal
+            keyPassword = keyPasswordVal
+            enableV4Signing = true
         }
     }
 
@@ -92,12 +96,26 @@ android {
         compose = true
         buildConfig = true
     }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            isUniversalApk = true
+        }
+    }
 }
 
 androidComponents {
     onVariants { variant ->
         variant.outputs.forEach { output ->
-            output.outputFileName.set("DeskClock-${variant.name}.apk")
+            val versionName = output.versionName.orNull ?: "version"
+            val versionCode = output.versionCode.orNull ?: "version"
+            val abiName =
+                output.filters.find { it.filterType == FilterConfiguration.FilterType.ABI }?.identifier
+                    ?: "universal"
+            output.outputFileName.set("DeskClock-$versionName-$versionCode-${abiName}-${variant.name}.apk")
         }
     }
 }

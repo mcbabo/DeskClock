@@ -54,6 +54,4 @@ jobs:
           name: "Nightly Build"
           body: "Automated rolling build from the latest master branch commit."
           prerelease: true
-          files: |
-            app/build/outputs/apk/debug/DeskClock-debug.apk
-            app/build/outputs/apk/release/DeskClock-release.apk
+          files: app/build/outputs/apk/release/DeskClock-*.apk
