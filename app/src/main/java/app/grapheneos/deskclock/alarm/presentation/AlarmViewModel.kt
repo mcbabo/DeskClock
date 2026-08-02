@@ -102,6 +102,5 @@ class AlarmViewModel(
 
     override fun onCleared() {
         audioPlayer.stop()
-        super.onCleared()
     }
 }

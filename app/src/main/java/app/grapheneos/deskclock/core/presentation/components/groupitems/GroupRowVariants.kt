@@ -46,7 +46,7 @@ private const val MAX_LABEL_LENGTH = 30
 /**
  * A [GroupRow] whose trailing content is a short, read-only value label —
  * e.g. a settings row that navigates to a picker or editor on tap and shows
- * the currently selected value (ringtone name, theme, snooze duration, etc).
+ * the currently selected value (ringtone name, theme, snooze duration, etc.).
  * Fires a light confirmation haptic on tap.
  */
 @Composable
