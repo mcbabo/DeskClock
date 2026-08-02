@@ -32,6 +32,7 @@ class AlarmNotificationManager(private val context: Context) {
 
     private fun getFullScreenIntent(id: Long): PendingIntent {
         val intent = Intent(context, AlarmPopUpActivity::class.java).apply {
+            setPackage(context.packageName)
             putExtra(AlarmConstants.EXTRA_INSTANCE_ID, id)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                 Intent.FLAG_ACTIVITY_NO_USER_ACTION or

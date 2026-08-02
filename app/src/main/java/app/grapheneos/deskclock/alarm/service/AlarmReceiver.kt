@@ -13,6 +13,7 @@ class AlarmReceiver : BroadcastReceiver(), KoinComponent {
         val instanceId = intent.getLongExtra(AlarmConstants.EXTRA_INSTANCE_ID, -1L)
 
         val serviceIntent = Intent(context, AlarmService::class.java).apply {
+            setPackage(context.packageName)
             putExtra(AlarmConstants.EXTRA_INSTANCE_ID, instanceId)
         }
 

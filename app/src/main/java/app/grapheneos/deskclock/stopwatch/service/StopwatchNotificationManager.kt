@@ -75,7 +75,10 @@ class StopwatchNotificationManager(private val context: Context) {
     }
 
     private fun getPendingIntent(action: String): PendingIntent {
-        val intent = Intent(context, StopwatchReceiver::class.java).apply { this.action = action }
+        val intent = Intent(context, StopwatchReceiver::class.java).apply {
+            this.action = action
+            setPackage(context.packageName)
+        }
         return PendingIntent.getBroadcast(
             context,
             action.hashCode(),

@@ -12,6 +12,8 @@ concurrency:
 jobs:
   prepare:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 5
     outputs:
       versionCode: ${{ steps.versioncode.outputs.versionCode }}

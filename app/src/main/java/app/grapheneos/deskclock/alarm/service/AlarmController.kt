@@ -20,25 +20,39 @@ class AlarmController(private val context: Context) {
             return
         }
 
-        val pendingIntent = createReceiverPendingIntent(instance.id, alarmId)
-        val alarmInfo = AlarmManager.AlarmClockInfo(instance.timeInMillis, pendingIntent)
+        val operation = createReceiverPendingIntent(instance.id, alarmId)
+        val showIntent = createShowPendingIntent(alarmId)
+        val alarmInfo = AlarmManager.AlarmClockInfo(instance.timeInMillis, showIntent)
 
         try {
-            alarmManager.setAlarmClock(alarmInfo, pendingIntent)
+            alarmManager.setAlarmClock(alarmInfo, operation)
         } catch (e: SecurityException) {
             Log.d("AlarmController", e.toString())
         }
     }
 
     fun cancelInstance(alarmId: Long) {
-        val pendingIntent = createReceiverPendingIntent(-1L, alarmId)
-        alarmManager.cancel(pendingIntent)
-        pendingIntent.cancel()
+        val operation = createReceiverPendingIntent(-1L, alarmId)
+        alarmManager.cancel(operation)
+        operation.cancel()
+    }
+
+    private fun createShowPendingIntent(alarmId: Long): PendingIntent {
+        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            ?: Intent(context, app.grapheneos.deskclock.MainActivity::class.java)
+        
+        return PendingIntent.getActivity(
+            context,
+            alarmId.toInt(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
     }
 
     private fun createReceiverPendingIntent(instanceId: Long, alarmId: Long): PendingIntent {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = AlarmConstants.ACTION_FIRE_ALARM
+            setPackage(context.packageName)
             putExtra(AlarmConstants.EXTRA_INSTANCE_ID, instanceId)
         }
         return PendingIntent.getBroadcast(
