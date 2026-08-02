@@ -66,4 +66,6 @@
     <string name="settings_vibration_desc">Default preference for alarms</string>
     <string name="lap">Lap</string>
     <string name="stop">Stop</string>
+    <string name="alarm_deleted">Alarm deleted</string>
+    <string name="undo">Undo</string>
 </resources>

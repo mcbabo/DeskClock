@@ -19,6 +19,7 @@ sealed interface AlarmIntent {
     data class ToggleAlarm(val alarm: AlarmEntity) : AlarmIntent
     data class UpdateAlarm(val alarm: AlarmEntity) : AlarmIntent
     data class DeleteAlarm(val alarm: AlarmEntity) : AlarmIntent
+    data class RestoreAlarm(val alarm: AlarmEntity) : AlarmIntent
     data class AddAlarm(
         val hour: Int,
         val minute: Int,

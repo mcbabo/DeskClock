@@ -120,6 +120,7 @@ fun AlarmDrawerContent(
 
             Button(
                 onClick = {
+                    view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
                     showTimePicker = true
                 },
                 colors = ButtonDefaults.buttonColors(

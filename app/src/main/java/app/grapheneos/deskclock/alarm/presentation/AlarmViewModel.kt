@@ -46,6 +46,7 @@ class AlarmViewModel(
                 is AlarmIntent.ToggleAlarm -> repository.toggleAlarm(intent.alarm)
                 is AlarmIntent.UpdateAlarm -> repository.updateAlarm(intent.alarm)
                 is AlarmIntent.DeleteAlarm -> repository.deleteAlarm(intent.alarm)
+                is AlarmIntent.RestoreAlarm -> repository.addAlarm(intent.alarm)
                 is AlarmIntent.AddAlarm -> {
                     val settings = settings.value
 

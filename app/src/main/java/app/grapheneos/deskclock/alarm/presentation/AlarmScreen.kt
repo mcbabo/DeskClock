@@ -17,12 +17,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +46,7 @@ import app.grapheneos.deskclock.core.presentation.FloatingActionButton
 import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.components.groupitems.lazyGroup
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
 
@@ -51,6 +57,11 @@ fun AlarmScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val backStack = LocalNavBackStack.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val alarmDeletedText = stringResource(R.string.alarm_deleted)
+    val undoText = stringResource(R.string.undo)
 
     var editingAlarmId by remember { mutableStateOf<Long?>(null) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -62,6 +73,7 @@ fun AlarmScreen(
     AlarmContent(
         uiState = uiState,
         modifier = modifier,
+        snackbarHostState = snackbarHostState,
         onIntent = viewModel::handleIntent,
         onNavigateToSettings = { backStack.add(Route.Settings) },
         onAddAlarmClick = { showTimePicker = true },
@@ -101,6 +113,17 @@ fun AlarmScreen(
             onDelete = {
                 viewModel.handleIntent(AlarmIntent.DeleteAlarm(alarmWithInstance.alarm))
                 editingAlarmId = null
+
+                scope.launch {
+                    val result = snackbarHostState.showSnackbar(
+                        message = alarmDeletedText,
+                        actionLabel = undoText,
+                        duration = SnackbarDuration.Long
+                    )
+                    if (result == SnackbarResult.ActionPerformed) {
+                        viewModel.handleIntent(AlarmIntent.RestoreAlarm(alarmWithInstance.alarm))
+                    }
+                }
             }
         )
     }
@@ -110,6 +133,7 @@ fun AlarmScreen(
 @Composable
 fun AlarmContent(
     uiState: AlarmUiState,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     onIntent: (AlarmIntent) -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -133,6 +157,9 @@ fun AlarmContent(
                     }
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -225,6 +252,7 @@ fun AlarmScreenPreview() {
                     )
                 )
             ),
+            snackbarHostState = remember { SnackbarHostState() },
             onIntent = {},
             onNavigateToSettings = {},
             onAddAlarmClick = {},

@@ -64,4 +64,6 @@
     <string name="settings_vibration_desc">Standardeinstellung für Wecker</string>
     <string name="lap">Runde</string>
     <string name="stop">Stopp</string>
+    <string name="alarm_deleted">Wecker gelöscht</string>
+    <string name="undo">Rückgängig</string>
 </resources>
