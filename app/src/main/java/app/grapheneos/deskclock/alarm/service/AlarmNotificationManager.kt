@@ -3,6 +3,7 @@ package app.grapheneos.deskclock.alarm.service
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
@@ -31,7 +32,8 @@ class AlarmNotificationManager(private val context: Context) {
     }
 
     private fun getFullScreenIntent(id: Long): PendingIntent {
-        val intent = Intent(context, AlarmPopUpActivity::class.java).apply {
+        val intent = Intent().apply {
+            component = ComponentName(context, AlarmPopUpActivity::class.java)
             putExtra(AlarmConstants.EXTRA_INSTANCE_ID, id)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                 Intent.FLAG_ACTIVITY_NO_USER_ACTION or

@@ -2,6 +2,7 @@ package app.grapheneos.deskclock.timer.service
 
 import android.app.Notification
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
@@ -53,7 +54,10 @@ class TimerNotificationManager(private val context: Context) {
     }
 
     private fun getPendingIntent(action: String): PendingIntent {
-        val intent = Intent(context, TimerReceiver::class.java).apply { this.action = action }
+        val intent = Intent().apply {
+            component = ComponentName(context, TimerReceiver::class.java)
+            this.action = action
+        }
         return PendingIntent.getBroadcast(
             context,
             action.hashCode(),

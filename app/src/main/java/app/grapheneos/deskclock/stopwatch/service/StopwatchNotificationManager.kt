@@ -2,6 +2,7 @@ package app.grapheneos.deskclock.stopwatch.service
 
 import android.app.Notification
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
@@ -75,7 +76,10 @@ class StopwatchNotificationManager(private val context: Context) {
     }
 
     private fun getPendingIntent(action: String): PendingIntent {
-        val intent = Intent(context, StopwatchReceiver::class.java).apply { this.action = action }
+        val intent = Intent().apply {
+            component = ComponentName(context, StopwatchReceiver::class.java)
+            this.action = action
+        }
         return PendingIntent.getBroadcast(
             context,
             action.hashCode(),
