@@ -4,6 +4,11 @@ A modern rewrite of the Android clock utility, following the **Material 3 Expres
 system. This project aims to replace the aging AOSP `com.android.deskclock` with a clean, stable,
 and privacy-focused alternative.
 
+#### Current issue disclaimer
+
+> [!IMPORTANT]  
+> AlarmPopUpScreen shows up much later than the ringtone and vibration triggers. (no fix yet)
+
 ## Features
 
 - **Alarms:** Full scheduling, custom ringtones, and vibration patterns. Uses a secure full-screen
