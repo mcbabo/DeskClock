@@ -5,13 +5,13 @@
     <string name="tab_timer">Timer</string>
     <string name="tab_stopwatch">Stoppuhr</string>
     <string name="reoccurring">Wiederholend</string>
-    <string name="name_of_alarm">Alarmname</string>
+    <string name="name_of_alarm">Weckername</string>
     <string name="alarm">Wecker</string>
     <string name="ringtone">Klingelton</string>
     <string name="vibrate">Vibrieren</string>
     <string name="dismiss">Ablehnen</string>
     <string name="ok">Ok</string>
-    <string name="alarm_n">Alarm (%1$s)</string>
+    <string name="alarm_n">Wecker (%1$s)</string>
     <string name="snooze">Snooze</string>
     <string name="n_minutes">%1$d Minuten</string>
     <string name="settings">Einstellungen</string>
@@ -70,4 +70,8 @@
     <string name="settings_custom_volume_desc">Benutzerdefinierte Weckerlautstärke</string>
     <string name="tip">Tipp</string>
     <string name="disabled">Deaktiviert</string>
+    <string name="settings_custom_volume_tip">Vor der Verwendung sicherstellen, dass die Lautstärke korrekt eingestellt ist.</string>
+    <string name="settings_light_mode">Hell</string>
+    <string name="settings_dark_mode">Dunkel</string>
+    <string name="settings_system_mode">System</string>
 </resources>

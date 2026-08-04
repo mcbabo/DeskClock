@@ -66,7 +66,7 @@ fun ThemeDrawer(
                         leadingContent = {
                             Icon(
                                 imageVector = themeMode.icon,
-                                contentDescription = themeMode.displayName
+                                contentDescription = stringResource(themeMode.displayNameRes)
                             )
                         },
                         trailingContent = {
@@ -77,7 +77,9 @@ fun ThemeDrawer(
                                 )
                             }
                         },
-                        content = { Text(themeMode.displayName) },
+                        content = {
+                            Text(text = stringResource(themeMode.displayNameRes))
+                        },
                     )
                 }
             }

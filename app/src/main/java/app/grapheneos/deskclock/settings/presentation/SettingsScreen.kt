@@ -49,7 +49,7 @@ import kotlin.math.roundToInt
 fun SettingsScreen(
     viewModel: SettingsViewModel = koinViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.uiState.collectAsState()
     val backStack = LocalNavBackStack.current
 
     SettingsContent(
@@ -109,28 +109,34 @@ fun SettingsContent(
                             onIntent(SettingsIntent.SetDynamicColors(newChecked))
                         },
                         leadingIcon = {
-                            Icon(imageVector = Icons.Outlined.ColorLens, contentDescription = null)
+                            Icon(
+                                imageVector = Icons.Outlined.ColorLens,
+                                contentDescription = stringResource(R.string.settings_dynamic_colors)
+                            )
                         }
                     )
                 }
 
-                item(onClick = { showThemeDialog = true }) {
+                item {
                     ValueGroupRow(
                         label = stringResource(R.string.setting_theme),
-                        value = state.settings.themeMode.displayName,
+                        value = stringResource(state.settings.themeMode.displayNameRes),
                         supportingContent = {
                             Text(text = stringResource(R.string.setting_theme_desc))
                         },
                         onClick = { showThemeDialog = true },
                         leadingIcon = {
-                            Icon(imageVector = Icons.Outlined.Colorize, contentDescription = null)
+                            Icon(
+                                imageVector = Icons.Outlined.Colorize,
+                                contentDescription = stringResource(R.string.setting_theme)
+                            )
                         }
                     )
                 }
             }
 
             ListGroup(title = stringResource(R.string.settings_alarm_and_timer)) {
-                item(onClick = { showSnoozeDialog = true }) {
+                item {
                     ValueGroupRow(
                         label = stringResource(R.string.settings_snooze_duration),
                         value = stringResource(
@@ -150,7 +156,7 @@ fun SettingsContent(
                     )
                 }
 
-                item(onClick = { showRingtoneDialog = true }) {
+                item {
                     ValueGroupRow(
                         label = stringResource(R.string.settings_alarm_sound),
                         value = state.settings.defaultRingtone.name,
@@ -202,7 +208,7 @@ fun SettingsContent(
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Outlined.Vibration,
-                                stringResource(R.string.settings_vibration)
+                                contentDescription = stringResource(R.string.settings_vibration)
                             )
                         }
                     )

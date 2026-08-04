@@ -61,7 +61,7 @@
     <string name="settings_snooze_duration">Default snooze duration</string>
     <string name="settings_snooze_duration_desc">Set the snooze duration for alarms</string>
     <string name="settings_alarm_sound">Alarm sound</string>
-    <string name="settings_alarm_sound_desc">Set the default sound for alarms and timers</string>
+    <string name="settings_alarm_sound_desc">Set default sound for alarms and timers</string>
     <string name="settings_vibration">Vibration</string>
     <string name="settings_vibration_desc">Default preference for alarms</string>
     <string name="lap">Lap</string>
@@ -72,4 +72,8 @@
     <string name="settings_custom_volume_desc">Custom ringtone volume</string>
     <string name="tip">Tip</string>
     <string name="disabled">Disabled</string>
+    <string name="settings_custom_volume_tip">Make sure you find the right volume before using it.</string>
+    <string name="settings_light_mode">Light</string>
+    <string name="settings_dark_mode">Dark</string>
+    <string name="settings_system_mode">System Default</string>
 </resources>
