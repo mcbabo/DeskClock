@@ -21,7 +21,14 @@ class RescheduleReceiver : BroadcastReceiver(), KoinComponent {
             val scope = CoroutineScope(Dispatchers.IO)
             scope.launch {
                 repository.getAllActiveInstances().forEach { instance ->
-                    controller.scheduleInstance(instance, instance.alarmId)
+                    val alarmWithInstance = repository.getAlarmByInstanceId(instance.id)
+                    if (alarmWithInstance != null) {
+                        controller.scheduleInstance(
+                            alarm = alarmWithInstance.alarm,
+                            instanceId = instance.id,
+                            triggerTime = instance.timeInMillis
+                        )
+                    }
                 }
             }
         }

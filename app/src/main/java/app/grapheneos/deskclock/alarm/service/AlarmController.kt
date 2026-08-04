@@ -8,13 +8,13 @@ import android.content.Intent
 import android.provider.Settings
 import android.util.Log
 import app.grapheneos.deskclock.MainActivity
-import app.grapheneos.deskclock.alarm.data.AlarmInstance
+import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.util.AlarmConstants
 
 class AlarmController(private val context: Context) {
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
-    fun scheduleInstance(instance: AlarmInstance, alarmId: Long) {
+    fun scheduleInstance(alarm: AlarmEntity, instanceId: Long, triggerTime: Long) {
         if (!alarmManager.canScheduleExactAlarms()) {
             val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -23,19 +23,28 @@ class AlarmController(private val context: Context) {
             return
         }
 
-        val operation = createReceiverPendingIntent(instance.id, alarmId)
-        val showIntent = createShowPendingIntent(alarmId)
-        val alarmInfo = AlarmManager.AlarmClockInfo(instance.timeInMillis, showIntent)
+        val operation = createReceiverPendingIntent(instanceId, alarm)
+        val showIntent = createShowPendingIntent(alarm.id)
+        val alarmInfo = AlarmManager.AlarmClockInfo(triggerTime, showIntent)
 
         try {
             alarmManager.setAlarmClock(alarmInfo, operation)
         } catch (e: SecurityException) {
-            Log.d("AlarmController", e.toString())
+            Log.e("AlarmController", "Failed to schedule exact alarm", e)
         }
     }
 
     fun cancelInstance(alarmId: Long) {
-        val operation = createReceiverPendingIntent(-1L, alarmId)
+        val intent = Intent().apply {
+            component = ComponentName(context, AlarmReceiver::class.java)
+            action = AlarmConstants.ACTION_FIRE_ALARM
+        }
+        val operation = PendingIntent.getBroadcast(
+            context,
+            alarmId.toInt(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
         alarmManager.cancel(operation)
         operation.cancel()
     }
@@ -53,15 +62,20 @@ class AlarmController(private val context: Context) {
         )
     }
 
-    private fun createReceiverPendingIntent(instanceId: Long, alarmId: Long): PendingIntent {
+    private fun createReceiverPendingIntent(instanceId: Long, alarm: AlarmEntity): PendingIntent {
         val intent = Intent().apply {
             component = ComponentName(context, AlarmReceiver::class.java)
             action = AlarmConstants.ACTION_FIRE_ALARM
             putExtra(AlarmConstants.EXTRA_INSTANCE_ID, instanceId)
+            putExtra(AlarmConstants.EXTRA_ALARM_LABEL, alarm.label)
+            putExtra(AlarmConstants.EXTRA_ALARM_HOUR, alarm.hour)
+            putExtra(AlarmConstants.EXTRA_ALARM_MINUTE, alarm.minute)
+            putExtra(AlarmConstants.EXTRA_ALARM_RINGTONE_URI, alarm.ringtoneUri)
+            putExtra(AlarmConstants.EXTRA_ALARM_VIBRATE, alarm.vibrate)
         }
         return PendingIntent.getBroadcast(
             context,
-            alarmId.toInt(),
+            alarm.id.toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

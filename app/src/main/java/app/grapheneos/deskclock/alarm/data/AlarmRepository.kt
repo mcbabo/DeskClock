@@ -77,7 +77,7 @@ class AlarmRepository(
         )
 
         val newInstanceId = alarmDao.insertInstance(snoozeInstance)
-        alarmController.scheduleInstance(snoozeInstance.copy(id = newInstanceId), alarm.id)
+        alarmController.scheduleInstance(alarm, newInstanceId, snoozeTimeInMillis)
     }
 
     private suspend fun scheduleInstance(alarm: AlarmEntity) {
@@ -91,7 +91,7 @@ class AlarmRepository(
         val instance = AlarmInstance(alarmId = alarm.id, timeInMillis = triggerTime, alarmState = 0)
         val instanceId = alarmDao.insertInstance(instance)
 
-        alarmController.scheduleInstance(instance.copy(id = instanceId), alarm.id)
+        alarmController.scheduleInstance(alarm, instanceId, triggerTime)
     }
 
     private suspend fun cancelInstanceByAlarmId(alarmId: Long) {

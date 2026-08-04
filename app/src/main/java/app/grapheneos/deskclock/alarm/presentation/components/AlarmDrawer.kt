@@ -41,6 +41,7 @@ import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.presentation.AlarmIntent
 import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.core.presentation.Layout
+import app.grapheneos.deskclock.core.presentation.components.DismissKeyboard
 import app.grapheneos.deskclock.core.presentation.components.groupitems.InlineEditableValueGroupRow
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
 import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGroupRow
@@ -68,13 +69,15 @@ fun AlarmDrawer(
         sheetState = sheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
     ) {
-        AlarmDrawerContent(
-            alarmWithInstance = alarmWithInstance,
-            ringtones = ringtones,
-            onDismissRequest = onDismissRequest,
-            onIntent = onIntent,
-            onDelete = onDelete
-        )
+        DismissKeyboard {
+            AlarmDrawerContent(
+                alarmWithInstance = alarmWithInstance,
+                ringtones = ringtones,
+                onDismissRequest = onDismissRequest,
+                onIntent = onIntent,
+                onDelete = onDelete
+            )
+        }
     }
 }
 

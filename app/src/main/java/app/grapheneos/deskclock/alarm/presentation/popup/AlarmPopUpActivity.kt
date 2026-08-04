@@ -76,6 +76,10 @@ class AlarmPopUpActivity : ComponentActivity(), KoinComponent {
 
     private fun handleAlarmIntent(intent: Intent) {
         val instanceId = intent.getLongExtra(AlarmConstants.EXTRA_INSTANCE_ID, -1L)
-        viewModel.handleIntent(AlarmPopUpIntent.Init(instanceId))
+        val label = intent.getStringExtra(AlarmConstants.EXTRA_ALARM_LABEL) ?: ""
+        val hour = intent.getIntExtra(AlarmConstants.EXTRA_ALARM_HOUR, -1)
+        val minute = intent.getIntExtra(AlarmConstants.EXTRA_ALARM_MINUTE, -1)
+
+        viewModel.handleIntent(AlarmPopUpIntent.Init(instanceId, label, hour, minute))
     }
 }

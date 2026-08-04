@@ -51,7 +51,6 @@ val coreModule = module {
     single { VibrationManager(get()) }
 
     viewModelOf(::MainActivityViewModel)
-    viewModelOf(::SettingsViewModel)
 }
 
 val settingsModule = module {

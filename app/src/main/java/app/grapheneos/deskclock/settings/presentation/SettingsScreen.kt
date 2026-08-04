@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Snooze
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -38,9 +39,11 @@ import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGr
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGroupRow
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.settings.presentation.components.RingtoneVolumeDrawer
 import app.grapheneos.deskclock.settings.presentation.components.SnoozeDrawer
 import app.grapheneos.deskclock.settings.presentation.components.ThemeDrawer
 import org.koin.androidx.compose.koinViewModel
+import kotlin.math.roundToInt
 
 @Composable
 fun SettingsScreen(
@@ -68,6 +71,7 @@ fun SettingsContent(
     val scrollBehavior = exitUntilCollapsedScrollBehavior()
     var showSnoozeDialog by remember { mutableStateOf(false) }
     var showRingtoneDialog by remember { mutableStateOf(false) }
+    var showRingtoneVolumeDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -164,6 +168,28 @@ fun SettingsContent(
                 }
 
                 item {
+                    val value = if (state.settings.useCustomRingtoneVolume) {
+                        (state.settings.ringtoneVolume * 100).roundToInt().toString() + "%"
+                    } else {
+                        stringResource(R.string.disabled)
+                    }
+                    ValueGroupRow(
+                        label = stringResource(R.string.settings_custom_volume),
+                        value = value,
+                        supportingContent = {
+                            Text(text = stringResource(R.string.settings_custom_volume_desc))
+                        },
+                        onClick = { showRingtoneVolumeDialog = true },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Tune,
+                                contentDescription = stringResource(R.string.settings_alarm_sound)
+                            )
+                        }
+                    )
+                }
+
+                item {
                     SwitchGroupRow(
                         label = stringResource(R.string.settings_vibration),
                         supportingContent = {
@@ -213,6 +239,21 @@ fun SettingsContent(
                 showRingtoneDialog = false
             }
         )
+    }
+
+    if (showRingtoneVolumeDialog) {
+        RingtoneVolumeDrawer(
+            customRingtoneVolumeEnabled = state.settings.useCustomRingtoneVolume,
+            currentVolume = state.settings.ringtoneVolume,
+            onChange = { enabled, volume ->
+                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                onIntent(SettingsIntent.SetCustomRingtoneVolumeEnabled(enabled))
+                onIntent(SettingsIntent.SetCustomRingtoneVolume(volume))
+                showRingtoneVolumeDialog = false
+            }
+        ) {
+            showRingtoneVolumeDialog = false
+        }
     }
 
     if (showThemeDialog) {

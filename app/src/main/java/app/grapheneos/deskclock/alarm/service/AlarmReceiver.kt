@@ -11,10 +11,20 @@ class AlarmReceiver : BroadcastReceiver(), KoinComponent {
         if (intent.action != AlarmConstants.ACTION_FIRE_ALARM) return
 
         val instanceId = intent.getLongExtra(AlarmConstants.EXTRA_INSTANCE_ID, -1L)
+        val label = intent.getStringExtra(AlarmConstants.EXTRA_ALARM_LABEL)
+        val hour = intent.getIntExtra(AlarmConstants.EXTRA_ALARM_HOUR, -1)
+        val minute = intent.getIntExtra(AlarmConstants.EXTRA_ALARM_MINUTE, -1)
+        val ringtoneUri = intent.getStringExtra(AlarmConstants.EXTRA_ALARM_RINGTONE_URI)
+        val vibrate = intent.getBooleanExtra(AlarmConstants.EXTRA_ALARM_VIBRATE, true)
 
         val serviceIntent = Intent(context, AlarmService::class.java).apply {
             setPackage(context.packageName)
             putExtra(AlarmConstants.EXTRA_INSTANCE_ID, instanceId)
+            putExtra(AlarmConstants.EXTRA_ALARM_LABEL, label)
+            putExtra(AlarmConstants.EXTRA_ALARM_HOUR, hour)
+            putExtra(AlarmConstants.EXTRA_ALARM_MINUTE, minute)
+            putExtra(AlarmConstants.EXTRA_ALARM_RINGTONE_URI, ringtoneUri)
+            putExtra(AlarmConstants.EXTRA_ALARM_VIBRATE, vibrate)
         }
 
         context.startForegroundService(serviceIntent)

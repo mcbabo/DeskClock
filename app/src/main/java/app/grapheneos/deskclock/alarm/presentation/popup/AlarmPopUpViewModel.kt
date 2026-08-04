@@ -2,7 +2,9 @@ package app.grapheneos.deskclock.alarm.presentation.popup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
+import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.util.AlarmConstants
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +30,22 @@ class AlarmPopUpViewModel(
         when (intent) {
             is AlarmPopUpIntent.Init -> {
                 currentInstanceId = intent.instanceId
+                if (intent.hour != -1 && intent.minute != -1) {
+                    val initialAlarm = AlarmEntity(
+                        id = -1, // Temporary
+                        hour = intent.hour,
+                        minute = intent.minute,
+                        daysOfWeek = 0,
+                        isEnabled = true,
+                        label = intent.label
+                    )
+                    _uiState.update {
+                        it.copy(
+                            alarmWithInstance = AlarmWithInstance(initialAlarm, null),
+                            isLoading = false
+                        )
+                    }
+                }
                 loadAlarmData()
             }
 
@@ -43,7 +61,11 @@ class AlarmPopUpViewModel(
         }
         viewModelScope.launch {
             val data = repository.getAlarmByInstanceId(currentInstanceId)
-            _uiState.update { it.copy(alarmWithInstance = data, isLoading = false) }
+            if (data != null) {
+                _uiState.update { it.copy(alarmWithInstance = data, isLoading = false) }
+            } else {
+                _uiState.update { it.copy(isLoading = false) }
+            }
         }
     }
 

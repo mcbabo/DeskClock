@@ -68,4 +68,8 @@
     <string name="stop">Stop</string>
     <string name="alarm_deleted">Alarm deleted</string>
     <string name="undo">Undo</string>
+    <string name="settings_custom_volume">Custom Volume</string>
+    <string name="settings_custom_volume_desc">Custom ringtone volume</string>
+    <string name="tip">Tip</string>
+    <string name="disabled">Disabled</string>
 </resources>

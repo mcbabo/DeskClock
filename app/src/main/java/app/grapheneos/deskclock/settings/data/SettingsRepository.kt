@@ -25,6 +25,18 @@ class SettingsRepository(
         dataStore.updateSettings { it.copy(defaultRingtone = ringtone) }
     }
 
+    suspend fun setCustomRingtoneVolumeEnabled(enabled: Boolean) {
+        dataStore.updateSettings {
+            it.copy(useCustomRingtoneVolume = enabled)
+        }
+    }
+
+    suspend fun setRingtoneVolume(volume: Float) {
+        dataStore.updateSettings {
+            it.copy(ringtoneVolume = volume)
+        }
+    }
+
     suspend fun setDefaultVibration(enabled: Boolean) {
         dataStore.updateSettings { it.copy(vibrate = enabled) }
     }

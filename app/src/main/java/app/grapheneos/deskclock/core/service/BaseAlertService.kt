@@ -30,8 +30,12 @@ abstract class BaseAlertService(private val tag: String) : Service(), KoinCompon
         )
     }
 
-    protected fun startAlert(ringtoneUri: String? = null, vibrate: Boolean = true) {
-        audioPlayer.playAlarm(ringtoneUri)
+    protected fun startAlert(
+        ringtoneUri: String? = null,
+        vibrate: Boolean = true,
+        ringtoneVolume: Float? = null
+    ) {
+        audioPlayer.playAlarm(ringtoneUri, ringtoneVolume = ringtoneVolume)
         if (vibrate) {
             vibrationManager.startAlarmVibration()
         }

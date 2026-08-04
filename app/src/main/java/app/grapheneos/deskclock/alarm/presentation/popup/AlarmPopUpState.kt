@@ -8,7 +8,12 @@ data class AlarmPopUpUiState(
 )
 
 sealed interface AlarmPopUpIntent {
-    data class Init(val instanceId: Long) : AlarmPopUpIntent
+    data class Init(
+        val instanceId: Long,
+        val label: String = "",
+        val hour: Int = -1,
+        val minute: Int = -1
+    ) : AlarmPopUpIntent
     object Snooze : AlarmPopUpIntent
     object Dismiss : AlarmPopUpIntent
 }

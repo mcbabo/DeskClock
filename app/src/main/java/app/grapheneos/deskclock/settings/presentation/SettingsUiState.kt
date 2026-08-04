@@ -22,5 +22,9 @@ sealed interface SettingsIntent {
 
     data class SetSnoozeTime(val minutes: Int) : SettingsIntent
     data class SetDefaultRingtone(val uri: String) : SettingsIntent
+
+    data class SetCustomRingtoneVolumeEnabled(val enabled: Boolean) : SettingsIntent
+    data class SetCustomRingtoneVolume(val volume: Float) : SettingsIntent
+
     data class SetDefaultVibration(val enabled: Boolean) : SettingsIntent
 }

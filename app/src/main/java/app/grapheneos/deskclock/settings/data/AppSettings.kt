@@ -19,6 +19,8 @@ data class AppSettings(
         "Cesium",
         "content://media/internal/audio/media/138?title=Cesium&canonical=1"
     ),
+    val useCustomRingtoneVolume: Boolean = false,
+    val ringtoneVolume: Float = 0.5F,
     val vibrate: Boolean = true,
 
     val stopwatchShowMilliseconds: Boolean = true,

@@ -58,6 +58,15 @@ class SettingsViewModel(
                     )
                 )
             }
+
+            is SettingsIntent.SetCustomRingtoneVolumeEnabled -> update {
+                repository.setCustomRingtoneVolumeEnabled(intent.enabled)
+            }
+
+            is SettingsIntent.SetCustomRingtoneVolume -> update {
+                repository.setRingtoneVolume(intent.volume)
+            }
+
             is SettingsIntent.SetDefaultVibration -> update { repository.setDefaultVibration(intent.enabled) }
         }
     }
