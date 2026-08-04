@@ -13,6 +13,7 @@ import app.grapheneos.deskclock.timer.data.TimerData
 import app.grapheneos.deskclock.timer.data.TimerRepository
 import app.grapheneos.deskclock.timer.presentation.popup.TimerPopUpActivity
 import app.grapheneos.deskclock.timer.util.TimerConstants
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -25,6 +26,7 @@ class TimerService : BaseAlertService(TimerConstants.PM_TAG) {
     private val notificationManager: TimerNotificationManager by inject()
 
     private var isSoundPlaying = false
+    private var observationJob: Job? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         observeTimer()
@@ -32,7 +34,8 @@ class TimerService : BaseAlertService(TimerConstants.PM_TAG) {
     }
 
     private fun observeTimer() {
-        serviceScope.launch {
+        if (observationJob != null) return
+        observationJob = serviceScope.launch {
             combine(repository.state, repository.remainingMillis) { state, remaining ->
                 state to (remaining / 1000)
             }

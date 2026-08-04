@@ -81,7 +81,7 @@ fun RingtonePickerDialogContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.ringtones)) },
+                title = { Text(text = stringResource(R.string.ringtones)) },
                 navigationIcon = {
                     IconButton(
                         onClick = onDismiss
@@ -93,7 +93,9 @@ fun RingtonePickerDialogContent(
                     }
                 },
                 actions = {
-                    TextButton(onClick = { onConfirm(selectedUri) }) { Text(stringResource(R.string.save)) }
+                    TextButton(onClick = { onConfirm(selectedUri) }) {
+                        Text(stringResource(R.string.save))
+                    }
                 }
             )
         }

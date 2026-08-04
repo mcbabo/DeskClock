@@ -80,17 +80,19 @@ fun DeskClockTheme(
 
 @Composable
 fun SystemBarsTheme(backgroundColor: Color = MaterialTheme.colorScheme.background) {
-    val activity = LocalActivity.current
-    val insetsController =
-        WindowCompat.getInsetsController(activity?.window!!, activity.window.decorView)
+    val activity = LocalActivity.current ?: return
+    val window = activity.window
+    val insetsController = remember(window) {
+        WindowCompat.getInsetsController(window, window.decorView)
+    }
     val isLightBackground = backgroundColor.luminance() > 0.5f
 
-    LaunchedEffect(backgroundColor) {
-        activity.window?.setBackgroundDrawable(
+    LaunchedEffect(backgroundColor, window, insetsController) {
+        window.setBackgroundDrawable(
             backgroundColor.toArgb().toDrawable()
         )
 
-        activity.window.isNavigationBarContrastEnforced = false
+        window.isNavigationBarContrastEnforced = false
 
         insetsController.isAppearanceLightStatusBars = isLightBackground
         insetsController.isAppearanceLightNavigationBars = isLightBackground

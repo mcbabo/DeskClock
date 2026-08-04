@@ -1,6 +1,7 @@
 package app.grapheneos.deskclock.core.permission
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,6 +16,7 @@ import androidx.core.net.toUri
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.presentation.PermissionUiState
 
+@SuppressLint("BatteryLife")
 fun buildPermissionList(
     context: Context,
     notificationLauncher: ActivityResultLauncher<String>,

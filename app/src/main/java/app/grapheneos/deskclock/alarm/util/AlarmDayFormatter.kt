@@ -27,10 +27,10 @@ object AlarmDayFormatter {
         val locale = context.resources.configuration.locales[0]
 
         return when (daysOfWeek) {
-            0 -> context.getString(R.string.one_time) // One time
-            127 -> context.getString(R.string.daily) // Daily
-            62 -> context.getString(R.string.mon_fri) // Mon(2) + Tue(4) + Wed(8) + Thu(16) + Fri(32)
-            65 -> context.getString(R.string.sat_sun) // Sun(1) + Sat(64)
+            0 -> context.getString(R.string.one_time)
+            AlarmConstants.BIT_ALL_DAYS -> context.getString(R.string.daily)
+            AlarmConstants.BIT_WEEKDAYS -> context.getString(R.string.mon_fri)
+            AlarmConstants.BIT_WEEKEND -> context.getString(R.string.sat_sun)
             else -> {
                 val selectedDays = mutableListOf<String>()
                 daysOrder.forEach { dayOfWeek ->

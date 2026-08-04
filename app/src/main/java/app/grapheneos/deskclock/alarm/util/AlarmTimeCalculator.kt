@@ -17,9 +17,9 @@ object AlarmTimeCalculator {
         }
 
         var nearest: ZonedDateTime? = null
-        for (i in 1..7) {
-            val day = DayOfWeek.of(i)
-            if ((daysOfWeekBitmask and (1 shl (day.value - 1))) != 0) {
+        for (day in DayOfWeek.entries) {
+            val shift = if (day == DayOfWeek.SUNDAY) 0 else day.value
+            if ((daysOfWeekBitmask and (1 shl shift)) != 0) {
                 var candidate = now.with(TemporalAdjusters.nextOrSame(day))
                     .with(LocalTime.of(hour, minute, 0, 0))
 

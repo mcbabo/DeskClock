@@ -1,15 +1,13 @@
 package app.grapheneos.deskclock.alarm.presentation
 
-import android.app.Application
-import android.media.RingtoneManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.core.audio.AudioPlayer
+import app.grapheneos.deskclock.core.ringtone.RingtoneRepository
 import app.grapheneos.deskclock.settings.data.AppSettings
 import app.grapheneos.deskclock.settings.data.SettingsRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,9 +19,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AlarmViewModel(
-    private val repository: AlarmRepository,
+    private val alarmRepository: AlarmRepository,
     private val settingsRepository: SettingsRepository,
-    private val application: Application,
+    private val ringtoneRepository: RingtoneRepository,
     private val audioPlayer: AudioPlayer
 ) : ViewModel() {
 
@@ -45,10 +43,10 @@ class AlarmViewModel(
     fun handleIntent(intent: AlarmIntent) {
         when (intent) {
             is AlarmIntent.LoadAlarms -> {} // Handled in init
-            is AlarmIntent.ToggleAlarm -> viewModelScope.launch { repository.toggleAlarm(intent.alarm) }
-            is AlarmIntent.UpdateAlarm -> viewModelScope.launch { repository.updateAlarm(intent.alarm) }
-            is AlarmIntent.DeleteAlarm -> viewModelScope.launch { repository.deleteAlarm(intent.alarm) }
-            is AlarmIntent.RestoreAlarm -> viewModelScope.launch { repository.addAlarm(intent.alarm) }
+            is AlarmIntent.ToggleAlarm -> viewModelScope.launch { alarmRepository.toggleAlarm(intent.alarm) }
+            is AlarmIntent.UpdateAlarm -> viewModelScope.launch { alarmRepository.updateAlarm(intent.alarm) }
+            is AlarmIntent.DeleteAlarm -> viewModelScope.launch { alarmRepository.deleteAlarm(intent.alarm) }
+            is AlarmIntent.RestoreAlarm -> viewModelScope.launch { alarmRepository.addAlarm(intent.alarm) }
             is AlarmIntent.AddAlarm -> viewModelScope.launch {
                 val settings = settings.value
 
@@ -64,7 +62,7 @@ class AlarmViewModel(
                     snoozeDurationMinutes = settings.snoozeDurationMinutes
                 )
 
-                repository.addAlarm(alarm)
+                alarmRepository.addAlarm(alarm)
             }
 
             is AlarmIntent.LoadSystemRingtones -> loadRingtones()
@@ -80,7 +78,7 @@ class AlarmViewModel(
 
     private fun observeAlarms() {
         _uiState.update { it.copy(isLoading = true) }
-        repository.allAlarms
+        alarmRepository.allAlarms
             .onEach { alarmList ->
                 _uiState.update { it.copy(alarms = alarmList, isLoading = false) }
             }
@@ -88,18 +86,9 @@ class AlarmViewModel(
     }
 
     private fun loadRingtones() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val manager = RingtoneManager(application).apply {
-                setType(RingtoneManager.TYPE_ALARM)
-            }
-            val cursor = manager.cursor ?: return@launch
-            val list = mutableListOf<RingtoneItem>()
-            while (cursor.moveToNext()) {
-                val title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX)
-                val uri = manager.getRingtoneUri(cursor.position).toString()
-                list.add(RingtoneItem(title, uri))
-            }
-            _uiState.update { it.copy(ringtones = list) }
+        viewModelScope.launch {
+            val ringtones = ringtoneRepository.getSystemAlarms()
+            _uiState.update { it.copy(ringtones = ringtones) }
         }
     }
 

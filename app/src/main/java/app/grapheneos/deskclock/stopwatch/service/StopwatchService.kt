@@ -10,6 +10,7 @@ import app.grapheneos.deskclock.core.notification.NotificationConstants
 import app.grapheneos.deskclock.core.service.BaseAlertService
 import app.grapheneos.deskclock.stopwatch.data.StopwatchRepository
 import app.grapheneos.deskclock.stopwatch.util.StopwatchConstants
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -18,6 +19,7 @@ import org.koin.core.component.inject
 class StopwatchService : BaseAlertService(StopwatchConstants.PM_TAG) {
     private val repository: StopwatchRepository by inject()
     private val notificationManager: StopwatchNotificationManager by inject()
+    private var observationJob: Job? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         observeStopwatch()
@@ -25,7 +27,8 @@ class StopwatchService : BaseAlertService(StopwatchConstants.PM_TAG) {
     }
 
     private fun observeStopwatch() {
-        serviceScope.launch {
+        if (observationJob != null) return
+        observationJob = serviceScope.launch {
             combine(repository.state, repository.elapsedMillis) { state, elapsed ->
                 state to (elapsed / 1000)
             }

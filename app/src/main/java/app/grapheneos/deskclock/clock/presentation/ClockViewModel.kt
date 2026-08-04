@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.clock.data.ClockRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.ZoneId
@@ -22,6 +22,16 @@ class ClockViewModel(private val repository: ClockRepository) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
     private val _isSearchActive = MutableStateFlow(false)
+    private val _allAvailableZones = MutableStateFlow<List<ZoneId>>(emptyList())
+
+    init {
+        viewModelScope.launch(Dispatchers.Default) {
+            val zones = ZoneId.getAvailableZoneIds()
+                .map { ZoneId.of(it) }
+                .sortedBy { it.id.substringAfter('/') }
+            _allAvailableZones.value = zones
+        }
+    }
 
     val timeUiState: StateFlow<TimeUiState> = flow {
         while (true) {
@@ -36,31 +46,27 @@ class ClockViewModel(private val repository: ClockRepository) : ViewModel() {
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TimeUiState())
 
-    private val allAvailableZones = ZoneId.getAvailableZoneIds()
-        .map { ZoneId.of(it) }
-        .sortedBy { it.id.substringAfter('/') }
-
-    private val filteredZonesFlow = _searchQuery
-        .map { query ->
-            val filtered = if (query.isBlank()) {
-                allAvailableZones
-            } else {
-                allAvailableZones.filter {
-                    it.id.contains(query, ignoreCase = true) ||
-                        it.id.replace('_', ' ').contains(query, ignoreCase = true)
-                }
+    private val filteredZonesFlow = combine(_searchQuery, _allAvailableZones) { query, allZones ->
+        val filtered = if (query.isBlank()) {
+            allZones
+        } else {
+            allZones.filter {
+                it.id.contains(query, ignoreCase = true) ||
+                    it.id.replace('_', ' ').contains(query, ignoreCase = true)
             }
-
-            filtered.groupBy { it.id.substringAfter('/').first().uppercaseChar() }
-                .toSortedMap()
         }
+
+        filtered.groupBy { it.id.substringAfter('/').first().uppercaseChar() }
+            .toSortedMap()
+    }
 
     val uiState: StateFlow<ClockUiState> = combine(
         repository.getSelectedClocks(),
         _searchQuery,
         _isSearchActive,
-        filteredZonesFlow
-    ) { selectedZones, query, isSearch, filtered ->
+        filteredZonesFlow,
+        timeUiState
+    ) { selectedZones, query, isSearch, filtered, _ ->
         val now = ZonedDateTime.now()
         ClockUiState(
             zoneClocks = selectedZones.map { formatToClockUiModel(now, it.zoneId) },
