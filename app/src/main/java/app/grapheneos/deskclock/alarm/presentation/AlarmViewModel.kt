@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class AlarmViewModel(
     private val alarmRepository: AlarmRepository,
-    private val settingsRepository: SettingsRepository,
+    settingsRepository: SettingsRepository,
     private val ringtoneRepository: RingtoneRepository,
     private val audioPlayer: AudioPlayer
 ) : ViewModel() {

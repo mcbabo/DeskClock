@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 class TimerViewModel(
-    private val repository: TimerRepository
+    private val timerRepository: TimerRepository
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<TimerUiState> = combine(
-        repository.state,
-        repository.remainingMillis
+        timerRepository.state,
+        timerRepository.remainingMillis
     ) { data, remaining ->
         TimerUiState(
             remainingTime = remaining,
@@ -35,11 +35,11 @@ class TimerViewModel(
 
     fun handleIntent(intent: TimerIntent) {
         when (intent) {
-            is TimerIntent.EnterDigit -> repository.enterDigit(intent.digit)
-            TimerIntent.Backspace -> repository.backspace()
-            TimerIntent.Start -> repository.start()
-            TimerIntent.TogglePauseResume -> repository.togglePauseResume()
-            TimerIntent.Reset -> repository.reset()
+            is TimerIntent.EnterDigit -> timerRepository.enterDigit(intent.digit)
+            TimerIntent.Backspace -> timerRepository.backspace()
+            TimerIntent.Start -> timerRepository.start()
+            TimerIntent.TogglePauseResume -> timerRepository.togglePauseResume()
+            TimerIntent.Reset -> timerRepository.reset()
         }
     }
 }

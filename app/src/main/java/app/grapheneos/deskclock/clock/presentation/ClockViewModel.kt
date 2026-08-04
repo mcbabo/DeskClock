@@ -18,7 +18,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration.Companion.seconds
 
-class ClockViewModel(private val repository: ClockRepository) : ViewModel() {
+class ClockViewModel(private val clockRepository: ClockRepository) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
     private val _isSearchActive = MutableStateFlow(false)
@@ -61,7 +61,7 @@ class ClockViewModel(private val repository: ClockRepository) : ViewModel() {
     }
 
     val uiState: StateFlow<ClockUiState> = combine(
-        repository.getSelectedClocks(),
+        clockRepository.getSelectedClocks(),
         _searchQuery,
         _isSearchActive,
         filteredZonesFlow,
@@ -81,12 +81,12 @@ class ClockViewModel(private val repository: ClockRepository) : ViewModel() {
             is ClockIntent.UpdateSearchQuery -> _searchQuery.value = intent.query
             is ClockIntent.ToggleSearch -> _isSearchActive.value = intent.isActive
             is ClockIntent.AddTimeZone -> viewModelScope.launch {
-                repository.addZone(intent.zoneId)
+                clockRepository.addZone(intent.zoneId)
                 handleIntent(ClockIntent.ToggleSearch(false))
             }
 
             is ClockIntent.RemoveTimeZone -> viewModelScope.launch {
-                repository.removeZone(intent.zoneId)
+                clockRepository.removeZone(intent.zoneId)
             }
         }
     }

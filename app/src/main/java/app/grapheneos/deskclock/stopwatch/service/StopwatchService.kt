@@ -14,10 +14,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 
 class StopwatchService : BaseAlertService(StopwatchConstants.PM_TAG) {
-    private val repository: StopwatchRepository by inject()
+    private val stopwatchRepository: StopwatchRepository by inject()
     private val notificationManager: StopwatchNotificationManager by inject()
     private var observationJob: Job? = null
 
@@ -29,7 +29,7 @@ class StopwatchService : BaseAlertService(StopwatchConstants.PM_TAG) {
     private fun observeStopwatch() {
         if (observationJob != null) return
         observationJob = serviceScope.launch {
-            combine(repository.state, repository.elapsedMillis) { state, elapsed ->
+            combine(stopwatchRepository.state, stopwatchRepository.elapsedMillis) { state, elapsed ->
                 state to (elapsed / 1000)
             }
                 .distinctUntilChanged()
@@ -45,7 +45,7 @@ class StopwatchService : BaseAlertService(StopwatchConstants.PM_TAG) {
     }
 
     private fun showNotification() {
-        val state = repository.state.value
+        val state = stopwatchRepository.state.value
         val notification = notificationManager.buildNotification(state)
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)

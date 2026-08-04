@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class StopwatchViewModel(
-    private val repository: StopwatchRepository
+    private val stopwatchRepository: StopwatchRepository
 ) : ViewModel() {
 
-    val uiState: StateFlow<StopwatchUiState> = repository.state
+    val uiState: StateFlow<StopwatchUiState> = stopwatchRepository.state
         .map { d ->
             StopwatchUiState(
                 isRunning = d.isRunning,
@@ -27,14 +27,14 @@ class StopwatchViewModel(
             initialValue = StopwatchUiState()
         )
 
-    val elapsedMillis: Flow<Long> = repository.elapsedMillis
+    val elapsedMillis: Flow<Long> = stopwatchRepository.elapsedMillis
 
     fun handleIntent(intent: StopwatchIntent) {
         when (intent) {
-            StopwatchIntent.StartOrResume -> repository.start()
-            StopwatchIntent.Pause -> repository.pause()
-            StopwatchIntent.Reset -> repository.reset()
-            StopwatchIntent.Lap -> repository.lap()
+            StopwatchIntent.StartOrResume -> stopwatchRepository.start()
+            StopwatchIntent.Pause -> stopwatchRepository.pause()
+            StopwatchIntent.Reset -> stopwatchRepository.reset()
+            StopwatchIntent.Lap -> stopwatchRepository.lap()
         }
     }
 }

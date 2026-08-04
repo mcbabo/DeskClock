@@ -12,10 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 
-abstract class BaseAlertService(private val tag: String) : Service(), KoinComponent {
+abstract class BaseAlertService(private val tag: String) : Service() {
     protected var wakeLock: PowerManager.WakeLock? = null
     protected val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     protected val audioPlayer: AudioPlayer by inject()

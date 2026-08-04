@@ -10,10 +10,10 @@ import app.grapheneos.deskclock.core.service.BaseAlertService
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 
 class AlarmService : BaseAlertService(AlarmConstants.PM_TAG) {
-    private val repository: AlarmRepository by inject()
+    private val alarmRepository: AlarmRepository by inject()
     private val settingsRepository: SettingsRepository by inject()
     private val notificationManager: AlarmNotificationManager by inject()
 
@@ -51,7 +51,7 @@ class AlarmService : BaseAlertService(AlarmConstants.PM_TAG) {
                 null
             }
 
-            val alarm = repository.getAlarmByInstanceId(instanceId)
+            val alarm = alarmRepository.getAlarmByInstanceId(instanceId)
             val dbRingtone = alarm?.alarm?.ringtoneUri
             val dbVibrate = alarm?.alarm?.vibrate ?: true
 

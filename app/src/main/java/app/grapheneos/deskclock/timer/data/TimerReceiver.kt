@@ -9,12 +9,12 @@ import org.koin.core.component.inject
 
 class TimerReceiver : BroadcastReceiver(), KoinComponent {
 
-    private val repository: TimerRepository by inject()
+    private val timerRepository: TimerRepository by inject()
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            TimerConstants.ACTION_PAUSE_RESUME -> repository.togglePauseResume()
-            TimerConstants.ACTION_RESET -> repository.reset()
+            TimerConstants.ACTION_PAUSE_RESUME -> timerRepository.togglePauseResume()
+            TimerConstants.ACTION_RESET -> timerRepository.reset()
         }
     }
 }

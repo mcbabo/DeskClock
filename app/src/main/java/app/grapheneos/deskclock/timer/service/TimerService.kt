@@ -18,10 +18,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 
 class TimerService : BaseAlertService(TimerConstants.PM_TAG) {
-    private val repository: TimerRepository by inject()
+    private val timerRepository: TimerRepository by inject()
     private val settingsRepository: SettingsRepository by inject()
     private val notificationManager: TimerNotificationManager by inject()
 
@@ -36,7 +36,7 @@ class TimerService : BaseAlertService(TimerConstants.PM_TAG) {
     private fun observeTimer() {
         if (observationJob != null) return
         observationJob = serviceScope.launch {
-            combine(repository.state, repository.remainingMillis) { state, remaining ->
+            combine(timerRepository.state, timerRepository.remainingMillis) { state, remaining ->
                 state to (remaining / 1000)
             }
                 .distinctUntilChanged()

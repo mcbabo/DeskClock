@@ -6,20 +6,32 @@ import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.util.AlarmConstants
+import app.grapheneos.deskclock.settings.data.AppSettings
+import app.grapheneos.deskclock.settings.data.SettingsRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AlarmPopUpViewModel(
-    private val repository: AlarmRepository
+    private val alarmRepository: AlarmRepository,
+    settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AlarmPopUpUiState())
     val uiState: StateFlow<AlarmPopUpUiState> = _uiState.asStateFlow()
+
+    val settings: StateFlow<AppSettings> = settingsRepository.settings
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = AppSettings()
+        )
 
     private val _effect = Channel<AlarmPopUpEffect>(Channel.BUFFERED)
     val effect = _effect.receiveAsFlow()
@@ -60,7 +72,7 @@ class AlarmPopUpViewModel(
             return
         }
         viewModelScope.launch {
-            val data = repository.getAlarmByInstanceId(currentInstanceId)
+            val data = alarmRepository.getAlarmByInstanceId(currentInstanceId)
             if (data != null) {
                 _uiState.update { it.copy(alarmWithInstance = data, isLoading = false) }
             } else {
@@ -72,7 +84,7 @@ class AlarmPopUpViewModel(
     private fun dismissAlarm() {
         viewModelScope.launch {
             if (currentInstanceId != -1L) {
-                repository.dismissAlarm(currentInstanceId)
+                alarmRepository.dismissAlarm(currentInstanceId)
             }
             _effect.send(AlarmPopUpEffect.FinishAndStopService)
         }
@@ -81,7 +93,7 @@ class AlarmPopUpViewModel(
     private fun snoozeAlarm() {
         viewModelScope.launch {
             if (currentInstanceId != -1L) {
-                repository.snoozeAlarm(
+                alarmRepository.snoozeAlarm(
                     currentInstanceId,
                     snoozeMinutes = AlarmConstants.DEFAULT_SNOOZE_TIME
                 )

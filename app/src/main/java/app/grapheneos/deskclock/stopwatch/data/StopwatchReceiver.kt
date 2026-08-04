@@ -8,23 +8,23 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class StopwatchReceiver : BroadcastReceiver(), KoinComponent {
-    private val repository: StopwatchRepository by inject()
+    private val stopwatchRepository: StopwatchRepository by inject()
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             StopwatchConstants.ACTION_START_PAUSE -> {
-                if (repository.state.value.isRunning) {
-                    repository.pause()
+                if (stopwatchRepository.state.value.isRunning) {
+                    stopwatchRepository.pause()
                 } else {
-                    repository.start()
+                    stopwatchRepository.start()
                 }
             }
 
             StopwatchConstants.ACTION_LAP_RESET -> {
-                if (repository.state.value.isRunning) {
-                    repository.lap()
+                if (stopwatchRepository.state.value.isRunning) {
+                    stopwatchRepository.lap()
                 } else {
-                    repository.reset()
+                    stopwatchRepository.reset()
                 }
             }
         }

@@ -11,7 +11,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class RescheduleReceiver : BroadcastReceiver(), KoinComponent {
-    private val repository: AlarmRepository by inject()
+    private val alarmRepository: AlarmRepository by inject()
     private val controller: AlarmController by inject()
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -20,8 +20,8 @@ class RescheduleReceiver : BroadcastReceiver(), KoinComponent {
         ) {
             val scope = CoroutineScope(Dispatchers.IO)
             scope.launch {
-                repository.getAllActiveInstances().forEach { instance ->
-                    val alarmWithInstance = repository.getAlarmByInstanceId(instance.id)
+                alarmRepository.getAllActiveInstances().forEach { instance ->
+                    val alarmWithInstance = alarmRepository.getAlarmByInstanceId(instance.id)
                     if (alarmWithInstance != null) {
                         controller.scheduleInstance(
                             alarm = alarmWithInstance.alarm,
