@@ -7,7 +7,9 @@ and privacy-focused alternative.
 #### Current issue disclaimer
 
 > [!IMPORTANT]  
-> AlarmPopUpScreen shows up much later than the ringtone and vibration triggers. (no fix yet)
+> AlarmPopUpScreen showed up much later than the ringtone and vibration triggers. (should be fixed
+> by
+> now)
 
 ## Features
 
