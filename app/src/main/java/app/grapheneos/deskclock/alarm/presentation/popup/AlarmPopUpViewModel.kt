@@ -6,13 +6,15 @@ import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
 import app.grapheneos.deskclock.alarm.presentation.toUiModel
 import app.grapheneos.deskclock.alarm.util.AlarmConstants
-import app.grapheneos.deskclock.settings.data.AppSettings
 import app.grapheneos.deskclock.settings.data.SettingsRepository
+import app.grapheneos.deskclock.settings.presentation.AppSettingsUiModel
+import app.grapheneos.deskclock.settings.presentation.toUiModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -26,11 +28,12 @@ class AlarmPopUpViewModel(
     private val _uiState = MutableStateFlow(AlarmPopUpUiState())
     val uiState: StateFlow<AlarmPopUpUiState> = _uiState.asStateFlow()
 
-    val settings: StateFlow<AppSettings> = settingsRepository.settings
+    val settings: StateFlow<AppSettingsUiModel?> = settingsRepository.settings
+        .map { it.toUiModel() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = AppSettings()
+            initialValue = null
         )
 
     private val _effect = Channel<AlarmPopUpEffect>(Channel.BUFFERED)

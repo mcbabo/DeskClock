@@ -38,25 +38,27 @@ class AlarmPopUpActivity : ComponentActivity() {
         setContent {
             val settings by viewModel.settings.collectAsStateWithLifecycle()
 
-            val isDarkTheme =
-                when (settings.themeMode) {
-                    ThemeMode.LIGHT -> false
-                    ThemeMode.DARK -> true
-                    ThemeMode.SYSTEM -> isSystemInDarkTheme()
+            if (settings != null) {
+                val isDarkTheme =
+                    when (settings!!.themeMode) {
+                        ThemeMode.LIGHT -> false
+                        ThemeMode.DARK -> true
+                        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                    }
+
+                DeskClockTheme(
+                    darkTheme = isDarkTheme,
+                    dynamicColor = settings!!.dynamicColors
+                ) {
+                    SystemBarsTheme()
+
+                    val uiState by viewModel.uiState.collectAsState()
+
+                    AlarmPopUpScreen(
+                        uiState = uiState,
+                        onIntent = { action -> viewModel.handleIntent(action) }
+                    )
                 }
-
-            DeskClockTheme(
-                darkTheme = isDarkTheme,
-                dynamicColor = settings.dynamicColors
-            ) {
-                SystemBarsTheme()
-
-                val uiState by viewModel.uiState.collectAsState()
-
-                AlarmPopUpScreen(
-                    uiState = uiState,
-                    onIntent = { action -> viewModel.handleIntent(action) }
-                )
             }
         }
     }

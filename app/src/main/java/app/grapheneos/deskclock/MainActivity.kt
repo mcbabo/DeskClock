@@ -28,19 +28,21 @@ class MainActivity : ComponentActivity() {
             val settings by viewModel.settings.collectAsStateWithLifecycle()
             val backStack = rememberNavBackStack(Route.Main)
 
-            val isDarkTheme =
-                when (settings.themeMode) {
-                    ThemeMode.LIGHT -> false
-                    ThemeMode.DARK -> true
-                    ThemeMode.SYSTEM -> isSystemInDarkTheme()
-                }
+            if (settings != null) {
+                val isDarkTheme =
+                    when (settings!!.themeMode) {
+                        ThemeMode.LIGHT -> false
+                        ThemeMode.DARK -> true
+                        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                    }
 
-            DeskClockTheme(
-                darkTheme = isDarkTheme,
-                dynamicColor = settings.dynamicColors
-            ) {
-                SystemBarsTheme()
-                NavigationRoot(backStack)
+                DeskClockTheme(
+                    darkTheme = isDarkTheme,
+                    dynamicColor = settings!!.dynamicColors
+                ) {
+                    SystemBarsTheme()
+                    NavigationRoot(backStack)
+                }
             }
         }
     }

@@ -2,13 +2,15 @@ package app.grapheneos.deskclock.timer.presentation.popup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.grapheneos.deskclock.settings.data.AppSettings
 import app.grapheneos.deskclock.settings.data.SettingsRepository
+import app.grapheneos.deskclock.settings.presentation.AppSettingsUiModel
+import app.grapheneos.deskclock.settings.presentation.toUiModel
 import app.grapheneos.deskclock.timer.data.TimerRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -28,11 +30,12 @@ class TimerPopUpViewModel(
         initialValue = TimerPopUpUiState()
     )
 
-    val settings: StateFlow<AppSettings> = settingsRepository.settings
+    val settings: StateFlow<AppSettingsUiModel?> = settingsRepository.settings
+        .map { it.toUiModel() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = AppSettings()
+            initialValue = null
         )
 
     private val _effect = Channel<TimerPopUpEffect>(Channel.BUFFERED)

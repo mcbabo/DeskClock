@@ -6,13 +6,14 @@ import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.core.audio.AudioPlayer
 import app.grapheneos.deskclock.core.ringtone.RingtoneRepository
-import app.grapheneos.deskclock.settings.data.AppSettings
 import app.grapheneos.deskclock.settings.data.SettingsRepository
+import app.grapheneos.deskclock.settings.presentation.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -29,10 +30,11 @@ class AlarmViewModel(
     val uiState: StateFlow<AlarmUiState> = _uiState.asStateFlow()
 
     private val settings = settingsRepository.settings
+        .map { it.toUiModel() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = AppSettings()
+            initialValue = null
         )
 
     init {
@@ -56,7 +58,7 @@ class AlarmViewModel(
                 alarmRepository.addAlarm(intent.alarm.toEntity())
             }
             is AlarmIntent.AddAlarm -> viewModelScope.launch {
-                val settings = settings.value
+                val currentSettings = settings.value ?: return@launch
 
                 val alarm = AlarmEntity(
                     hour = intent.hour,
@@ -65,9 +67,9 @@ class AlarmViewModel(
                     isEnabled = true,
                     deleteAfterUse = intent.deleteAfterUse,
                     label = intent.label,
-                    ringtoneUri = settings.defaultRingtone.uri,
-                    vibrate = settings.vibrate,
-                    snoozeDurationMinutes = settings.snoozeDurationMinutes
+                    ringtoneUri = currentSettings.defaultRingtone.uri,
+                    vibrate = currentSettings.vibrate,
+                    snoozeDurationMinutes = currentSettings.snoozeDurationMinutes
                 )
 
                 alarmRepository.addAlarm(alarm)
