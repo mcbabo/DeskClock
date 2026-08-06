@@ -1,9 +1,11 @@
 package app.grapheneos.deskclock.alarm.presentation.popup
 
-import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
+import androidx.compose.runtime.Immutable
+import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
 
+@Immutable
 data class AlarmPopUpUiState(
-    val alarmWithInstance: AlarmWithInstance? = null,
+    val alarm: AlarmUiModel? = null,
     val isLoading: Boolean = true
 )
 
@@ -14,10 +16,10 @@ sealed interface AlarmPopUpIntent {
         val hour: Int = -1,
         val minute: Int = -1
     ) : AlarmPopUpIntent
-    object Snooze : AlarmPopUpIntent
-    object Dismiss : AlarmPopUpIntent
+    data object Snooze : AlarmPopUpIntent
+    data object Dismiss : AlarmPopUpIntent
 }
 
 sealed interface AlarmPopUpEffect {
-    object FinishAndStopService : AlarmPopUpEffect
+    data object FinishAndStopService : AlarmPopUpEffect
 }
