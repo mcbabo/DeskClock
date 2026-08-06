@@ -1,12 +1,15 @@
 package app.grapheneos.deskclock.clock.presentation
 
+import androidx.compose.runtime.Immutable
 import java.time.ZoneId
 
+@Immutable
 data class TimeUiState(
     val localTime: String = "--:--:--",
     val localDate: String = ""
 )
 
+@Immutable
 data class ClockUiState(
     val zoneClocks: List<ClockUiModel> = emptyList(),
     val searchQuery: String = "",
@@ -14,6 +17,7 @@ data class ClockUiState(
     val filteredZones: Map<Char, List<ZoneId>> = emptyMap()
 )
 
+@Immutable
 data class ClockUiModel(
     val zoneId: ZoneId,
     val cityName: String,

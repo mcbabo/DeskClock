@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import app.grapheneos.deskclock.R
+import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.alarm.presentation.components.RingtonePickerDialog
 import app.grapheneos.deskclock.core.navigation.LocalNavBackStack
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
@@ -39,6 +40,7 @@ import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGr
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGroupRow
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.settings.data.ThemeMode
 import app.grapheneos.deskclock.settings.presentation.components.RingtoneVolumeDrawer
 import app.grapheneos.deskclock.settings.presentation.components.SnoozeDrawer
 import app.grapheneos.deskclock.settings.presentation.components.ThemeDrawer
@@ -74,6 +76,8 @@ fun SettingsContent(
     var showRingtoneVolumeDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
 
+    val settings = state.settings ?: return
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -104,7 +108,7 @@ fun SettingsContent(
                         supportingContent = {
                             Text(text = stringResource(R.string.settings_dynamic_colors_desc))
                         },
-                        checked = state.settings.dynamicColors,
+                        checked = settings.dynamicColors,
                         onCheckedChange = { newChecked ->
                             onIntent(SettingsIntent.SetDynamicColors(newChecked))
                         },
@@ -120,7 +124,7 @@ fun SettingsContent(
                 item {
                     ValueGroupRow(
                         label = stringResource(R.string.setting_theme),
-                        value = stringResource(state.settings.themeMode.displayNameRes),
+                        value = stringResource(settings.themeMode.displayNameRes),
                         supportingContent = {
                             Text(text = stringResource(R.string.setting_theme_desc))
                         },
@@ -141,7 +145,7 @@ fun SettingsContent(
                         label = stringResource(R.string.settings_snooze_duration),
                         value = stringResource(
                             R.string.n_minutes,
-                            state.settings.snoozeDurationMinutes
+                            settings.snoozeDurationMinutes
                         ),
                         supportingContent = {
                             Text(text = stringResource(R.string.settings_snooze_duration_desc))
@@ -159,7 +163,7 @@ fun SettingsContent(
                 item {
                     ValueGroupRow(
                         label = stringResource(R.string.settings_alarm_sound),
-                        value = state.settings.defaultRingtone.name,
+                        value = settings.defaultRingtone.name,
                         supportingContent = {
                             Text(text = stringResource(R.string.settings_alarm_sound_desc))
                         },
@@ -174,8 +178,8 @@ fun SettingsContent(
                 }
 
                 item {
-                    val value = if (state.settings.useCustomRingtoneVolume) {
-                        (state.settings.ringtoneVolume * 100).roundToInt().toString() + "%"
+                    val value = if (settings.useCustomRingtoneVolume) {
+                        (settings.ringtoneVolume * 100).roundToInt().toString() + "%"
                     } else {
                         stringResource(R.string.disabled)
                     }
@@ -201,7 +205,7 @@ fun SettingsContent(
                         supportingContent = {
                             Text(text = stringResource(R.string.settings_vibration_desc))
                         },
-                        checked = state.settings.vibrate,
+                        checked = settings.vibrate,
                         onCheckedChange = { newChecked ->
                             onIntent(SettingsIntent.SetDefaultVibration(newChecked))
                         },
@@ -219,7 +223,7 @@ fun SettingsContent(
 
     if (showSnoozeDialog) {
         SnoozeDrawer(
-            state.settings.snoozeDurationMinutes,
+            settings.snoozeDurationMinutes,
             onConfirm = {
                 onIntent(SettingsIntent.SetSnoozeTime(it))
                 view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
@@ -233,7 +237,7 @@ fun SettingsContent(
     if (showRingtoneDialog) {
         RingtonePickerDialog(
             ringtones = state.ringtones,
-            initialUri = state.settings.defaultRingtone.uri,
+            initialUri = settings.defaultRingtone.uri,
             onPlayPreview = { onIntent(SettingsIntent.PlayPreview(it)) },
             onStopPreview = { onIntent(SettingsIntent.StopPreview) },
             onDismiss = {
@@ -249,8 +253,8 @@ fun SettingsContent(
 
     if (showRingtoneVolumeDialog) {
         RingtoneVolumeDrawer(
-            customRingtoneVolumeEnabled = state.settings.useCustomRingtoneVolume,
-            currentVolume = state.settings.ringtoneVolume,
+            customRingtoneVolumeEnabled = settings.useCustomRingtoneVolume,
+            currentVolume = settings.ringtoneVolume,
             onChange = { enabled, volume ->
                 view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
                 onIntent(SettingsIntent.SetCustomRingtoneVolumeEnabled(enabled))
@@ -264,7 +268,7 @@ fun SettingsContent(
 
     if (showThemeDialog) {
         ThemeDrawer(
-            state.settings.themeMode,
+            settings.themeMode,
             onThemeChange = {
                 onIntent(SettingsIntent.UpdateTheme(it))
                 view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
@@ -280,7 +284,18 @@ fun SettingsContent(
 fun SettingsScreenPreview() {
     DeskClockTheme {
         SettingsContent(
-            state = SettingsUiState(),
+            state = SettingsUiState(
+                settings = AppSettingsUiModel(
+                    themeMode = ThemeMode.SYSTEM,
+                    dynamicColors = true,
+                    snoozeDurationMinutes = 10,
+                    defaultRingtone = RingtoneItem("Cesium", ""),
+                    useCustomRingtoneVolume = false,
+                    ringtoneVolume = 0.5f,
+                    vibrate = true,
+                    stopwatchShowMilliseconds = true
+                )
+            ),
             onIntent = {},
             onBack = {}
         )

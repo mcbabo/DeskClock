@@ -1,11 +1,13 @@
 package app.grapheneos.deskclock.alarm.util
 
 import android.content.Context
+import androidx.compose.runtime.Immutable
 import app.grapheneos.deskclock.R
 import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.Locale
 
+@Immutable
 data class DayChipState(
     val label: String,
     val shift: Int,

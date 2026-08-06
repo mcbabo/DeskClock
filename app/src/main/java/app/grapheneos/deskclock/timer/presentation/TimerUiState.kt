@@ -1,5 +1,8 @@
 package app.grapheneos.deskclock.timer.presentation
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class TimerUiState(
     val remainingTime: Long = 0L,
     val totalTime: Long = 0L,

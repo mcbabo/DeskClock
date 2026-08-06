@@ -43,10 +43,18 @@ class AlarmViewModel(
     fun handleIntent(intent: AlarmIntent) {
         when (intent) {
             is AlarmIntent.LoadAlarms -> {} // Handled in init
-            is AlarmIntent.ToggleAlarm -> viewModelScope.launch { alarmRepository.toggleAlarm(intent.alarm) }
-            is AlarmIntent.UpdateAlarm -> viewModelScope.launch { alarmRepository.updateAlarm(intent.alarm) }
-            is AlarmIntent.DeleteAlarm -> viewModelScope.launch { alarmRepository.deleteAlarm(intent.alarm) }
-            is AlarmIntent.RestoreAlarm -> viewModelScope.launch { alarmRepository.addAlarm(intent.alarm) }
+            is AlarmIntent.ToggleAlarm -> viewModelScope.launch {
+                alarmRepository.toggleAlarm(intent.alarm.toEntity())
+            }
+            is AlarmIntent.UpdateAlarm -> viewModelScope.launch {
+                alarmRepository.updateAlarm(intent.alarm.toEntity())
+            }
+            is AlarmIntent.DeleteAlarm -> viewModelScope.launch {
+                alarmRepository.deleteAlarm(intent.alarm.toEntity())
+            }
+            is AlarmIntent.RestoreAlarm -> viewModelScope.launch {
+                alarmRepository.addAlarm(intent.alarm.toEntity())
+            }
             is AlarmIntent.AddAlarm -> viewModelScope.launch {
                 val settings = settings.value
 
@@ -80,7 +88,8 @@ class AlarmViewModel(
         _uiState.update { it.copy(isLoading = true) }
         alarmRepository.allAlarms
             .onEach { alarmList ->
-                _uiState.update { it.copy(alarms = alarmList, isLoading = false) }
+                val uiModels = alarmList.map { it.toUiModel() }
+                _uiState.update { it.copy(alarms = uiModels, isLoading = false) }
             }
             .launchIn(viewModelScope)
     }

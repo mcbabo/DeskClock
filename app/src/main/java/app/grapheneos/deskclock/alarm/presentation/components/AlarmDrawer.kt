@@ -36,9 +36,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.R
-import app.grapheneos.deskclock.alarm.data.AlarmEntity
-import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.presentation.AlarmIntent
+import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
 import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.components.DismissKeyboard
@@ -53,7 +52,7 @@ import app.grapheneos.deskclock.core.util.formatSystemTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmDrawer(
-    alarmWithInstance: AlarmWithInstance,
+    alarm: AlarmUiModel,
     ringtones: List<RingtoneItem>,
     onDismissRequest: () -> Unit,
     onIntent: (AlarmIntent) -> Unit,
@@ -71,7 +70,7 @@ fun AlarmDrawer(
     ) {
         DismissKeyboard {
             AlarmDrawerContent(
-                alarmWithInstance = alarmWithInstance,
+                alarm = alarm,
                 ringtones = ringtones,
                 onDismissRequest = onDismissRequest,
                 onIntent = onIntent,
@@ -83,7 +82,7 @@ fun AlarmDrawer(
 
 @Composable
 fun AlarmDrawerContent(
-    alarmWithInstance: AlarmWithInstance,
+    alarm: AlarmUiModel,
     ringtones: List<RingtoneItem>,
     onDismissRequest: () -> Unit,
     onIntent: (AlarmIntent) -> Unit,
@@ -93,8 +92,8 @@ fun AlarmDrawerContent(
     val context = LocalContext.current
     val view = LocalView.current
 
-    var localAlarm by remember(alarmWithInstance.alarm.id) {
-        mutableStateOf(alarmWithInstance.alarm)
+    var localAlarm by remember(alarm.id) {
+        mutableStateOf(alarm)
     }
     val defaultValue = stringResource(R.string.default_value)
     val selectedRingtoneName = remember(localAlarm.ringtoneUri, ringtones) {
@@ -278,17 +277,17 @@ fun AlarmDrawerContent(
 fun AlarmDrawerContentPreview() {
     DeskClockTheme {
         AlarmDrawerContent(
-            AlarmWithInstance(
-                alarm = AlarmEntity(
-                    id = 1,
-                    hour = 7,
-                    minute = 30,
-                    daysOfWeek = 31,
-                    isEnabled = true,
-                    deleteAfterUse = false,
-                    label = ""
-                ),
-                instance = null
+            alarm = AlarmUiModel(
+                id = 1,
+                hour = 7,
+                minute = 30,
+                daysOfWeek = 31,
+                isEnabled = true,
+                deleteAfterUse = false,
+                label = "",
+                ringtoneUri = "",
+                vibrate = true,
+                snoozeDurationMinutes = 10
             ),
             ringtones = emptyList(),
             onDismissRequest = {},

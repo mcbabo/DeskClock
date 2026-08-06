@@ -35,8 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.grapheneos.deskclock.R
-import app.grapheneos.deskclock.alarm.data.AlarmEntity
-import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.presentation.components.AlarmDrawer
 import app.grapheneos.deskclock.alarm.presentation.components.AlarmListItem
 import app.grapheneos.deskclock.alarm.presentation.components.DialWithDialog
@@ -67,7 +65,7 @@ fun AlarmScreen(
     var showTimePicker by remember { mutableStateOf(false) }
 
     val editingAlarm = remember(editingAlarmId, uiState.alarms) {
-        uiState.alarms.find { it.alarm.id == editingAlarmId }
+        uiState.alarms.find { it.id == editingAlarmId }
     }
 
     AlarmContent(
@@ -77,7 +75,7 @@ fun AlarmScreen(
         onIntent = viewModel::handleIntent,
         onNavigateToSettings = { backStack.add(Route.Settings) },
         onAddAlarmClick = { showTimePicker = true },
-        onAlarmClick = { alarmWithInstance -> editingAlarmId = alarmWithInstance.alarm.id }
+        onAlarmClick = { alarmUiModel -> editingAlarmId = alarmUiModel.id }
     )
 
     if (showTimePicker) {
@@ -101,9 +99,9 @@ fun AlarmScreen(
         )
     }
 
-    editingAlarm?.let { alarmWithInstance ->
+    editingAlarm?.let { alarmUiModel ->
         AlarmDrawer(
-            alarmWithInstance = alarmWithInstance,
+            alarm = alarmUiModel,
             ringtones = uiState.ringtones,
             onDismissRequest = {
                 viewModel.handleIntent(AlarmIntent.StopPreview)
@@ -111,7 +109,7 @@ fun AlarmScreen(
             },
             onIntent = viewModel::handleIntent,
             onDelete = {
-                viewModel.handleIntent(AlarmIntent.DeleteAlarm(alarmWithInstance.alarm))
+                viewModel.handleIntent(AlarmIntent.DeleteAlarm(alarmUiModel))
                 editingAlarmId = null
 
                 scope.launch {
@@ -121,7 +119,7 @@ fun AlarmScreen(
                         duration = SnackbarDuration.Long
                     )
                     if (result == SnackbarResult.ActionPerformed) {
-                        viewModel.handleIntent(AlarmIntent.RestoreAlarm(alarmWithInstance.alarm))
+                        viewModel.handleIntent(AlarmIntent.RestoreAlarm(alarmUiModel))
                     }
                 }
             }
@@ -138,7 +136,7 @@ fun AlarmContent(
     onIntent: (AlarmIntent) -> Unit,
     onNavigateToSettings: () -> Unit,
     onAddAlarmClick: () -> Unit,
-    onAlarmClick: (AlarmWithInstance) -> Unit,
+    onAlarmClick: (AlarmUiModel) -> Unit,
 ) {
     val listState = rememberLazyListState()
 
@@ -203,17 +201,18 @@ fun AlarmContent(
                 ) {
                     lazyGroup(
                         items = uiState.alarms,
-                        key = { it.alarm.id },
+                        key = { it.id },
                         onClick = { onAlarmClick(it) }
-                    ) { alarmWithInstance ->
+                    ) { alarmUiModel ->
                         AlarmListItem(
-                            alarmWithInstance = alarmWithInstance,
+                            alarm = alarmUiModel,
                             onToggle = {
-                                onIntent(AlarmIntent.ToggleAlarm(alarmWithInstance.alarm))
+                                onIntent(AlarmIntent.ToggleAlarm(alarmUiModel))
+                            },
+                            onClick = {
+                                onAlarmClick(alarmUiModel)
                             }
-                        ) {
-                            onAlarmClick(alarmWithInstance)
-                        }
+                        )
                     }
                 }
             }
@@ -228,27 +227,29 @@ fun AlarmScreenPreview() {
         AlarmContent(
             uiState = AlarmUiState(
                 alarms = listOf(
-                    AlarmWithInstance(
-                        alarm = AlarmEntity(
-                            id = 1,
-                            hour = 7,
-                            minute = 30,
-                            daysOfWeek = 31, // Mon-Fri
-                            isEnabled = true,
-                            label = "Wake up"
-                        ),
-                        instance = null
+                    AlarmUiModel(
+                        id = 1,
+                        hour = 7,
+                        minute = 30,
+                        daysOfWeek = 31, // Mon-Fri
+                        isEnabled = true,
+                        deleteAfterUse = false,
+                        label = "Wake up",
+                        ringtoneUri = "",
+                        vibrate = true,
+                        snoozeDurationMinutes = 10
                     ),
-                    AlarmWithInstance(
-                        alarm = AlarmEntity(
-                            id = 2,
-                            hour = 9,
-                            minute = 0,
-                            daysOfWeek = 64, // Sat
-                            isEnabled = false,
-                            label = "Gym"
-                        ),
-                        instance = null
+                    AlarmUiModel(
+                        id = 2,
+                        hour = 9,
+                        minute = 0,
+                        daysOfWeek = 64, // Sat
+                        isEnabled = false,
+                        deleteAfterUse = false,
+                        label = "Gym",
+                        ringtoneUri = "",
+                        vibrate = true,
+                        snoozeDurationMinutes = 10
                     )
                 )
             ),

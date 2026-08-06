@@ -1,7 +1,9 @@
 package app.grapheneos.deskclock.stopwatch.presentation
 
+import androidx.compose.runtime.Immutable
 import app.grapheneos.deskclock.stopwatch.data.Lap
 
+@Immutable
 data class StopwatchUiState(
     val isRunning: Boolean = false,
     val elapsedMillis: Long = 0L,

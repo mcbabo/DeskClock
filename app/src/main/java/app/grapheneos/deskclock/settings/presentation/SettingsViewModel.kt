@@ -72,7 +72,7 @@ class SettingsViewModel(
         if (settingsJob != null) return
         settingsJob = settingsRepository.settings
             .onEach { updatedSettings ->
-                _uiState.update { it.copy(settings = updatedSettings) }
+                _uiState.update { it.copy(settings = updatedSettings.toUiModel()) }
             }
             .launchIn(viewModelScope)
     }

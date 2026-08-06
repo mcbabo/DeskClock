@@ -17,8 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.R
-import app.grapheneos.deskclock.alarm.data.AlarmEntity
-import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
+import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
 import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter
 import app.grapheneos.deskclock.core.presentation.components.groupitems.GroupRow
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
@@ -26,13 +25,12 @@ import app.grapheneos.deskclock.core.util.formatSystemTime
 
 @Composable
 fun AlarmListItem(
-    alarmWithInstance: AlarmWithInstance,
+    alarm: AlarmUiModel,
     onToggle: (Boolean) -> Unit,
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
     val view = LocalView.current
-    val alarm = alarmWithInstance.alarm
 
     val timeText = formatSystemTime(context, alarm.hour, alarm.minute)
 
@@ -100,15 +98,17 @@ fun AlarmListItemPreview() {
     DeskClockTheme {
         Surface {
             AlarmListItem(
-                alarmWithInstance = AlarmWithInstance(
-                    alarm = AlarmEntity(
-                        id = 1,
-                        hour = 2,
-                        minute = 30,
-                        daysOfWeek = 62,
-                        isEnabled = true,
-                    ),
-                    instance = null
+                alarm = AlarmUiModel(
+                    id = 1,
+                    hour = 2,
+                    minute = 30,
+                    daysOfWeek = 62,
+                    isEnabled = true,
+                    deleteAfterUse = false,
+                    label = "",
+                    ringtoneUri = "",
+                    vibrate = true,
+                    snoozeDurationMinutes = 10
                 ),
                 onToggle = {},
                 onClick = {}
