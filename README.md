@@ -8,8 +8,7 @@ and privacy-focused alternative.
 
 > [!IMPORTANT]  
 > AlarmPopUpScreen showed up much later than the ringtone and vibration triggers. (should be fixed
-> by
-> now)
+> by now)
 
 ## Features
 
@@ -18,7 +17,8 @@ and privacy-focused alternative.
 - **World Clock:** Track time across multiple cities with an integrated timezone search.
 - **Timer:** Reliable background countdowns with "negative count-up" after completion.
 - **Stopwatch:** High-precision lap timing with battery-efficient status bar updates.
-- **Material You:** Full support for Dynamic Colors and Edge-to-Edge layouts.
+- **Material 3 Expressive:** Full support for Dynamic Colors and newest Material 3 design. You can
+  also decide between styles for the popup screens.
 
 ## Technical Details
 
@@ -27,8 +27,6 @@ This app is built with modern Android development in mind:
 - **UI:** 100% Jetpack Compose.
 - **Architecture:** MVI-style pattern with clean separation between UI and Data layers.
 - **Navigation:** Adopts the latest **Navigation 3** library.
-- **Lifecycle:** Services are Android 14+ compliant, using specific foreground service types for
-  reliability.
 - **DI:** **Koin** instead of Hilt (why not).
 
 ## Screenshots
