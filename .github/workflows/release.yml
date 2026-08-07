@@ -23,7 +23,6 @@ jobs:
         id: versionname
         run: echo "versionName=$(grep -E '^\s+versionName\s*=' app/build.gradle.kts | head -1 | awk -F\" '{ print $2 }')" >> $GITHUB_OUTPUT
 
-  # Need to add hash later
   release:
     needs: [ prepare ]
     runs-on: ubuntu-latest
@@ -64,10 +63,38 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
+      - name: Append Checksums Table to Release Notes
+        run: |
+          cd app/build/outputs/apk/release
+          sha256sum DeskClock-*.apk > checksums.txt
+          cd -
+          
+          mkdir -p .github
+          touch .github/RELEASE_NOTES.md
+          
+          echo -e "\n\n### Checksums" >> .github/RELEASE_NOTES.md
+          echo "| File | SHA-256 |" >> .github/RELEASE_NOTES.md
+          echo "| --- | --- |" >> .github/RELEASE_NOTES.md
+          
+          for apk in app/build/outputs/apk/release/DeskClock-*.apk; do
+            if [ -f "$apk" ]; then
+              filename=$(basename "$apk")
+              hash=$(sha256sum "$apk" | awk '{print $1}')
+              echo "| \`$filename\` | \`$hash\` |" >> .github/RELEASE_NOTES.md
+            fi
+            done
+
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v3.0.2
         with:
           tag_name: ${{ needs.prepare.outputs.versionName }}
           name: ${{ env.VERSION }} Release
-          files: app/build/outputs/apk/release/DeskClock-*.apk
+          body_path: .github/RELEASE_NOTES.md
+          files: |
+            app/build/outputs/apk/release/DeskClock-*.apk
+            app/build/outputs/apk/release/checksums.txt
           prerelease: false
+
+      - name: Clean up Keystore
+        if: always()
+        run: rm -f android-keystore.jks
