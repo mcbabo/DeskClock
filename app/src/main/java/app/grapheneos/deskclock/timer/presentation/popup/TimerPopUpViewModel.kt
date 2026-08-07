@@ -21,9 +21,13 @@ class TimerPopUpViewModel(
 ) : ViewModel() {
     val uiState: StateFlow<TimerPopUpUiState> = combine(
         timerRepository.state,
-        timerRepository.remainingMillis
-    ) { _, remaining ->
-        TimerPopUpUiState(remainingTime = remaining)
+        timerRepository.remainingMillis,
+        settingsRepository.settings
+    ) { _, remaining, settings ->
+        TimerPopUpUiState(
+            remainingTime = remaining,
+            style = settings.timerPopUpStyle
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

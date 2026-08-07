@@ -29,7 +29,10 @@ class StopwatchService : BaseAlertService(StopwatchConstants.PM_TAG) {
     private fun observeStopwatch() {
         if (observationJob != null) return
         observationJob = serviceScope.launch {
-            combine(stopwatchRepository.state, stopwatchRepository.elapsedMillis) { state, elapsed ->
+            combine(
+                stopwatchRepository.state,
+                stopwatchRepository.elapsedMillis
+            ) { state, elapsed ->
                 state to (elapsed / 1000)
             }
                 .distinctUntilChanged()

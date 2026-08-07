@@ -24,6 +24,12 @@ sealed interface Route : NavKey {
 
     @Serializable
     data object Settings : Route
+
+    @Serializable
+    data object AlarmStylePicker : Route
+
+    @Serializable
+    data object TimerStylePicker : Route
 }
 
 val LocalNavBackStack = staticCompositionLocalOf<NavBackStack<NavKey>> {

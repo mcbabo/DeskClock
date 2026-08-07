@@ -26,6 +26,9 @@ data class AppSettings(
     val vibrate: Boolean = true,
 
     val stopwatchShowMilliseconds: Boolean = true,
+
+    val alarmPopUpStyle: PopUpStyle = PopUpStyle.DEFAULT,
+    val timerPopUpStyle: PopUpStyle = PopUpStyle.DEFAULT,
 )
 
 @Serializable
@@ -33,4 +36,10 @@ enum class ThemeMode(@StringRes val displayNameRes: Int, val icon: ImageVector) 
     LIGHT(R.string.settings_light_mode, Icons.Outlined.LightMode),
     DARK(R.string.settings_dark_mode, Icons.Outlined.DarkMode),
     SYSTEM(R.string.settings_system_mode, Icons.Outlined.Smartphone)
+}
+
+@Serializable
+enum class PopUpStyle(@StringRes val titleRes: Int) {
+    DEFAULT(R.string.style_default),
+    VARIANT(R.string.style_variant)
 }

@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -40,6 +42,14 @@ class AlarmPopUpViewModel(
     val effect = _effect.receiveAsFlow()
 
     private var currentInstanceId: Long = -1L
+
+    init {
+        settingsRepository.settings
+            .onEach { settings ->
+                _uiState.update { it.copy(style = settings.alarmPopUpStyle) }
+            }
+            .launchIn(viewModelScope)
+    }
 
     fun handleIntent(intent: AlarmPopUpIntent) {
         when (intent) {

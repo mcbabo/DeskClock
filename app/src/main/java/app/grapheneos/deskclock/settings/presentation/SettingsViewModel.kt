@@ -65,6 +65,14 @@ class SettingsViewModel(
                     intent.enabled
                 )
             }
+
+            is SettingsIntent.SetAlarmPopUpStyle -> update {
+                settingsRepository.setAlarmPopUpStyle(intent.style)
+            }
+
+            is SettingsIntent.SetTimerPopUpStyle -> update {
+                settingsRepository.setTimerPopUpStyle(intent.style)
+            }
         }
     }
 

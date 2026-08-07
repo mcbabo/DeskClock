@@ -3,6 +3,7 @@ package app.grapheneos.deskclock.settings.presentation
 import androidx.compose.runtime.Immutable
 import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.settings.data.AppSettings
+import app.grapheneos.deskclock.settings.data.PopUpStyle
 import app.grapheneos.deskclock.settings.data.ThemeMode
 
 @Immutable
@@ -14,7 +15,9 @@ data class AppSettingsUiModel(
     val useCustomRingtoneVolume: Boolean,
     val ringtoneVolume: Float,
     val vibrate: Boolean,
-    val stopwatchShowMilliseconds: Boolean
+    val stopwatchShowMilliseconds: Boolean,
+    val alarmPopUpStyle: PopUpStyle,
+    val timerPopUpStyle: PopUpStyle
 )
 
 @Immutable
@@ -41,6 +44,9 @@ sealed interface SettingsIntent {
     data class SetCustomRingtoneVolume(val volume: Float) : SettingsIntent
 
     data class SetDefaultVibration(val enabled: Boolean) : SettingsIntent
+
+    data class SetAlarmPopUpStyle(val style: PopUpStyle) : SettingsIntent
+    data class SetTimerPopUpStyle(val style: PopUpStyle) : SettingsIntent
 }
 
 fun AppSettings.toUiModel(): AppSettingsUiModel {
@@ -52,6 +58,8 @@ fun AppSettings.toUiModel(): AppSettingsUiModel {
         useCustomRingtoneVolume = useCustomRingtoneVolume,
         ringtoneVolume = ringtoneVolume,
         vibrate = vibrate,
-        stopwatchShowMilliseconds = stopwatchShowMilliseconds
+        stopwatchShowMilliseconds = stopwatchShowMilliseconds,
+        alarmPopUpStyle = alarmPopUpStyle,
+        timerPopUpStyle = timerPopUpStyle
     )
 }

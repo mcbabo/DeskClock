@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.MusicNote
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Snooze
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Vibration
@@ -35,11 +36,13 @@ import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.alarm.presentation.components.RingtonePickerDialog
 import app.grapheneos.deskclock.core.navigation.LocalNavBackStack
+import app.grapheneos.deskclock.core.navigation.Route
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
 import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGroupRow
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGroupRow
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.settings.data.PopUpStyle
 import app.grapheneos.deskclock.settings.data.ThemeMode
 import app.grapheneos.deskclock.settings.presentation.components.RingtoneVolumeDrawer
 import app.grapheneos.deskclock.settings.presentation.components.SnoozeDrawer
@@ -49,6 +52,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun SettingsScreen(
+    onBack: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -57,7 +61,9 @@ fun SettingsScreen(
     SettingsContent(
         state = state,
         onIntent = { intent -> viewModel.handleIntent(intent) },
-        onBack = { backStack.removeLastOrNull() }
+        onBack = onBack,
+        onNavigateToAlarmStyle = { backStack.add(Route.AlarmStylePicker) },
+        onNavigateToTimerStyle = { backStack.add(Route.TimerStylePicker) }
     )
 }
 
@@ -66,7 +72,9 @@ fun SettingsScreen(
 fun SettingsContent(
     state: SettingsUiState,
     onIntent: (SettingsIntent) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToAlarmStyle: () -> Unit,
+    onNavigateToTimerStyle: () -> Unit
 ) {
     val view = LocalView.current
 
@@ -133,6 +141,40 @@ fun SettingsContent(
                             Icon(
                                 imageVector = Icons.Outlined.Colorize,
                                 contentDescription = stringResource(R.string.setting_theme)
+                            )
+                        }
+                    )
+                }
+
+                item {
+                    ValueGroupRow(
+                        label = stringResource(R.string.settings_alarm_popup_style),
+                        value = stringResource(settings.alarmPopUpStyle.titleRes),
+                        supportingContent = {
+                            Text(text = stringResource(R.string.settings_alarm_popup_style_desc))
+                        },
+                        onClick = onNavigateToAlarmStyle,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Palette,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+
+                item {
+                    ValueGroupRow(
+                        label = stringResource(R.string.settings_timer_popup_style),
+                        value = stringResource(settings.timerPopUpStyle.titleRes),
+                        supportingContent = {
+                            Text(text = stringResource(R.string.settings_timer_popup_style_desc))
+                        },
+                        onClick = onNavigateToTimerStyle,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Palette,
+                                contentDescription = null
                             )
                         }
                     )
@@ -293,11 +335,15 @@ fun SettingsScreenPreview() {
                     useCustomRingtoneVolume = false,
                     ringtoneVolume = 0.5f,
                     vibrate = true,
-                    stopwatchShowMilliseconds = true
+                    stopwatchShowMilliseconds = true,
+                    alarmPopUpStyle = PopUpStyle.DEFAULT,
+                    timerPopUpStyle = PopUpStyle.DEFAULT
                 )
             ),
             onIntent = {},
-            onBack = {}
+            onBack = {},
+            onNavigateToAlarmStyle = {},
+            onNavigateToTimerStyle = {}
         )
     }
 }

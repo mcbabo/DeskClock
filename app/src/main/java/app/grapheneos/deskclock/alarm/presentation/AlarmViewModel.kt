@@ -48,15 +48,19 @@ class AlarmViewModel(
             is AlarmIntent.ToggleAlarm -> viewModelScope.launch {
                 alarmRepository.toggleAlarm(intent.alarm.toEntity())
             }
+
             is AlarmIntent.UpdateAlarm -> viewModelScope.launch {
                 alarmRepository.updateAlarm(intent.alarm.toEntity())
             }
+
             is AlarmIntent.DeleteAlarm -> viewModelScope.launch {
                 alarmRepository.deleteAlarm(intent.alarm.toEntity())
             }
+
             is AlarmIntent.RestoreAlarm -> viewModelScope.launch {
                 alarmRepository.addAlarm(intent.alarm.toEntity())
             }
+
             is AlarmIntent.AddAlarm -> viewModelScope.launch {
                 val currentSettings = settings.value ?: return@launch
 

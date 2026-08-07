@@ -41,6 +41,14 @@ class SettingsRepository(
         dataStore.updateSettings { it.copy(vibrate = enabled) }
     }
 
+    suspend fun setAlarmPopUpStyle(style: PopUpStyle) {
+        dataStore.updateSettings { it.copy(alarmPopUpStyle = style) }
+    }
+
+    suspend fun setTimerPopUpStyle(style: PopUpStyle) {
+        dataStore.updateSettings { it.copy(timerPopUpStyle = style) }
+    }
+
     suspend fun resetToDefaults() {
         dataStore.updateSettings { AppSettings() }
     }

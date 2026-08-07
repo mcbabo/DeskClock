@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">DeskClock</string>
+    <string name="app_name">Clock</string>
     <string name="deskclock_service" translatable="false">Alarm Playback</string>
     <string name="empty" translatable="false"></string>
     <string name="tab_alarm">Alarm</string>
@@ -76,4 +76,13 @@
     <string name="settings_light_mode">Light</string>
     <string name="settings_dark_mode">Dark</string>
     <string name="settings_system_mode">System Default</string>
+    <string name="style_default">Default</string>
+    <string name="style_variant">Variant</string>
+    <string name="preview">Preview</string>
+    <string name="set_style">Set style</string>
+    <string name="settings_alarm_popup_style">Alarm popup style</string>
+    <string name="settings_timer_popup_style">Timer popup style</string>
+    <string name="settings_alarm_popup_style_desc">Set the style of the alarm popup</string>
+    <string name="settings_timer_popup_style_desc">Set the style of the timer popup</string>
+    <string name="swipe_to_dismiss">Swipe to dismiss</string>
 </resources>

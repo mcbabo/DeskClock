@@ -13,6 +13,8 @@ import app.grapheneos.deskclock.core.presentation.PermissionScreen
 import app.grapheneos.deskclock.core.theme.motion.clockDefaultTransitions
 import app.grapheneos.deskclock.core.theme.motion.clockPopTransitions
 import app.grapheneos.deskclock.settings.presentation.SettingsScreen
+import app.grapheneos.deskclock.settings.presentation.style.AlarmStylePickerScreen
+import app.grapheneos.deskclock.settings.presentation.style.TimerStylePickerScreen
 
 private const val METADATA_PERMISSIONS_REQUIRED = "permissions_required"
 
@@ -48,7 +50,15 @@ fun NavigationRoot(
                 }
 
                 entry<Route.Settings> {
-                    SettingsScreen()
+                    SettingsScreen(onBack = { backStack.removeLastOrNull() })
+                }
+
+                entry<Route.AlarmStylePicker> {
+                    AlarmStylePickerScreen(onBack = { backStack.removeLastOrNull() })
+                }
+
+                entry<Route.TimerStylePicker> {
+                    TimerStylePickerScreen(onBack = { backStack.removeLastOrNull() })
                 }
             }
         )
