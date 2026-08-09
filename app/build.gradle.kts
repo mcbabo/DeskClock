@@ -26,6 +26,7 @@ android {
     }
 
     defaultConfig {
+        // not official!
         applicationId = "app.grapheneos.deskclock"
         minSdk = 37
         targetSdk = 37
@@ -112,10 +113,11 @@ androidComponents {
         variant.outputs.forEach { output ->
             val versionName = output.versionName.orNull ?: "version"
             val versionCode = output.versionCode.orNull ?: "version"
-            val abiName =
-                output.filters.find { it.filterType == FilterConfiguration.FilterType.ABI }?.identifier
-                    ?: "universal"
-            output.outputFileName.set("DeskClock-$versionName-$versionCode-${abiName}-${variant.name}.apk")
+            val abiName = output.filters.find {
+                it.filterType == FilterConfiguration.FilterType.ABI
+            }?.identifier ?: "universal"
+            val fileName = "DeskClock-$versionName-$versionCode-${abiName}-${variant.name}.apk"
+            output.outputFileName.set(fileName)
         }
     }
 }
@@ -134,7 +136,8 @@ detekt {
     parallel = true
     buildUponDefaultConfig = true
     autoCorrect = true
-    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+    source.setFrom(files("../src"))
 }
 
 dependencies {
