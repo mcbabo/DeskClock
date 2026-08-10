@@ -99,7 +99,7 @@ jobs:
         uses: softprops/action-gh-release@v3.0.2
         with:
           tag_name: ${{ env.VERSION }}
-          name: ${{ env.VERSION }} Nightly Release
+          name: Nightly Release
           body: ${{ steps.release_body.outputs.body }}
           files: |
             app/build/outputs/apk/release/DeskClock-*.apk
