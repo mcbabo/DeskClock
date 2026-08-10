@@ -137,7 +137,6 @@ detekt {
     buildUponDefaultConfig = true
     autoCorrect = true
     config.setFrom(rootProject.file("config/detekt/detekt.yml"))
-    source.setFrom(files("../src"))
 }
 
 dependencies {
