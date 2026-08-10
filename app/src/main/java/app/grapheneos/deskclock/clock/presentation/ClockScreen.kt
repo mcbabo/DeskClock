@@ -45,47 +45,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.clock.presentation.components.ClockListItem
 import app.grapheneos.deskclock.clock.presentation.components.ClockSearch
 import app.grapheneos.deskclock.clock.presentation.components.SearchBarInput
-import app.grapheneos.deskclock.core.navigation.LocalNavBackStack
-import app.grapheneos.deskclock.core.navigation.Route
 import app.grapheneos.deskclock.core.presentation.FloatingActionButton
 import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.components.groupitems.GroupItem
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
-import org.koin.androidx.compose.koinViewModel
 import java.time.ZoneId
-
-@Composable
-fun ClockScreen(
-    modifier: Modifier = Modifier,
-    viewModel: ClockViewModel = koinViewModel()
-) {
-    val timeUiState by viewModel.timeUiState.collectAsStateWithLifecycle()
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val backStack = LocalNavBackStack.current
-
-    ClockContent(
-        modifier = modifier,
-        uiState = uiState,
-        timeUiState = timeUiState,
-        onIntent = viewModel::handleIntent,
-        onNavigateToSettings = { backStack.add(Route.Settings) }
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClockContent(
-    modifier: Modifier,
+fun ClockScreen(
     uiState: ClockUiState,
     timeUiState: TimeUiState,
     onIntent: (ClockIntent) -> Unit,
-    onNavigateToSettings: () -> Unit
+    onSettingsClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val textFieldState = rememberTextFieldState()
     val searchBarState = rememberSearchBarState()
@@ -119,9 +97,7 @@ fun ClockContent(
         SearchBarInput(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
-            onBack = {
-                onIntent(ClockIntent.ToggleSearch(false))
-            }
+            onBack = { onIntent(ClockIntent.ToggleSearch(false)) }
         )
     }
 
@@ -130,11 +106,9 @@ fun ClockContent(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             TopAppBar(
-                title = {
-                    Text(text = stringResource(R.string.tab_clock))
-                },
+                title = { Text(text = stringResource(R.string.tab_clock)) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateToSettings) {
+                    IconButton(onClick = onSettingsClick) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(R.string.settings)
@@ -142,12 +116,8 @@ fun ClockContent(
                     }
                 },
                 actions = {
-                    AnimatedVisibility(
-                        visible = uiState.zoneClocks.isNotEmpty()
-                    ) {
-                        IconButton(
-                            onClick = { isEditing = !isEditing }
-                        ) {
+                    AnimatedVisibility(visible = uiState.zoneClocks.isNotEmpty()) {
+                        IconButton(onClick = { isEditing = !isEditing }) {
                             Icon(
                                 imageVector = Icons.Outlined.Edit,
                                 contentDescription = null
@@ -167,7 +137,6 @@ fun ClockContent(
         },
         floatingActionButton = {
             FloatingActionButton(
-                modifier = Modifier,
                 text = { Text(text = stringResource(R.string.add_clock)) },
                 icon = {
                     Icon(
@@ -254,8 +223,7 @@ fun ClockContent(
 @Composable
 fun ClockScreenPreview() {
     DeskClockTheme {
-        ClockContent(
-            modifier = Modifier,
+        ClockScreen(
             timeUiState = TimeUiState(
                 localTime = "12:45:00",
                 localDate = "Wed, 29. Jul",
@@ -280,8 +248,8 @@ fun ClockScreenPreview() {
                     )
                 )
             ),
-            onNavigateToSettings = {},
-            onIntent = {}
+            onIntent = {},
+            onSettingsClick = {}
         )
     }
 }
