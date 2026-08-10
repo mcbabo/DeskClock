@@ -30,8 +30,6 @@ import app.grapheneos.deskclock.alarm.presentation.AlarmViewModel
 import app.grapheneos.deskclock.clock.presentation.ClockScreen
 import app.grapheneos.deskclock.clock.presentation.ClockViewModel
 import app.grapheneos.deskclock.core.navigation.ClockTab
-import app.grapheneos.deskclock.core.navigation.LocalNavBackStack
-import app.grapheneos.deskclock.core.navigation.Route
 import app.grapheneos.deskclock.stopwatch.presentation.StopwatchScreen
 import app.grapheneos.deskclock.stopwatch.presentation.StopwatchViewModel
 import app.grapheneos.deskclock.timer.presentation.TimerScreen
@@ -41,6 +39,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainPagerScreen(
+    onSettingsClick: () -> Unit,
     alarmViewModel: AlarmViewModel = koinViewModel(),
     clockViewModel: ClockViewModel = koinViewModel(),
     timerViewModel: TimerViewModel = koinViewModel(),
@@ -50,13 +49,6 @@ fun MainPagerScreen(
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
     val view = LocalView.current
-    val backStack = LocalNavBackStack.current
-
-    val alarmUiState by alarmViewModel.uiState.collectAsStateWithLifecycle()
-    val clockUiState by clockViewModel.uiState.collectAsStateWithLifecycle()
-    val timeUiState by clockViewModel.timeUiState.collectAsStateWithLifecycle()
-    val timerUiState by timerViewModel.uiState.collectAsStateWithLifecycle()
-    val stopwatchUiState by stopwatchViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(pagerState) {
         var isInitial = true
@@ -109,12 +101,9 @@ fun MainPagerScreen(
                 .padding(outerPadding),
             beyondViewportPageCount = 1
         ) { pageIndex ->
-            val onSettingsClick = {
-                backStack.add(Route.Settings)
-                Unit
-            }
             when (tabs[pageIndex]) {
                 ClockTab.Alarm -> {
+                    val alarmUiState by alarmViewModel.uiState.collectAsStateWithLifecycle()
                     AlarmScreen(
                         uiState = alarmUiState,
                         onIntent = alarmViewModel::handleIntent,
@@ -123,6 +112,8 @@ fun MainPagerScreen(
                 }
 
                 ClockTab.WorldClock -> {
+                    val clockUiState by clockViewModel.uiState.collectAsStateWithLifecycle()
+                    val timeUiState by clockViewModel.timeUiState.collectAsStateWithLifecycle()
                     ClockScreen(
                         uiState = clockUiState,
                         timeUiState = timeUiState,
@@ -132,6 +123,7 @@ fun MainPagerScreen(
                 }
 
                 ClockTab.Timer -> {
+                    val timerUiState by timerViewModel.uiState.collectAsStateWithLifecycle()
                     TimerScreen(
                         uiState = timerUiState,
                         onIntent = timerViewModel::handleIntent,
@@ -140,6 +132,7 @@ fun MainPagerScreen(
                 }
 
                 ClockTab.Stopwatch -> {
+                    val stopwatchUiState by stopwatchViewModel.uiState.collectAsStateWithLifecycle()
                     StopwatchScreen(
                         uiState = stopwatchUiState,
                         elapsedMillisFlow = stopwatchViewModel.elapsedMillis,

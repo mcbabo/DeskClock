@@ -34,8 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.alarm.presentation.components.RingtonePickerDialog
-import app.grapheneos.deskclock.core.navigation.LocalNavBackStack
-import app.grapheneos.deskclock.core.navigation.Route
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
 import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGroupRow
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGroupRow
@@ -54,9 +52,10 @@ fun SettingsScreen(
     state: SettingsUiState,
     onIntent: (SettingsIntent) -> Unit,
     onBack: () -> Unit,
+    onNavigateToAlarmStylePicker: () -> Unit,
+    onNavigateToTimerStylePicker: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val backStack = LocalNavBackStack.current
     val view = LocalView.current
     val scrollBehavior = exitUntilCollapsedScrollBehavior()
 
@@ -134,7 +133,7 @@ fun SettingsScreen(
                         supportingContent = {
                             Text(text = stringResource(R.string.settings_alarm_popup_style_desc))
                         },
-                        onClick = { backStack.add(Route.AlarmStylePicker) },
+                        onClick = onNavigateToAlarmStylePicker,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Outlined.Palette,
@@ -151,7 +150,7 @@ fun SettingsScreen(
                         supportingContent = {
                             Text(text = stringResource(R.string.settings_timer_popup_style_desc))
                         },
-                        onClick = { backStack.add(Route.TimerStylePicker) },
+                        onClick = onNavigateToTimerStylePicker,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Outlined.Palette,
@@ -322,7 +321,9 @@ fun SettingsScreenPreview() {
                 )
             ),
             onIntent = {},
-            onBack = {}
+            onBack = {},
+            onNavigateToAlarmStylePicker = {},
+            onNavigateToTimerStylePicker = {}
         )
     }
 }
