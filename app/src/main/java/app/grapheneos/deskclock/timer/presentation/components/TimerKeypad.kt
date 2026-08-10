@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.timer.presentation.components
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,10 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun TimerKeypad(onDigitClick: (Int) -> Unit, onBackspace: () -> Unit) {
+    val view = LocalView.current
     val digits = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, null, 0, -1)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         digits.chunked(3).forEach { row ->
@@ -26,7 +29,10 @@ fun TimerKeypad(onDigitClick: (Int) -> Unit, onBackspace: () -> Unit) {
                     when (digit) {
                         null -> Spacer(modifier = Modifier.size(64.dp))
                         -1 -> IconButton(
-                            onClick = onBackspace,
+                            onClick = {
+                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                                onBackspace()
+                            },
                             modifier = Modifier.size(64.dp)
                         ) {
                             Icon(
@@ -36,7 +42,10 @@ fun TimerKeypad(onDigitClick: (Int) -> Unit, onBackspace: () -> Unit) {
                         }
 
                         else -> TextButton(
-                            onClick = { onDigitClick(digit) },
+                            onClick = {
+                                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                                onDigitClick(digit)
+                            },
                             modifier = Modifier.size(64.dp)
                         ) {
                             Text(
