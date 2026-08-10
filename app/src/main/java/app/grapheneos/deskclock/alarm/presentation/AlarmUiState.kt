@@ -28,7 +28,8 @@ data class AlarmUiModel(
 data class AlarmUiState(
     val alarms: List<AlarmUiModel> = emptyList(),
     val ringtones: List<RingtoneItem> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val nextAlarmRemainingTime: String? = null
 )
 
 sealed interface AlarmIntent {

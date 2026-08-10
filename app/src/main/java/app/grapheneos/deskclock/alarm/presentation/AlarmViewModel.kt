@@ -4,20 +4,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
+import app.grapheneos.deskclock.alarm.util.AlarmTimeCalculator
 import app.grapheneos.deskclock.core.audio.AudioPlayer
 import app.grapheneos.deskclock.core.ringtone.RingtoneRepository
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.settings.presentation.toUiModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Duration
+import java.time.Instant
+import kotlin.time.Duration.Companion.minutes
 
 class AlarmViewModel(
     private val alarmRepository: AlarmRepository,
@@ -39,7 +46,41 @@ class AlarmViewModel(
 
     init {
         observeAlarms()
+        observeNextAlarmTime()
         handleIntent(AlarmIntent.LoadSystemRingtones)
+    }
+
+    private fun observeNextAlarmTime() {
+        flow {
+            while (true) {
+                emit(Unit)
+                delay(1.minutes)
+            }
+        }.combine(alarmRepository.allAlarms) { _, alarms ->
+            calculateNextAlarmString(alarms.map { it.toUiModel() })
+        }.onEach { nextAlarmString ->
+            _uiState.update { it.copy(nextAlarmRemainingTime = nextAlarmString) }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun calculateNextAlarmString(alarms: List<AlarmUiModel>): String? {
+        val activeAlarms = alarms.filter { it.isEnabled }
+        val nextTriggerTime = activeAlarms.minOfOrNull {
+            AlarmTimeCalculator.calculateNextTriggerTime(it.hour, it.minute, it.daysOfWeek)
+        } ?: return null
+
+        val duration = Duration.between(Instant.now(), Instant.ofEpochMilli(nextTriggerTime))
+        val result = if (duration.isNegative || duration.isZero) {
+            null
+        } else {
+            val parts = mutableListOf<String>()
+            val days = duration.toDays()
+            if (days > 0) parts.add("${days}d")
+            if (days > 0 || duration.toHoursPart() > 0) parts.add("${duration.toHoursPart()}h")
+            parts.add("${duration.toMinutesPart()}m")
+            parts.joinToString(" ")
+        }
+        return result
     }
 
     fun handleIntent(intent: AlarmIntent) {

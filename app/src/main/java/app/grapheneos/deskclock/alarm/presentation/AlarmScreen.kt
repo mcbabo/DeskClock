@@ -145,7 +145,18 @@ fun AlarmContent(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.tab_alarm)) },
+                title = {
+                    Column {
+                        Text(stringResource(R.string.tab_alarm))
+                        uiState.nextAlarmRemainingTime?.let {
+                            Text(
+                                text = stringResource(R.string.next_alarm_in, it),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(

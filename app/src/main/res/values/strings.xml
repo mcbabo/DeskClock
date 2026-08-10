@@ -87,4 +87,9 @@
     <string name="settings_timer_popup_style_desc">Set the style of the timer popup</string>
     <string name="swipe_to_dismiss">Swipe to dismiss</string>
     <string name="add_minute">1 min</string>
+    <string name="next_alarm_in">Next alarm in %1$s</string>
+    <string name="days_short">%1$dd</string>
+    <string name="hours_short">%1$dh</string>
+    <string name="minutes_short">%1$dm</string>
+    <string name="less_than_a_minute">less than a minute</string>
 </resources>
