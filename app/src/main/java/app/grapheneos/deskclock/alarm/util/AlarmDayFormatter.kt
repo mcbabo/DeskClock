@@ -27,8 +27,8 @@ object AlarmDayFormatter {
 
     fun formatDaysOfWeek(context: Context, daysOfWeek: Int): String {
         val locale = context.resources.configuration.locales[0]
-
-        return when (daysOfWeek) {
+        val dayBits = daysOfWeek and AlarmConstants.BIT_ALL_DAYS
+        return when (dayBits) {
             0 -> context.getString(R.string.one_time)
             AlarmConstants.BIT_ALL_DAYS -> context.getString(R.string.daily)
             AlarmConstants.BIT_WEEKDAYS -> context.getString(R.string.mon_fri)
