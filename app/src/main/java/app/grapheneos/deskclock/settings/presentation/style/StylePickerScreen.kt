@@ -1,4 +1,4 @@
-package app.grapheneos.deskclock.settings.presentation
+package app.grapheneos.deskclock.settings.presentation.style
 
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.background
@@ -50,6 +50,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.settings.data.PopUpStyle
+
+const val PREVIEW_SCALE = 0.7f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,7 +127,10 @@ fun StylePickerScreen(
                     ) {
                         Surface(
                             modifier = Modifier
-                                .requiredSize(screenWidth * 0.6f, screenHeight * 0.6f)
+                                .requiredSize(
+                                    screenWidth * PREVIEW_SCALE,
+                                    screenHeight * PREVIEW_SCALE
+                                )
                                 .clip(RoundedCornerShape(32.dp))
                                 .border(
                                     width = borderWeight,
@@ -143,7 +148,7 @@ fun StylePickerScreen(
                                 Box(
                                     modifier = Modifier
                                         .requiredSize(screenWidth, screenHeight)
-                                        .scale(0.6f)
+                                        .scale(PREVIEW_SCALE)
                                         .clipToBounds()
                                         .align(Alignment.Center)
                                 ) {

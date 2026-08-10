@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
 
 class TimerPopUpViewModel(
     private val timerRepository: TimerRepository,
@@ -52,6 +53,10 @@ class TimerPopUpViewModel(
                     timerRepository.reset()
                     _effect.send(TimerPopUpEffect.Finish)
                 }
+            }
+
+            TimerPopUpIntent.AddMinute -> {
+                timerRepository.addTime(1.minutes.inWholeMilliseconds)
             }
         }
     }

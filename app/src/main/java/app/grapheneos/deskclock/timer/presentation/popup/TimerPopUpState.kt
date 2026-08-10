@@ -11,6 +11,7 @@ data class TimerPopUpUiState(
 
 sealed interface TimerPopUpIntent {
     data object Stop : TimerPopUpIntent
+    data object AddMinute : TimerPopUpIntent
 }
 
 sealed interface TimerPopUpEffect {

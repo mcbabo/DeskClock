@@ -35,4 +35,13 @@ object TimerUtils {
         val seconds = cleanInput.substring(4, 6).toIntOrNull() ?: 0
         return ((hours * 3_600) + (minutes * 60) + seconds) * 1_000L
     }
+
+    fun formatMillisToInput(millis: Long): String {
+        val totalSeconds = (millis / 1000).coerceAtLeast(0)
+        val h = totalSeconds / 3600
+        val m = (totalSeconds % 3600) / 60
+        val s = totalSeconds % 60
+        // Locale.US only for internal calculation
+        return String.format(Locale.US, "%02d%02d%02d", h.coerceAtMost(99), m, s)
+    }
 }

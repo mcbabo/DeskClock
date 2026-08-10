@@ -78,6 +78,7 @@
     <string name="settings_system_mode">System Default</string>
     <string name="style_default">Default</string>
     <string name="style_variant">Variant</string>
+    <string name="style_tertiary">Tertiary</string>
     <string name="preview">Preview</string>
     <string name="set_style">Set style</string>
     <string name="settings_alarm_popup_style">Alarm popup style</string>
@@ -85,4 +86,5 @@
     <string name="settings_alarm_popup_style_desc">Set the style of the alarm popup</string>
     <string name="settings_timer_popup_style_desc">Set the style of the timer popup</string>
     <string name="swipe_to_dismiss">Swipe to dismiss</string>
+    <string name="add_minute">1 min</string>
 </resources>

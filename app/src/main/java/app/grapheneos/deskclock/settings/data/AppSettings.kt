@@ -41,5 +41,6 @@ enum class ThemeMode(@StringRes val displayNameRes: Int, val icon: ImageVector) 
 @Serializable
 enum class PopUpStyle(@StringRes val titleRes: Int) {
     DEFAULT(R.string.style_default),
-    VARIANT(R.string.style_variant)
+    VARIANT(R.string.style_variant),
+    TERTIARY(R.string.style_tertiary)
 }

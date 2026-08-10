@@ -8,12 +8,13 @@ import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
 import app.grapheneos.deskclock.alarm.presentation.popup.getAlarmLabel
 import app.grapheneos.deskclock.alarm.presentation.popup.styles.AlarmPopUpDefault
+import app.grapheneos.deskclock.alarm.presentation.popup.styles.AlarmPopUpTertiary
 import app.grapheneos.deskclock.alarm.presentation.popup.styles.AlarmPopUpVariant
 import app.grapheneos.deskclock.settings.data.PopUpStyle
 import app.grapheneos.deskclock.settings.presentation.SettingsIntent
 import app.grapheneos.deskclock.settings.presentation.SettingsViewModel
-import app.grapheneos.deskclock.settings.presentation.StylePickerScreen
 import app.grapheneos.deskclock.timer.presentation.popup.styles.TimerPopUpDefault
+import app.grapheneos.deskclock.timer.presentation.popup.styles.TimerPopUpTertiary
 import app.grapheneos.deskclock.timer.presentation.popup.styles.TimerPopUpVariant
 import org.koin.androidx.compose.koinViewModel
 
@@ -60,6 +61,13 @@ fun AlarmStylePickerScreen(
                     onDismiss = {},
                     onSnooze = {}
                 )
+
+                PopUpStyle.TERTIARY -> AlarmPopUpTertiary(
+                    alarm = mockAlarm,
+                    labelText = labelText,
+                    onDismiss = {},
+                    onSnooze = {}
+                )
             }
         }
     )
@@ -80,8 +88,23 @@ fun TimerStylePickerScreen(
         onBack = onBack,
         previewContent = { style ->
             when (style) {
-                PopUpStyle.DEFAULT -> TimerPopUpDefault(remainingTime = 0L, onStop = {})
-                PopUpStyle.VARIANT -> TimerPopUpVariant(remainingTime = 0L, onStop = {})
+                PopUpStyle.DEFAULT -> TimerPopUpDefault(
+                    remainingTime = 0L,
+                    onStop = {},
+                    onAddMinute = {}
+                )
+
+                PopUpStyle.VARIANT -> TimerPopUpVariant(
+                    remainingTime = 0L,
+                    onStop = {},
+                    onAddMinute = {}
+                )
+
+                PopUpStyle.TERTIARY -> TimerPopUpTertiary(
+                    remainingTime = 0L,
+                    onStop = {},
+                    onAddMinute = {}
+                )
             }
         }
     )

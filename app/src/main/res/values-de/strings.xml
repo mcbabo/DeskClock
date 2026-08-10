@@ -77,6 +77,7 @@
     <string name="settings_system_mode">System</string>
     <string name="style_default">Standard</string>
     <string name="style_variant">Variante</string>
+    <string name="style_tertiary">Tertiär</string>
     <string name="preview">Vorschau</string>
     <string name="set_style">Stil festlegen</string>
     <string name="settings_alarm_popup_style">Wecker Popup-Stil</string>
@@ -84,4 +85,5 @@
     <string name="settings_alarm_popup_style_desc">Popup-Stil des Weckers einstellen</string>
     <string name="settings_timer_popup_style_desc">Popup-Stil des Weckers einstellen</string>
     <string name="swipe_to_dismiss">Wischen zum Ablehnen</string>
+    <string name="add_minute">1 Min.</string>
 </resources>

@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
 import app.grapheneos.deskclock.alarm.presentation.popup.styles.AlarmPopUpDefault
+import app.grapheneos.deskclock.alarm.presentation.popup.styles.AlarmPopUpTertiary
 import app.grapheneos.deskclock.alarm.presentation.popup.styles.AlarmPopUpVariant
 import app.grapheneos.deskclock.settings.data.PopUpStyle
 
@@ -36,6 +37,15 @@ fun AlarmPopUpScreen(
 
             PopUpStyle.VARIANT -> {
                 AlarmPopUpVariant(
+                    alarm = uiState.alarm,
+                    labelText = labelText,
+                    onDismiss = { onIntent(AlarmPopUpIntent.Dismiss) },
+                    onSnooze = { onIntent(AlarmPopUpIntent.Snooze) }
+                )
+            }
+
+            PopUpStyle.TERTIARY -> {
+                AlarmPopUpTertiary(
                     alarm = uiState.alarm,
                     labelText = labelText,
                     onDismiss = { onIntent(AlarmPopUpIntent.Dismiss) },

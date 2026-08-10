@@ -108,6 +108,23 @@ class TimerRepository(
         if (_state.value.isRunning) pause() else start()
     }
 
+    fun addTime(millis: Long) {
+        _state.update { current ->
+            val newRemaining = current.getRemainingTime() + millis
+            val newInput = TimerUtils.formatMillisToInput(newRemaining)
+            current.copy(
+                remainingTimeAtStart = newRemaining,
+                totalMillis = current.totalMillis + millis,
+                startTime = if (current.isRunning) SystemClock.elapsedRealtime() else current.startTime,
+                inputTime = newInput,
+                isFinished = false
+            )
+        }
+        if (_state.value.isRunning) {
+            scheduleFinish()
+        }
+    }
+
     fun enterDigit(digit: Int) {
         _state.update { current ->
             val currentInput = current.inputTime.replaceFirst("^0+".toRegex(), "")
