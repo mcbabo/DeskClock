@@ -18,6 +18,7 @@ jobs:
     outputs:
       versionCode: ${{ steps.versioncode.outputs.versionCode }}
       versionName: ${{ steps.versionname.outputs.versionName }}
+      shortSha: ${{ steps.sha.outputs.shortSha }}
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Get versionCode
@@ -26,15 +27,17 @@ jobs:
       - name: Get versionName
         id: versionname
         run: echo "versionName=$(grep -E '^\s+versionName\s*=' app/build.gradle.kts | head -1 | awk -F\" '{ print $2 }')" >> $GITHUB_OUTPUT
+      - name: Get Short Commit Hash
+        id: sha
+        run: echo "shortSha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
-  # Need to add hash later
   nightly:
     needs: [ prepare ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     env:
-      VERSION: ${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}
+      VERSION: ${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}-${{ needs.prepare.outputs.shortSha }}
 
     steps:
       - name: Checkout code
@@ -68,11 +71,37 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      - name: Update Nightly Pre-Release
+      - name: Generate Checksums & Release Body
+        id: release_body
+        run: |
+          cd app/build/outputs/apk/release
+          sha256sum DeskClock-*.apk > checksums.txt
+          cd -
+
+          {
+            echo "body<<EOF"
+            echo "Automated rolling build from the latest master branch commit."
+            echo ""
+            echo "### Checksums"
+            echo "| File | SHA-256 |"
+            echo "| --- | --- |"
+            for apk in app/build/outputs/apk/release/DeskClock-*.apk; do
+              if [ -f "$apk" ]; then
+                filename=$(basename "$apk")
+                hash=$(sha256sum "$apk" | awk '{print $1}')
+                echo "| \`$filename\` | \`$hash\` |"
+              fi
+            done
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Nightly Pre-Release
         uses: softprops/action-gh-release@v3.0.2
         with:
-          tag_name: nightly
+          tag_name: ${{ env.VERSION }}
           name: ${{ env.VERSION }} Nightly Release
-          body: "Automated rolling build from the latest master branch commit."
-          files: app/build/outputs/apk/release/DeskClock-*.apk
+          body: ${{ steps.release_body.outputs.body }}
+          files: |
+            app/build/outputs/apk/release/DeskClock-*.apk
+            app/build/outputs/apk/release/checksums.txt
           prerelease: true
