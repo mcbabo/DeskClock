@@ -22,7 +22,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.exitUntilCollapsedScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,38 +46,20 @@ import app.grapheneos.deskclock.settings.data.ThemeMode
 import app.grapheneos.deskclock.settings.presentation.components.RingtoneVolumeDrawer
 import app.grapheneos.deskclock.settings.presentation.components.SnoozeDrawer
 import app.grapheneos.deskclock.settings.presentation.components.ThemeDrawer
-import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
-
-@Composable
-fun SettingsScreen(
-    onBack: () -> Unit,
-    viewModel: SettingsViewModel = koinViewModel()
-) {
-    val state by viewModel.uiState.collectAsState()
-    val backStack = LocalNavBackStack.current
-
-    SettingsContent(
-        state = state,
-        onIntent = { intent -> viewModel.handleIntent(intent) },
-        onBack = onBack,
-        onNavigateToAlarmStyle = { backStack.add(Route.AlarmStylePicker) },
-        onNavigateToTimerStyle = { backStack.add(Route.TimerStylePicker) }
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsContent(
+fun SettingsScreen(
     state: SettingsUiState,
     onIntent: (SettingsIntent) -> Unit,
     onBack: () -> Unit,
-    onNavigateToAlarmStyle: () -> Unit,
-    onNavigateToTimerStyle: () -> Unit
+    modifier: Modifier = Modifier,
 ) {
+    val backStack = LocalNavBackStack.current
     val view = LocalView.current
-
     val scrollBehavior = exitUntilCollapsedScrollBehavior()
+
     var showSnoozeDialog by remember { mutableStateOf(false) }
     var showRingtoneDialog by remember { mutableStateOf(false) }
     var showRingtoneVolumeDialog by remember { mutableStateOf(false) }
@@ -87,7 +68,7 @@ fun SettingsContent(
     val settings = state.settings ?: return
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = { Text(text = stringResource(R.string.settings)) },
@@ -153,7 +134,7 @@ fun SettingsContent(
                         supportingContent = {
                             Text(text = stringResource(R.string.settings_alarm_popup_style_desc))
                         },
-                        onClick = onNavigateToAlarmStyle,
+                        onClick = { backStack.add(Route.AlarmStylePicker) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Outlined.Palette,
@@ -170,7 +151,7 @@ fun SettingsContent(
                         supportingContent = {
                             Text(text = stringResource(R.string.settings_timer_popup_style_desc))
                         },
-                        onClick = onNavigateToTimerStyle,
+                        onClick = { backStack.add(Route.TimerStylePicker) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Outlined.Palette,
@@ -325,7 +306,7 @@ fun SettingsContent(
 @Composable
 fun SettingsScreenPreview() {
     DeskClockTheme {
-        SettingsContent(
+        SettingsScreen(
             state = SettingsUiState(
                 settings = AppSettingsUiModel(
                     themeMode = ThemeMode.SYSTEM,
@@ -341,9 +322,7 @@ fun SettingsScreenPreview() {
                 )
             ),
             onIntent = {},
-            onBack = {},
-            onNavigateToAlarmStyle = {},
-            onNavigateToTimerStyle = {}
+            onBack = {}
         )
     }
 }
