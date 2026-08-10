@@ -37,7 +37,8 @@ jobs:
     permissions:
       contents: write
     env:
-      VERSION: ${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}-${{ needs.prepare.outputs.shortSha }}
+      VERSION_TAG: ${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}-${{ needs.prepare.outputs.shortSha }}
+      VERSION: ${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}
 
     steps:
       - name: Checkout code
@@ -98,8 +99,8 @@ jobs:
       - name: Nightly Pre-Release
         uses: softprops/action-gh-release@v3.0.2
         with:
-          tag_name: ${{ env.VERSION }}
-          name: Nightly Release
+          tag_name: ${{ env.VERSION_TAG }}
+          name: ${{ env.VERSION }} Nightly Release
           body: ${{ steps.release_body.outputs.body }}
           files: |
             app/build/outputs/apk/release/DeskClock-*.apk

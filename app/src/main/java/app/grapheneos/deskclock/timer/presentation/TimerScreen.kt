@@ -32,38 +32,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.grapheneos.deskclock.R
-import app.grapheneos.deskclock.core.navigation.LocalNavBackStack
-import app.grapheneos.deskclock.core.navigation.Route
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.timer.presentation.components.TimerKeypad
 import app.grapheneos.deskclock.timer.util.TimerUtils
-import org.koin.androidx.compose.koinViewModel
-
-@Composable
-fun TimerScreen(
-    modifier: Modifier = Modifier,
-    viewModel: TimerViewModel = koinViewModel()
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val backStack = LocalNavBackStack.current
-
-    TimerContent(
-        uiState = uiState,
-        onNavigateToSettings = { backStack.add(Route.Settings) },
-        onIntent = viewModel::handleIntent,
-        modifier = modifier
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimerContent(
+fun TimerScreen(
     uiState: TimerUiState,
-    onNavigateToSettings: () -> Unit,
     onIntent: (TimerIntent) -> Unit,
-    modifier: Modifier = Modifier
+    onSettingsClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
@@ -71,7 +51,7 @@ fun TimerContent(
             TopAppBar(
                 title = { Text(stringResource(R.string.timer)) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateToSettings) {
+                    IconButton(onClick = onSettingsClick) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(R.string.settings)
@@ -210,10 +190,10 @@ private fun TimerIndicator(
 @Composable
 fun TimerSetupPreview() {
     DeskClockTheme {
-        TimerContent(
+        TimerScreen(
             uiState = TimerUiState(inputTime = "001000"),
-            onNavigateToSettings = {},
-            onIntent = {}
+            onIntent = {},
+            onSettingsClick = {},
         )
     }
 }
@@ -222,15 +202,15 @@ fun TimerSetupPreview() {
 @Composable
 fun TimerRunningPreview() {
     DeskClockTheme {
-        TimerContent(
+        TimerScreen(
             uiState = TimerUiState(
                 isStarted = true,
                 isRunning = true,
                 remainingTime = 45000,
                 progress = 0.75f
             ),
-            onNavigateToSettings = {},
-            onIntent = {}
+            onIntent = {},
+            onSettingsClick = {},
         )
     }
 }

@@ -37,7 +37,7 @@ import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGrou
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 
 @Composable
-fun PermissionScreen(
+fun PermissionGate(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -78,7 +78,7 @@ fun PermissionScreen(
     if (initiallyAllGranted || isContinueClicked) {
         content()
     } else {
-        PermissionContent(
+        PermissionScreen(
             permissions = permissions,
             onContinue = { isContinueClicked = true }
         )
@@ -86,14 +86,15 @@ fun PermissionScreen(
 }
 
 @Composable
-fun PermissionContent(
+fun PermissionScreen(
     permissions: List<PermissionUiState>,
-    onContinue: () -> Unit
+    onContinue: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val allGranted = permissions.all { it.isGranted }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         bottomBar = {
             Box(
                 modifier = Modifier
@@ -183,8 +184,8 @@ fun PermissionContent(
 @Composable
 fun PermissionScreenPreview() {
     DeskClockTheme {
-        PermissionContent(
-            listOf(
+        PermissionScreen(
+            permissions = listOf(
                 PermissionUiState(
                     title = "Notifications",
                     description = "Required to display active timers and persistent alarm alerts.",
@@ -199,7 +200,8 @@ fun PermissionScreenPreview() {
                     icon = Icons.Outlined.Layers,
                     launchAction = { }
                 )
-            )
-        ) {}
+            ),
+            onContinue = {}
+        )
     }
 }

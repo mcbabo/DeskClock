@@ -1,9 +1,7 @@
 package app.grapheneos.deskclock.settings.presentation.style
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
 import app.grapheneos.deskclock.alarm.presentation.popup.getAlarmLabel
@@ -12,18 +10,17 @@ import app.grapheneos.deskclock.alarm.presentation.popup.styles.AlarmPopUpTertia
 import app.grapheneos.deskclock.alarm.presentation.popup.styles.AlarmPopUpVariant
 import app.grapheneos.deskclock.settings.data.PopUpStyle
 import app.grapheneos.deskclock.settings.presentation.SettingsIntent
-import app.grapheneos.deskclock.settings.presentation.SettingsViewModel
+import app.grapheneos.deskclock.settings.presentation.SettingsUiState
 import app.grapheneos.deskclock.timer.presentation.popup.styles.TimerPopUpDefault
 import app.grapheneos.deskclock.timer.presentation.popup.styles.TimerPopUpTertiary
 import app.grapheneos.deskclock.timer.presentation.popup.styles.TimerPopUpVariant
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AlarmStylePickerScreen(
-    onBack: () -> Unit,
-    viewModel: SettingsViewModel = koinViewModel()
+    state: SettingsUiState,
+    onIntent: (SettingsIntent) -> Unit,
+    onBack: () -> Unit
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val currentStyle = state.settings?.alarmPopUpStyle ?: PopUpStyle.DEFAULT
 
     val mockAlarm = AlarmUiModel(
@@ -44,7 +41,7 @@ fun AlarmStylePickerScreen(
     StylePickerScreen(
         title = stringResource(R.string.settings_alarm_popup_style),
         currentStyle = currentStyle,
-        onStyleSelected = { viewModel.handleIntent(SettingsIntent.SetAlarmPopUpStyle(it)) },
+        onStyleSelected = { onIntent(SettingsIntent.SetAlarmPopUpStyle(it)) },
         onBack = onBack,
         previewContent = { style ->
             when (style) {
@@ -75,16 +72,16 @@ fun AlarmStylePickerScreen(
 
 @Composable
 fun TimerStylePickerScreen(
-    onBack: () -> Unit,
-    viewModel: SettingsViewModel = koinViewModel()
+    state: SettingsUiState,
+    onIntent: (SettingsIntent) -> Unit,
+    onBack: () -> Unit
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val currentStyle = state.settings?.timerPopUpStyle ?: PopUpStyle.DEFAULT
 
     StylePickerScreen(
         title = stringResource(R.string.settings_timer_popup_style),
         currentStyle = currentStyle,
-        onStyleSelected = { viewModel.handleIntent(SettingsIntent.SetTimerPopUpStyle(it)) },
+        onStyleSelected = { onIntent(SettingsIntent.SetTimerPopUpStyle(it)) },
         onBack = onBack,
         previewContent = { style ->
             when (style) {

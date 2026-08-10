@@ -10,9 +10,7 @@ import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.HourglassBottom
 import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import app.grapheneos.deskclock.R
 import kotlinx.serialization.Serializable
@@ -30,10 +28,6 @@ sealed interface Route : NavKey {
 
     @Serializable
     data object TimerStylePicker : Route
-}
-
-val LocalNavBackStack = staticCompositionLocalOf<NavBackStack<NavKey>> {
-    error("No NavBackStack provided")
 }
 
 enum class ClockTab(
