@@ -1,8 +1,11 @@
 package app.grapheneos.deskclock.alarm.presentation
 
+import android.content.Context
 import androidx.compose.runtime.Immutable
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
+import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter
+import app.grapheneos.deskclock.core.util.formatSystemTime
 import kotlinx.serialization.Serializable
 
 @Immutable
@@ -21,7 +24,9 @@ data class AlarmUiModel(
     val ringtoneUri: String,
     val vibrate: Boolean,
     val snoozeDurationMinutes: Int,
-    val hasInstance: Boolean = false
+    val hasInstance: Boolean = false,
+    val timeText: String = "",
+    val daysOfWeekText: String = ""
 )
 
 @Immutable
@@ -53,7 +58,7 @@ sealed interface AlarmIntent {
     data object StopPreview : AlarmIntent
 }
 
-fun AlarmWithInstance.toUiModel(): AlarmUiModel {
+fun AlarmWithInstance.toUiModel(context: Context): AlarmUiModel {
     return AlarmUiModel(
         id = alarm.id,
         hour = alarm.hour,
@@ -65,7 +70,9 @@ fun AlarmWithInstance.toUiModel(): AlarmUiModel {
         ringtoneUri = alarm.ringtoneUri,
         vibrate = alarm.vibrate,
         snoozeDurationMinutes = alarm.snoozeDurationMinutes,
-        hasInstance = instance != null
+        hasInstance = instance != null,
+        timeText = formatSystemTime(context, alarm.hour, alarm.minute),
+        daysOfWeekText = AlarmDayFormatter.formatDaysOfWeek(context, alarm.daysOfWeek)
     )
 }
 

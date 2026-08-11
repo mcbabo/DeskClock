@@ -136,9 +136,8 @@ fun AlarmPopUpBase(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 if (alarm != null) {
-                    val scheduledTime = formatSystemTime(context, alarm.hour, alarm.minute)
                     Text(
-                        text = stringResource(R.string.alarm_n, scheduledTime),
+                        text = stringResource(R.string.alarm_n, alarm.timeText),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

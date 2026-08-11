@@ -1,11 +1,14 @@
 package app.grapheneos.deskclock.alarm.presentation.popup
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
 import app.grapheneos.deskclock.alarm.presentation.toUiModel
 import app.grapheneos.deskclock.alarm.util.AlarmConstants
+import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter.formatDaysOfWeek
+import app.grapheneos.deskclock.core.util.formatSystemTime
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.settings.presentation.AppSettingsUiModel
 import app.grapheneos.deskclock.settings.presentation.toUiModel
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AlarmPopUpViewModel(
+    private val application: Application,
     private val alarmRepository: AlarmRepository,
     settingsRepository: SettingsRepository
 ) : ViewModel() {
@@ -66,7 +70,9 @@ class AlarmPopUpViewModel(
                         label = intent.label,
                         ringtoneUri = "",
                         vibrate = true,
-                        snoozeDurationMinutes = 10
+                        snoozeDurationMinutes = 10,
+                        timeText = formatSystemTime(application, intent.hour, intent.minute),
+                        daysOfWeekText = formatDaysOfWeek(application, 0)
                     )
                     _uiState.update {
                         it.copy(
@@ -91,7 +97,7 @@ class AlarmPopUpViewModel(
         viewModelScope.launch {
             val data = alarmRepository.getAlarmByInstanceId(currentInstanceId)
             if (data != null) {
-                _uiState.update { it.copy(alarm = data.toUiModel(), isLoading = false) }
+                _uiState.update { it.copy(alarm = data.toUiModel(application), isLoading = false) }
             } else {
                 _uiState.update { it.copy(isLoading = false) }
             }

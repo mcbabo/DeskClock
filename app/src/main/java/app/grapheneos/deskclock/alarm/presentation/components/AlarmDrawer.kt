@@ -89,7 +89,6 @@ fun AlarmDrawerContent(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val view = LocalView.current
 
     var localAlarm by remember(alarm.id) {
@@ -109,135 +108,43 @@ fun AlarmDrawerContent(
             .screenPadding(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = formatSystemTime(context, localAlarm.hour, localAlarm.minute),
-                modifier = Modifier.padding(horizontal = 4.dp),
-                style = MaterialTheme.typography.displayMedium
-            )
-
-            Button(
-                onClick = {
-                    view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                    showTimePicker = true
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                )
-            ) {
-                Text(stringResource(R.string.edit))
+        AlarmDrawerTimeHeader(
+            hour = localAlarm.hour,
+            minute = localAlarm.minute,
+            onEditClick = {
+                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                showTimePicker = true
             }
-        }
+        )
 
-        DayChips(
-            selectedDaysBitmask = localAlarm.daysOfWeek,
-            onBitmaskChange = { newBitmask ->
+        AlarmDrawerDaySelection(
+            daysOfWeek = localAlarm.daysOfWeek,
+            onDaysChange = { newBitmask ->
                 localAlarm = localAlarm.copy(daysOfWeek = newBitmask)
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
             }
         )
 
-        ListGroup {
-            item {
-                SwitchGroupRow(
-                    label = stringResource(R.string.delete_after_use),
-                    checked = if (localAlarm.daysOfWeek == 0) {
-                        localAlarm.deleteAfterUse
-                    } else {
-                        false
-                    },
-                    onCheckedChange = { isChecked ->
-                        localAlarm = localAlarm.copy(deleteAfterUse = isChecked)
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Delete,
-                            contentDescription = stringResource(R.string.delete)
-                        )
-                    },
-                    enabled = localAlarm.daysOfWeek == 0
-                )
-            }
-        }
-
-        ListGroup {
-            item {
-                InlineEditableValueGroupRow(
-                    label = stringResource(R.string.name_of_alarm),
-                    value = localAlarm.label,
-                    onValueChange = { newLabel -> localAlarm = localAlarm.copy(label = newLabel) },
-                    placeholder = stringResource(R.string.alarm),
-                    leadingIcon = {
-                        Icon(
-                            Icons.AutoMirrored.Outlined.Label,
-                            contentDescription = stringResource(R.string.name_of_alarm)
-                        )
-                    }
-                )
-            }
-            item {
-                ValueGroupRow(
-                    label = stringResource(R.string.ringtone),
-                    value = selectedRingtoneName,
-                    onClick = { showRingtonePicker = true },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Outlined.NotificationsActive,
-                            contentDescription = stringResource(R.string.ringtone)
-                        )
-                    }
-                )
-            }
-            item {
-                SwitchGroupRow(
-                    label = stringResource(R.string.vibrate),
-                    checked = localAlarm.vibrate,
-                    onCheckedChange = {
-                        localAlarm = localAlarm.copy(vibrate = it)
-                    },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Outlined.Vibration,
-                            contentDescription = stringResource(R.string.vibrate)
-                        )
-                    }
-                )
-            }
-        }
+        AlarmDrawerOptionsSection(
+            alarm = localAlarm,
+            selectedRingtoneName = selectedRingtoneName,
+            onAlarmChange = { localAlarm = it },
+            onRingtoneClick = { showRingtonePicker = true }
+        )
 
         Spacer(modifier.height(Layout.ScreenVertical))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                    onDelete()
-                },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.error,
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                )
-            ) {
-                Text(stringResource(R.string.delete))
+        AlarmDrawerActionButtons(
+            onDelete = {
+                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                onDelete()
+            },
+            onSave = {
+                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                onIntent(AlarmIntent.UpdateAlarm(localAlarm))
+                onDismissRequest()
             }
-            Button(
-                onClick = {
-                    view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                    onIntent(AlarmIntent.UpdateAlarm(localAlarm))
-                    onDismissRequest()
-                },
-            ) {
-                Text(stringResource(R.string.save))
-            }
-        }
+        )
     }
 
     if (showTimePicker) {
@@ -272,6 +179,149 @@ fun AlarmDrawerContent(
     }
 }
 
+@Composable
+private fun AlarmDrawerTimeHeader(
+    hour: Int,
+    minute: Int,
+    onEditClick: () -> Unit
+) {
+    val context = LocalContext.current
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = formatSystemTime(context, hour, minute),
+            modifier = Modifier.padding(horizontal = 4.dp),
+            style = MaterialTheme.typography.displayMedium
+        )
+
+        Button(
+            onClick = onEditClick,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            Text(stringResource(R.string.edit))
+        }
+    }
+}
+
+@Composable
+private fun AlarmDrawerDaySelection(
+    daysOfWeek: Int,
+    onDaysChange: (Int) -> Unit
+) {
+    DayChips(
+        selectedDaysBitmask = daysOfWeek,
+        onBitmaskChange = onDaysChange
+    )
+}
+
+@Composable
+private fun AlarmDrawerOptionsSection(
+    alarm: AlarmUiModel,
+    selectedRingtoneName: String,
+    onAlarmChange: (AlarmUiModel) -> Unit,
+    onRingtoneClick: () -> Unit
+) {
+    ListGroup {
+        item {
+            SwitchGroupRow(
+                label = stringResource(R.string.delete_after_use),
+                checked = if (alarm.daysOfWeek == 0) {
+                    alarm.deleteAfterUse
+                } else {
+                    false
+                },
+                onCheckedChange = { isChecked ->
+                    onAlarmChange(alarm.copy(deleteAfterUse = isChecked))
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = stringResource(R.string.delete)
+                    )
+                },
+                enabled = alarm.daysOfWeek == 0
+            )
+        }
+    }
+
+    ListGroup {
+        item {
+            InlineEditableValueGroupRow(
+                label = stringResource(R.string.name_of_alarm),
+                value = alarm.label,
+                onValueChange = { newLabel -> onAlarmChange(alarm.copy(label = newLabel)) },
+                placeholder = stringResource(R.string.alarm),
+                leadingIcon = {
+                    Icon(
+                        Icons.AutoMirrored.Outlined.Label,
+                        contentDescription = stringResource(R.string.name_of_alarm)
+                    )
+                }
+            )
+        }
+        item {
+            ValueGroupRow(
+                label = stringResource(R.string.ringtone),
+                value = selectedRingtoneName,
+                onClick = onRingtoneClick,
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.NotificationsActive,
+                        contentDescription = stringResource(R.string.ringtone)
+                    )
+                }
+            )
+        }
+        item {
+            SwitchGroupRow(
+                label = stringResource(R.string.vibrate),
+                checked = alarm.vibrate,
+                onCheckedChange = {
+                    onAlarmChange(alarm.copy(vibrate = it))
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Vibration,
+                        contentDescription = stringResource(R.string.vibrate)
+                    )
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun AlarmDrawerActionButtons(
+    onDelete: () -> Unit,
+    onSave: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Button(
+            onClick = onDelete,
+            colors = ButtonDefaults.buttonColors(
+                contentColor = MaterialTheme.colorScheme.error,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            )
+        ) {
+            Text(stringResource(R.string.delete))
+        }
+        Button(
+            onClick = onSave,
+        ) {
+            Text(stringResource(R.string.save))
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun AlarmDrawerContentPreview() {
@@ -287,7 +337,9 @@ fun AlarmDrawerContentPreview() {
                 label = "",
                 ringtoneUri = "",
                 vibrate = true,
-                snoozeDurationMinutes = 10
+                snoozeDurationMinutes = 10,
+                timeText = "7:30",
+                daysOfWeekText = "Mon-Fri"
             ),
             ringtones = emptyList(),
             onDismissRequest = {},

@@ -211,7 +211,9 @@ fun AlarmScreenPreview() {
                         label = "Wake up",
                         ringtoneUri = "",
                         vibrate = true,
-                        snoozeDurationMinutes = 10
+                        snoozeDurationMinutes = 10,
+                        timeText = "7:30",
+                        daysOfWeekText = "Mon-Fri"
                     ),
                     AlarmUiModel(
                         id = 2,
@@ -223,7 +225,9 @@ fun AlarmScreenPreview() {
                         label = "Gym",
                         ringtoneUri = "",
                         vibrate = true,
-                        snoozeDurationMinutes = 10
+                        snoozeDurationMinutes = 10,
+                        timeText = "16:00",
+                        daysOfWeekText = "Sat-Sun"
                     )
                 ),
                 nextAlarmRemainingTime = "7h 30m"

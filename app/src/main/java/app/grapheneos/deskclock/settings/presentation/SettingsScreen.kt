@@ -89,157 +89,28 @@ fun SettingsScreen(
                 .padding(innerPadding)
                 .screenPadding()
         ) {
-            ListGroup(title = stringResource(R.string.general)) {
-                item {
-                    SwitchGroupRow(
-                        label = stringResource(R.string.settings_dynamic_colors),
-                        supportingContent = {
-                            Text(text = stringResource(R.string.settings_dynamic_colors_desc))
-                        },
-                        checked = settings.dynamicColors,
-                        onCheckedChange = { newChecked ->
-                            onIntent(SettingsIntent.SetDynamicColors(newChecked))
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.ColorLens,
-                                contentDescription = stringResource(R.string.settings_dynamic_colors)
-                            )
-                        }
-                    )
-                }
+            GeneralSettingsSection(
+                dynamicColors = settings.dynamicColors,
+                themeMode = settings.themeMode,
+                alarmPopUpStyle = settings.alarmPopUpStyle,
+                timerPopUpStyle = settings.timerPopUpStyle,
+                onDynamicColorsChange = { onIntent(SettingsIntent.SetDynamicColors(it)) },
+                onThemeClick = { showThemeDialog = true },
+                onAlarmPopUpStyleClick = onNavigateToAlarmStylePicker,
+                onTimerPopUpStyleClick = onNavigateToTimerStylePicker
+            )
 
-                item {
-                    ValueGroupRow(
-                        label = stringResource(R.string.setting_theme),
-                        value = stringResource(settings.themeMode.displayNameRes),
-                        supportingContent = {
-                            Text(text = stringResource(R.string.setting_theme_desc))
-                        },
-                        onClick = { showThemeDialog = true },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Colorize,
-                                contentDescription = stringResource(R.string.setting_theme)
-                            )
-                        }
-                    )
-                }
-
-                item {
-                    ValueGroupRow(
-                        label = stringResource(R.string.settings_alarm_popup_style),
-                        value = stringResource(settings.alarmPopUpStyle.titleRes),
-                        supportingContent = {
-                            Text(text = stringResource(R.string.settings_alarm_popup_style_desc))
-                        },
-                        onClick = onNavigateToAlarmStylePicker,
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Palette,
-                                contentDescription = null
-                            )
-                        }
-                    )
-                }
-
-                item {
-                    ValueGroupRow(
-                        label = stringResource(R.string.settings_timer_popup_style),
-                        value = stringResource(settings.timerPopUpStyle.titleRes),
-                        supportingContent = {
-                            Text(text = stringResource(R.string.settings_timer_popup_style_desc))
-                        },
-                        onClick = onNavigateToTimerStylePicker,
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Palette,
-                                contentDescription = null
-                            )
-                        }
-                    )
-                }
-            }
-
-            ListGroup(title = stringResource(R.string.settings_alarm_and_timer)) {
-                item {
-                    ValueGroupRow(
-                        label = stringResource(R.string.settings_snooze_duration),
-                        value = stringResource(
-                            R.string.n_minutes,
-                            settings.snoozeDurationMinutes
-                        ),
-                        supportingContent = {
-                            Text(text = stringResource(R.string.settings_snooze_duration_desc))
-                        },
-                        onClick = { showSnoozeDialog = true },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Snooze,
-                                contentDescription = stringResource(R.string.settings_snooze_duration)
-                            )
-                        }
-                    )
-                }
-
-                item {
-                    ValueGroupRow(
-                        label = stringResource(R.string.settings_alarm_sound),
-                        value = settings.defaultRingtone.name,
-                        supportingContent = {
-                            Text(text = stringResource(R.string.settings_alarm_sound_desc))
-                        },
-                        onClick = { showRingtoneDialog = true },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.MusicNote,
-                                contentDescription = stringResource(R.string.settings_alarm_sound)
-                            )
-                        }
-                    )
-                }
-
-                item {
-                    val value = if (settings.useCustomRingtoneVolume) {
-                        (settings.ringtoneVolume * 100).roundToInt().toString() + "%"
-                    } else {
-                        stringResource(R.string.disabled)
-                    }
-                    ValueGroupRow(
-                        label = stringResource(R.string.settings_custom_volume),
-                        value = value,
-                        supportingContent = {
-                            Text(text = stringResource(R.string.settings_custom_volume_desc))
-                        },
-                        onClick = { showRingtoneVolumeDialog = true },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Tune,
-                                contentDescription = stringResource(R.string.settings_alarm_sound)
-                            )
-                        }
-                    )
-                }
-
-                item {
-                    SwitchGroupRow(
-                        label = stringResource(R.string.settings_vibration),
-                        supportingContent = {
-                            Text(text = stringResource(R.string.settings_vibration_desc))
-                        },
-                        checked = settings.vibrate,
-                        onCheckedChange = { newChecked ->
-                            onIntent(SettingsIntent.SetDefaultVibration(newChecked))
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Vibration,
-                                contentDescription = stringResource(R.string.settings_vibration)
-                            )
-                        }
-                    )
-                }
-            }
+            AlarmTimerSettingsSection(
+                snoozeDurationMinutes = settings.snoozeDurationMinutes,
+                defaultRingtoneName = settings.defaultRingtone.name,
+                useCustomRingtoneVolume = settings.useCustomRingtoneVolume,
+                ringtoneVolume = settings.ringtoneVolume,
+                vibrate = settings.vibrate,
+                onSnoozeClick = { showSnoozeDialog = true },
+                onRingtoneClick = { showRingtoneDialog = true },
+                onVolumeClick = { showRingtoneVolumeDialog = true },
+                onVibrationChange = { onIntent(SettingsIntent.SetDefaultVibration(it)) }
+            )
         }
     }
 
@@ -298,6 +169,179 @@ fun SettingsScreen(
             },
             onDismissRequest = { showThemeDialog = false }
         )
+    }
+}
+
+@Composable
+private fun GeneralSettingsSection(
+    dynamicColors: Boolean,
+    themeMode: ThemeMode,
+    alarmPopUpStyle: PopUpStyle,
+    timerPopUpStyle: PopUpStyle,
+    onDynamicColorsChange: (Boolean) -> Unit,
+    onThemeClick: () -> Unit,
+    onAlarmPopUpStyleClick: () -> Unit,
+    onTimerPopUpStyleClick: () -> Unit
+) {
+    ListGroup(title = stringResource(R.string.general)) {
+        item {
+            SwitchGroupRow(
+                label = stringResource(R.string.settings_dynamic_colors),
+                supportingContent = {
+                    Text(text = stringResource(R.string.settings_dynamic_colors_desc))
+                },
+                checked = dynamicColors,
+                onCheckedChange = onDynamicColorsChange,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.ColorLens,
+                        contentDescription = stringResource(R.string.settings_dynamic_colors)
+                    )
+                }
+            )
+        }
+
+        item {
+            ValueGroupRow(
+                label = stringResource(R.string.setting_theme),
+                value = stringResource(themeMode.displayNameRes),
+                supportingContent = {
+                    Text(text = stringResource(R.string.setting_theme_desc))
+                },
+                onClick = onThemeClick,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Colorize,
+                        contentDescription = stringResource(R.string.setting_theme)
+                    )
+                }
+            )
+        }
+
+        item {
+            ValueGroupRow(
+                label = stringResource(R.string.settings_alarm_popup_style),
+                value = stringResource(alarmPopUpStyle.titleRes),
+                supportingContent = {
+                    Text(text = stringResource(R.string.settings_alarm_popup_style_desc))
+                },
+                onClick = onAlarmPopUpStyleClick,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Palette,
+                        contentDescription = null
+                    )
+                }
+            )
+        }
+
+        item {
+            ValueGroupRow(
+                label = stringResource(R.string.settings_timer_popup_style),
+                value = stringResource(timerPopUpStyle.titleRes),
+                supportingContent = {
+                    Text(text = stringResource(R.string.settings_timer_popup_style_desc))
+                },
+                onClick = onTimerPopUpStyleClick,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Palette,
+                        contentDescription = null
+                    )
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun AlarmTimerSettingsSection(
+    snoozeDurationMinutes: Int,
+    defaultRingtoneName: String,
+    useCustomRingtoneVolume: Boolean,
+    ringtoneVolume: Float,
+    vibrate: Boolean,
+    onSnoozeClick: () -> Unit,
+    onRingtoneClick: () -> Unit,
+    onVolumeClick: () -> Unit,
+    onVibrationChange: (Boolean) -> Unit
+) {
+    ListGroup(title = stringResource(R.string.settings_alarm_and_timer)) {
+        item {
+            ValueGroupRow(
+                label = stringResource(R.string.settings_snooze_duration),
+                value = stringResource(
+                    R.string.n_minutes,
+                    snoozeDurationMinutes
+                ),
+                supportingContent = {
+                    Text(text = stringResource(R.string.settings_snooze_duration_desc))
+                },
+                onClick = onSnoozeClick,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Snooze,
+                        contentDescription = stringResource(R.string.settings_snooze_duration)
+                    )
+                }
+            )
+        }
+
+        item {
+            ValueGroupRow(
+                label = stringResource(R.string.settings_alarm_sound),
+                value = defaultRingtoneName,
+                supportingContent = {
+                    Text(text = stringResource(R.string.settings_alarm_sound_desc))
+                },
+                onClick = onRingtoneClick,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.MusicNote,
+                        contentDescription = stringResource(R.string.settings_alarm_sound)
+                    )
+                }
+            )
+        }
+
+        item {
+            val value = if (useCustomRingtoneVolume) {
+                (ringtoneVolume * 100).roundToInt().toString() + "%"
+            } else {
+                stringResource(R.string.disabled)
+            }
+            ValueGroupRow(
+                label = stringResource(R.string.settings_custom_volume),
+                value = value,
+                supportingContent = {
+                    Text(text = stringResource(R.string.settings_custom_volume_desc))
+                },
+                onClick = onVolumeClick,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Tune,
+                        contentDescription = stringResource(R.string.settings_alarm_sound)
+                    )
+                }
+            )
+        }
+
+        item {
+            SwitchGroupRow(
+                label = stringResource(R.string.settings_vibration),
+                supportingContent = {
+                    Text(text = stringResource(R.string.settings_vibration_desc))
+                },
+                checked = vibrate,
+                onCheckedChange = onVibrationChange,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Vibration,
+                        contentDescription = stringResource(R.string.settings_vibration)
+                    )
+                }
+            )
+        }
     }
 }
 

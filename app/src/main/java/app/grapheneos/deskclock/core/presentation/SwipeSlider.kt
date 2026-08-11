@@ -32,8 +32,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -93,35 +93,38 @@ fun SwipeSlider(
             centerLabel = centerLabel,
             leftAction = leftAction,
             rightAction = rightAction,
-            offsetX = offsetX.value,
+            offsetX = { offsetX.value },
             maxTravel = maxTravel,
             centerOffset = centerOffset,
-            isLeftReached = isLeftReached,
-            isRightReached = isRightReached,
+            isLeftReached = { leftAction != null && offsetX.value < -maxTravel * 0.6f },
+            isRightReached = { rightAction != null && offsetX.value > maxTravel * 0.6f },
             onOffsetChange = { delta ->
                 val min = if (leftAction != null) -maxTravel else 0f
                 val max = if (rightAction != null) maxTravel else 0f
                 scope.launch { offsetX.snapTo((offsetX.value + delta).coerceIn(min, max)) }
-            }
-        ) {
-            scope.launch {
-                when {
-                    isRightReached -> {
-                        offsetX.animateTo(maxTravel, tween(150))
-                        rightAction.onTrigger()
-                        offsetX.animateTo(0f, tween(300))
-                    }
+            },
+            onDragStopped = {
+                scope.launch {
+                    val reachedRight = rightAction != null && offsetX.value > maxTravel * 0.6f
+                    val reachedLeft = leftAction != null && offsetX.value < -maxTravel * 0.6f
+                    when {
+                        reachedRight -> {
+                            offsetX.animateTo(maxTravel, tween(150))
+                            rightAction.onTrigger()
+                            offsetX.animateTo(0f, tween(300))
+                        }
 
-                    isLeftReached -> {
-                        offsetX.animateTo(-maxTravel, tween(150))
-                        leftAction.onTrigger()
-                        offsetX.animateTo(0f, tween(300))
-                    }
+                        reachedLeft -> {
+                            offsetX.animateTo(-maxTravel, tween(150))
+                            leftAction.onTrigger()
+                            offsetX.animateTo(0f, tween(300))
+                        }
 
-                    else -> offsetX.animateTo(0f, tween(300))
+                        else -> offsetX.animateTo(0f, tween(300))
+                    }
                 }
             }
-        }
+        )
     }
 }
 
@@ -130,17 +133,20 @@ private fun SwipeSliderContent(
     centerLabel: String,
     leftAction: SwipeAction?,
     rightAction: SwipeAction?,
-    offsetX: Float,
+    offsetX: () -> Float,
     maxTravel: Float,
     centerOffset: Float,
-    isLeftReached: Boolean,
-    isRightReached: Boolean,
+    isLeftReached: () -> Boolean,
+    isRightReached: () -> Boolean,
     onOffsetChange: (Float) -> Unit,
     onDragStopped: () -> Unit
 ) {
+    val reachedRight = isRightReached()
+    val reachedLeft = isLeftReached()
+
     val targetColor = when {
-        isRightReached -> rightAction?.color?.invoke() ?: MaterialTheme.colorScheme.primary
-        isLeftReached -> leftAction?.color?.invoke() ?: MaterialTheme.colorScheme.primary
+        reachedRight -> rightAction?.color?.invoke() ?: MaterialTheme.colorScheme.primary
+        reachedLeft -> leftAction?.color?.invoke() ?: MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.primary
     }
     val thumbColor by animateColorAsState(targetValue = targetColor, label = "thumbColor")
@@ -150,20 +156,22 @@ private fun SwipeSliderContent(
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(
             text = when {
-                isRightReached -> rightAction?.label ?: centerLabel
-                isLeftReached -> leftAction?.label ?: centerLabel
+                reachedRight -> rightAction?.label ?: centerLabel
+                reachedLeft -> leftAction?.label ?: centerLabel
                 else -> centerLabel
             },
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.alpha((1f - abs(offsetX) / (maxTravel * 0.5f)).coerceIn(0f, 1f))
+            modifier = Modifier.graphicsLayer {
+                alpha = (1f - abs(offsetX()) / (maxTravel * 0.5f)).coerceIn(0f, 1f)
+            }
         )
     }
 
     Box(
         modifier = Modifier
             .padding(vertical = 4.dp)
-            .offset { IntOffset((centerOffset + offsetX).roundToInt(), 0) }
+            .offset { IntOffset((centerOffset + offsetX()).roundToInt(), 0) }
             .size(76.dp)
             .clip(CircleShape)
             .background(thumbColor)
@@ -175,19 +183,19 @@ private fun SwipeSliderContent(
         contentAlignment = Alignment.Center
     ) {
         val icon = when {
-            isRightReached -> rightAction?.icon
-            isLeftReached -> leftAction?.icon
+            reachedRight -> rightAction?.icon
+            reachedLeft -> leftAction?.icon
             else -> rightAction?.icon ?: leftAction?.icon
         } ?: Icons.Default.Close
 
         val tint = when {
-            isRightReached -> if (targetColor == MaterialTheme.colorScheme.error) {
+            reachedRight -> if (targetColor == MaterialTheme.colorScheme.error) {
                 MaterialTheme.colorScheme.onError
             } else {
                 MaterialTheme.colorScheme.onTertiary
             }
 
-            isLeftReached -> MaterialTheme.colorScheme.onSecondary
+            reachedLeft -> MaterialTheme.colorScheme.onSecondary
             else -> MaterialTheme.colorScheme.onPrimary
         }
 
@@ -204,7 +212,7 @@ private fun SwipeSliderContent(
 private fun SwipeBackgroundIcons(
     leftAction: SwipeAction?,
     rightAction: SwipeAction?,
-    offsetX: Float
+    offsetX: () -> Float
 ) {
     Row(
         modifier = Modifier
@@ -218,7 +226,7 @@ private fun SwipeBackgroundIcons(
                 imageVector = leftAction.icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.alpha(if (offsetX < 0) 1f else 0.3f)
+                modifier = Modifier.graphicsLayer { alpha = if (offsetX() < 0) 1f else 0.3f }
             )
         } else {
             Box(Modifier.size(24.dp))
@@ -229,7 +237,7 @@ private fun SwipeBackgroundIcons(
                 imageVector = rightAction.icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.alpha(if (offsetX > 0) 1f else 0.3f)
+                modifier = Modifier.graphicsLayer { alpha = if (offsetX() > 0) 1f else 0.3f }
             )
         } else {
             Box(Modifier.size(24.dp))

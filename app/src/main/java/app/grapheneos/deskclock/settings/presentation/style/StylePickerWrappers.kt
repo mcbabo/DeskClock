@@ -33,7 +33,9 @@ fun AlarmStylePickerScreen(
         label = stringResource(R.string.wake_up),
         ringtoneUri = "",
         vibrate = true,
-        snoozeDurationMinutes = 10
+        snoozeDurationMinutes = 10,
+        timeText = "7:30",
+        daysOfWeekText = stringResource(R.string.one_time)
     )
 
     val labelText = getAlarmLabel(mockAlarm)

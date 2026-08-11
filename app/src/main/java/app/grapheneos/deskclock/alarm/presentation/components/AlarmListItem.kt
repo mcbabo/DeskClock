@@ -11,17 +11,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
-import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter
 import app.grapheneos.deskclock.core.presentation.components.groupitems.GroupRow
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
-import app.grapheneos.deskclock.core.util.formatSystemTime
 
 @Composable
 fun AlarmListItem(
@@ -29,10 +26,7 @@ fun AlarmListItem(
     onToggle: (Boolean) -> Unit,
     onClick: () -> Unit
 ) {
-    val context = LocalContext.current
     val view = LocalView.current
-
-    val timeText = formatSystemTime(context, alarm.hour, alarm.minute)
 
     GroupRow(
         modifier = Modifier,
@@ -42,7 +36,7 @@ fun AlarmListItem(
         },
         content = {
             Text(
-                text = timeText,
+                text = alarm.timeText,
                 style = MaterialTheme.typography.displayMedium,
             )
         },
@@ -67,7 +61,7 @@ fun AlarmListItem(
                 Spacer(modifier = Modifier.width(6.dp))
 
                 Text(
-                    text = AlarmDayFormatter.formatDaysOfWeek(context, alarm.daysOfWeek),
+                    text = alarm.daysOfWeekText,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -108,7 +102,9 @@ fun AlarmListItemPreview() {
                     label = "",
                     ringtoneUri = "",
                     vibrate = true,
-                    snoozeDurationMinutes = 10
+                    snoozeDurationMinutes = 10,
+                    timeText = "2:30",
+                    daysOfWeekText = "Sat-Sun"
                 ),
                 onToggle = {},
                 onClick = {}

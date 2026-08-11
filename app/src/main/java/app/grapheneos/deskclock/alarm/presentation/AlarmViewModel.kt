@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.alarm.presentation
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
@@ -27,6 +28,7 @@ import java.time.Instant
 import kotlin.time.Duration.Companion.minutes
 
 class AlarmViewModel(
+    private val application: Application,
     private val alarmRepository: AlarmRepository,
     settingsRepository: SettingsRepository,
     private val ringtoneRepository: RingtoneRepository,
@@ -57,7 +59,7 @@ class AlarmViewModel(
                 delay(1.minutes)
             }
         }.combine(alarmRepository.allAlarms) { _, alarms ->
-            calculateNextAlarmString(alarms.map { it.toUiModel() })
+            calculateNextAlarmString(alarms.map { it.toUiModel(application) })
         }.onEach { nextAlarmString ->
             _uiState.update { it.copy(nextAlarmRemainingTime = nextAlarmString) }
         }.launchIn(viewModelScope)
@@ -135,7 +137,7 @@ class AlarmViewModel(
         _uiState.update { it.copy(isLoading = true) }
         alarmRepository.allAlarms
             .onEach { alarmList ->
-                val uiModels = alarmList.map { it.toUiModel() }
+                val uiModels = alarmList.map { it.toUiModel(application) }
                 _uiState.update { it.copy(alarms = uiModels, isLoading = false) }
             }
             .launchIn(viewModelScope)

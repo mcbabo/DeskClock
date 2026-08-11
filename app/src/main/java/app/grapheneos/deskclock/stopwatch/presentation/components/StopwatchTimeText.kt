@@ -19,6 +19,21 @@ fun StopwatchTimeText(
     modifier: Modifier = Modifier
 ) {
     val elapsedMillis by elapsedMillisFlow.collectAsState(initial = initialMillis)
+    StopwatchTimeText(
+        elapsedMillis = elapsedMillis,
+        isRunning = isRunning,
+        style = style,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun StopwatchTimeText(
+    elapsedMillis: Long,
+    isRunning: Boolean,
+    style: TextStyle,
+    modifier: Modifier = Modifier
+) {
     val precision = if (isRunning) {
         StopwatchPrecision.TENTHS
     } else {
