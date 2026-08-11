@@ -8,9 +8,9 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.notification.NotificationConstants
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.timer.data.TimerData
 import app.grapheneos.deskclock.timer.data.TimerReceiver
-import app.grapheneos.deskclock.timer.util.TimerConstants
 import app.grapheneos.deskclock.timer.util.TimerUtils
 
 class TimerNotificationManager(private val context: Context) {
@@ -30,7 +30,7 @@ class TimerNotificationManager(private val context: Context) {
             .addAction(
                 android.R.drawable.ic_menu_close_clear_cancel,
                 context.getString(R.string.reset),
-                getPendingIntent(TimerConstants.ACTION_RESET)
+                getPendingIntent(Constants.Timer.ACTION_RESET)
             )
             .build()
     }
@@ -49,7 +49,7 @@ class TimerNotificationManager(private val context: Context) {
         return NotificationCompat.Action(
             icon,
             title,
-            getPendingIntent(TimerConstants.ACTION_PAUSE_RESUME)
+            getPendingIntent(Constants.Timer.ACTION_PAUSE_RESUME)
         )
     }
 

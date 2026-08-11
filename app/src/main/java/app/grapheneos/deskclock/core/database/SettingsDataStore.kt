@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.settings.data.AppSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -14,11 +15,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
-const val SETTINGS_NAME = "app_settings"
-const val SETTINGS_KEY = "settings_json"
-
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(
-    name = SETTINGS_NAME
+    name = Constants.SETTINGS_DATASTORE_NAME
 )
 
 class SettingsDataStore(private val context: Context) {
@@ -29,7 +27,7 @@ class SettingsDataStore(private val context: Context) {
         }
 
     companion object {
-        private val SETTINGS_JSON_KEY = stringPreferencesKey(SETTINGS_KEY)
+        private val SETTINGS_JSON_KEY = stringPreferencesKey(Constants.SETTINGS_DATASTORE_KEY)
     }
 
     suspend fun exportSettingsToJson(): String {

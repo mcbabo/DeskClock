@@ -16,6 +16,7 @@ import app.grapheneos.deskclock.core.database.getRoomDatabase
 import app.grapheneos.deskclock.core.notification.ChannelManager
 import app.grapheneos.deskclock.core.presentation.MainActivityViewModel
 import app.grapheneos.deskclock.core.ringtone.RingtoneRepository
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.settings.presentation.SettingsViewModel
 import app.grapheneos.deskclock.stopwatch.data.StopwatchRepository
@@ -44,7 +45,7 @@ val coreModule = module {
     }
 
     single(named("AttributedContext")) {
-        androidContext().createAttributionContext("deskclock_service")
+        androidContext().createAttributionContext(Constants.ATTRIBUTION_TAG_DESKCLOCK_SERVICE)
     }
 
     single { ChannelManager(get()) }

@@ -10,8 +10,8 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.popup.AlarmPopUpActivity
-import app.grapheneos.deskclock.alarm.util.AlarmConstants
 import app.grapheneos.deskclock.core.notification.NotificationConstants
+import app.grapheneos.deskclock.core.util.Constants
 
 class AlarmNotificationManager(private val context: Context) {
     @SuppressLint("FullScreenIntentPolicy")
@@ -50,10 +50,10 @@ class AlarmNotificationManager(private val context: Context) {
     ): PendingIntent {
         val intent = Intent().apply {
             component = ComponentName(context, AlarmPopUpActivity::class.java)
-            putExtra(AlarmConstants.EXTRA_INSTANCE_ID, id)
-            putExtra(AlarmConstants.EXTRA_ALARM_LABEL, label)
-            putExtra(AlarmConstants.EXTRA_ALARM_HOUR, hour)
-            putExtra(AlarmConstants.EXTRA_ALARM_MINUTE, minute)
+            putExtra(Constants.Alarm.EXTRA_INSTANCE_ID, id)
+            putExtra(Constants.Alarm.EXTRA_ALARM_LABEL, label)
+            putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, hour)
+            putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, minute)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                 Intent.FLAG_ACTIVITY_NO_USER_ACTION or
                 Intent.FLAG_ACTIVITY_SINGLE_TOP

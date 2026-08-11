@@ -3,7 +3,7 @@ package app.grapheneos.deskclock.timer.data
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import app.grapheneos.deskclock.timer.util.TimerConstants
+import app.grapheneos.deskclock.core.util.Constants
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -13,8 +13,8 @@ class TimerReceiver : BroadcastReceiver(), KoinComponent {
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            TimerConstants.ACTION_PAUSE_RESUME -> timerRepository.togglePauseResume()
-            TimerConstants.ACTION_RESET -> timerRepository.reset()
+            Constants.Timer.ACTION_PAUSE_RESUME -> timerRepository.togglePauseResume()
+            Constants.Timer.ACTION_RESET -> timerRepository.reset()
         }
     }
 }

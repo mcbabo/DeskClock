@@ -17,11 +17,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
-import app.grapheneos.deskclock.alarm.util.AlarmConstants
 import app.grapheneos.deskclock.core.presentation.PopUpButton
 import app.grapheneos.deskclock.core.presentation.SwipeAction
 import app.grapheneos.deskclock.core.presentation.SwipeSlider
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.core.util.Constants
 
 @Composable
 fun AlarmPopUpVariant(
@@ -39,7 +39,7 @@ fun AlarmPopUpVariant(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
-            val minutes = alarm?.snoozeDurationMinutes ?: AlarmConstants.DEFAULT_SNOOZE_TIME
+            val minutes = alarm?.snoozeDurationMinutes ?: Constants.Alarm.DEFAULT_SNOOZE_TIME
             PopUpButton(
                 onClick = onSnooze,
                 icon = Icons.Default.Snooze,

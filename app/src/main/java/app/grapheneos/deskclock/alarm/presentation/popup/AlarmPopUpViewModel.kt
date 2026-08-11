@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
 import app.grapheneos.deskclock.alarm.presentation.toUiModel
-import app.grapheneos.deskclock.alarm.util.AlarmConstants
 import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter.formatDaysOfWeek
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.core.util.formatSystemTime
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.settings.presentation.AppSettingsUiModel
@@ -118,7 +118,7 @@ class AlarmPopUpViewModel(
             if (currentInstanceId != -1L) {
                 alarmRepository.snoozeAlarm(
                     currentInstanceId,
-                    snoozeMinutes = AlarmConstants.DEFAULT_SNOOZE_TIME
+                    snoozeMinutes = Constants.Alarm.DEFAULT_SNOOZE_TIME
                 )
             }
             _effect.send(AlarmPopUpEffect.FinishAndStopService)

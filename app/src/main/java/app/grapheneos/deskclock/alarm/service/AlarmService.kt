@@ -4,29 +4,29 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.alarm.presentation.popup.AlarmPopUpActivity
-import app.grapheneos.deskclock.alarm.util.AlarmConstants
 import app.grapheneos.deskclock.core.notification.NotificationConstants
 import app.grapheneos.deskclock.core.service.BaseAlertService
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class AlarmService : BaseAlertService(AlarmConstants.PM_TAG) {
+class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
     private val alarmRepository: AlarmRepository by inject()
     private val settingsRepository: SettingsRepository by inject()
     private val notificationManager: AlarmNotificationManager by inject()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val instanceId = intent?.getLongExtra(AlarmConstants.EXTRA_INSTANCE_ID, -1L) ?: -1L
-        val label = intent?.getStringExtra(AlarmConstants.EXTRA_ALARM_LABEL) ?: ""
-        val hour = intent?.getIntExtra(AlarmConstants.EXTRA_ALARM_HOUR, -1) ?: -1
-        val minute = intent?.getIntExtra(AlarmConstants.EXTRA_ALARM_MINUTE, -1) ?: -1
+        val instanceId = intent?.getLongExtra(Constants.Alarm.EXTRA_INSTANCE_ID, -1L) ?: -1L
+        val label = intent?.getStringExtra(Constants.Alarm.EXTRA_ALARM_LABEL) ?: ""
+        val hour = intent?.getIntExtra(Constants.Alarm.EXTRA_ALARM_HOUR, -1) ?: -1
+        val minute = intent?.getIntExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, -1) ?: -1
 
-        val hasIntentData = intent?.hasExtra(AlarmConstants.EXTRA_ALARM_RINGTONE_URI) == true
-        val intentRingtone = intent?.getStringExtra(AlarmConstants.EXTRA_ALARM_RINGTONE_URI)
+        val hasIntentData = intent?.hasExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI) == true
+        val intentRingtone = intent?.getStringExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI)
         val intentVibrate =
-            intent?.getBooleanExtra(AlarmConstants.EXTRA_ALARM_VIBRATE, true) ?: true
+            intent?.getBooleanExtra(Constants.Alarm.EXTRA_ALARM_VIBRATE, true) ?: true
 
         val notification = notificationManager.buildAlarmNotification(
             instanceId = instanceId,
@@ -80,10 +80,10 @@ class AlarmService : BaseAlertService(AlarmConstants.PM_TAG) {
 
     private fun launchPopUp(instanceId: Long, label: String, hour: Int, minute: Int) {
         val intent = Intent(this, AlarmPopUpActivity::class.java).apply {
-            putExtra(AlarmConstants.EXTRA_INSTANCE_ID, instanceId)
-            putExtra(AlarmConstants.EXTRA_ALARM_LABEL, label)
-            putExtra(AlarmConstants.EXTRA_ALARM_HOUR, hour)
-            putExtra(AlarmConstants.EXTRA_ALARM_MINUTE, minute)
+            putExtra(Constants.Alarm.EXTRA_INSTANCE_ID, instanceId)
+            putExtra(Constants.Alarm.EXTRA_ALARM_LABEL, label)
+            putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, hour)
+            putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, minute)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                 Intent.FLAG_ACTIVITY_NO_USER_ACTION or
                 Intent.FLAG_ACTIVITY_SINGLE_TOP

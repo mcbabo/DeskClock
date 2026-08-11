@@ -13,13 +13,12 @@ import app.grapheneos.deskclock.core.presentation.MainPagerScreen
 import app.grapheneos.deskclock.core.presentation.PermissionGate
 import app.grapheneos.deskclock.core.theme.motion.clockDefaultTransitions
 import app.grapheneos.deskclock.core.theme.motion.clockPopTransitions
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.settings.presentation.SettingsScreen
 import app.grapheneos.deskclock.settings.presentation.SettingsViewModel
 import app.grapheneos.deskclock.settings.presentation.style.AlarmStylePickerScreen
 import app.grapheneos.deskclock.settings.presentation.style.TimerStylePickerScreen
 import org.koin.androidx.compose.koinViewModel
-
-private const val METADATA_PERMISSIONS_REQUIRED = "permissions_required"
 
 @Composable
 fun NavigationRoot(
@@ -39,7 +38,7 @@ fun NavigationRoot(
         entryDecorators = listOf(
             NavEntryDecorator { entry ->
                 val permissionsRequired =
-                    entry.metadata[METADATA_PERMISSIONS_REQUIRED] as? Boolean ?: false
+                    entry.metadata[Constants.METADATA_PERMISSIONS_REQUIRED] as? Boolean ?: false
                 if (permissionsRequired) {
                     PermissionGate { entry.Content() }
                 } else {
@@ -49,7 +48,7 @@ fun NavigationRoot(
         ),
         entryProvider = entryProvider {
             entry<Route.Main>(
-                metadata = mapOf(METADATA_PERMISSIONS_REQUIRED to true)
+                metadata = mapOf(Constants.METADATA_PERMISSIONS_REQUIRED to true)
             ) {
                 MainPagerScreen(
                     onSettingsClick = { backStack.add(Route.Settings) }

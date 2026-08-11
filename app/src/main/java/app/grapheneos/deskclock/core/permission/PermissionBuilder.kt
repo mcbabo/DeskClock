@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.core.net.toUri
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.presentation.PermissionUiState
+import app.grapheneos.deskclock.core.util.Constants
 
 @SuppressLint("BatteryLife")
 fun buildPermissionList(
@@ -46,7 +47,7 @@ fun buildPermissionList(
             launchAction = {
                 val intent = Intent(
                     Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    "package:${context.packageName}".toUri()
+                    "${Constants.SCHEME_PACKAGE}${context.packageName}".toUri()
                 )
                 settingsLauncher.launch(intent)
             }
@@ -64,7 +65,7 @@ fun buildPermissionList(
             launchAction = {
                 val intent = Intent(
                     Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                    "package:${context.packageName}".toUri()
+                    "${Constants.SCHEME_PACKAGE}${context.packageName}".toUri()
                 )
                 settingsLauncher.launch(intent)
             }

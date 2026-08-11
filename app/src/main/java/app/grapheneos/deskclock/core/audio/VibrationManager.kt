@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.VibratorManager
-import app.grapheneos.deskclock.alarm.util.AlarmConstants
+import app.grapheneos.deskclock.core.util.Constants
 
 class VibrationManager(private val context: Context) {
     private val vibratorManager =
@@ -14,8 +14,8 @@ class VibrationManager(private val context: Context) {
         val effect = VibrationEffect.createWaveform(
             longArrayOf(
                 0,
-                AlarmConstants.WAVE_FORM,
-                AlarmConstants.WAVE_FORM
+                Constants.Alarm.WAVE_FORM,
+                Constants.Alarm.WAVE_FORM
             ),
             0
         )

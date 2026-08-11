@@ -8,11 +8,11 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import app.grapheneos.deskclock.core.notification.NotificationConstants
 import app.grapheneos.deskclock.core.service.BaseAlertService
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.timer.data.TimerData
 import app.grapheneos.deskclock.timer.data.TimerRepository
 import app.grapheneos.deskclock.timer.presentation.popup.TimerPopUpActivity
-import app.grapheneos.deskclock.timer.util.TimerConstants
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class TimerService : BaseAlertService(TimerConstants.PM_TAG) {
+class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
     private val timerRepository: TimerRepository by inject()
     private val settingsRepository: SettingsRepository by inject()
     private val notificationManager: TimerNotificationManager by inject()

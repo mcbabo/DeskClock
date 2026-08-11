@@ -9,7 +9,7 @@ import android.provider.Settings
 import android.util.Log
 import app.grapheneos.deskclock.MainActivity
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
-import app.grapheneos.deskclock.alarm.util.AlarmConstants
+import app.grapheneos.deskclock.core.util.Constants
 
 class AlarmController(private val context: Context) {
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
@@ -37,7 +37,7 @@ class AlarmController(private val context: Context) {
     fun cancelInstance(alarmId: Long) {
         val intent = Intent().apply {
             component = ComponentName(context, AlarmReceiver::class.java)
-            action = AlarmConstants.ACTION_FIRE_ALARM
+            action = Constants.Alarm.ACTION_FIRE_ALARM
         }
         val operation = PendingIntent.getBroadcast(
             context,
@@ -65,13 +65,13 @@ class AlarmController(private val context: Context) {
     private fun createReceiverPendingIntent(instanceId: Long, alarm: AlarmEntity): PendingIntent {
         val intent = Intent().apply {
             component = ComponentName(context, AlarmReceiver::class.java)
-            action = AlarmConstants.ACTION_FIRE_ALARM
-            putExtra(AlarmConstants.EXTRA_INSTANCE_ID, instanceId)
-            putExtra(AlarmConstants.EXTRA_ALARM_LABEL, alarm.label)
-            putExtra(AlarmConstants.EXTRA_ALARM_HOUR, alarm.hour)
-            putExtra(AlarmConstants.EXTRA_ALARM_MINUTE, alarm.minute)
-            putExtra(AlarmConstants.EXTRA_ALARM_RINGTONE_URI, alarm.ringtoneUri)
-            putExtra(AlarmConstants.EXTRA_ALARM_VIBRATE, alarm.vibrate)
+            action = Constants.Alarm.ACTION_FIRE_ALARM
+            putExtra(Constants.Alarm.EXTRA_INSTANCE_ID, instanceId)
+            putExtra(Constants.Alarm.EXTRA_ALARM_LABEL, alarm.label)
+            putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, alarm.hour)
+            putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, alarm.minute)
+            putExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI, alarm.ringtoneUri)
+            putExtra(Constants.Alarm.EXTRA_ALARM_VIBRATE, alarm.vibrate)
         }
         return PendingIntent.getBroadcast(
             context,

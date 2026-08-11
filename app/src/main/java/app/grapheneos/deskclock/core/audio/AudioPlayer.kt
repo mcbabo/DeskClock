@@ -8,6 +8,7 @@ import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.util.Log
 import androidx.core.net.toUri
+import app.grapheneos.deskclock.core.util.Constants
 import java.io.IOException
 
 class AudioPlayer(private val context: Context) {
@@ -42,7 +43,7 @@ class AudioPlayer(private val context: Context) {
         try {
             startMediaPlayer(uri, attributes, loop, ringtoneVolume)
         } catch (e: IOException) {
-            Log.e("AudioPlayer", "Error playing alarm", e)
+            Log.e(Constants.TAG_AUDIO_PLAYER, "Error playing alarm", e)
             if (uriString != null) {
                 playAlarm(null, loop, alarm, ringtoneVolume)
             }
@@ -83,7 +84,7 @@ class AudioPlayer(private val context: Context) {
             mediaPlayer?.stop()
             mediaPlayer?.release()
         } catch (e: IllegalStateException) {
-            Log.d("AudioPlayer", e.toString())
+            Log.d(Constants.TAG_AUDIO_PLAYER, e.toString())
         } finally {
             mediaPlayer = null
             focusRequest?.let { audioManager.abandonAudioFocusRequest(it) }

@@ -3,6 +3,7 @@ package app.grapheneos.deskclock.alarm.util
 import android.content.Context
 import androidx.compose.runtime.Immutable
 import app.grapheneos.deskclock.R
+import app.grapheneos.deskclock.core.util.Constants
 import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.Locale
@@ -27,12 +28,12 @@ object AlarmDayFormatter {
 
     fun formatDaysOfWeek(context: Context, daysOfWeek: Int): String {
         val locale = context.resources.configuration.locales[0]
-        val dayBits = daysOfWeek and AlarmConstants.BIT_ALL_DAYS
+        val dayBits = daysOfWeek and Constants.Alarm.BIT_ALL_DAYS
         return when (dayBits) {
             0 -> context.getString(R.string.one_time)
-            AlarmConstants.BIT_ALL_DAYS -> context.getString(R.string.daily)
-            AlarmConstants.BIT_WEEKDAYS -> context.getString(R.string.mon_fri)
-            AlarmConstants.BIT_WEEKEND -> context.getString(R.string.sat_sun)
+            Constants.Alarm.BIT_ALL_DAYS -> context.getString(R.string.daily)
+            Constants.Alarm.BIT_WEEKDAYS -> context.getString(R.string.mon_fri)
+            Constants.Alarm.BIT_WEEKEND -> context.getString(R.string.sat_sun)
             else -> {
                 val selectedDays = mutableListOf<String>()
                 daysOrder.forEach { dayOfWeek ->

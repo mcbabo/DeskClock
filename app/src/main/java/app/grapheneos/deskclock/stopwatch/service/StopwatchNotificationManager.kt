@@ -8,9 +8,9 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.notification.NotificationConstants
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.stopwatch.data.StopwatchData
 import app.grapheneos.deskclock.stopwatch.data.StopwatchReceiver
-import app.grapheneos.deskclock.stopwatch.util.StopwatchConstants
 import app.grapheneos.deskclock.stopwatch.util.StopwatchPrecision
 import app.grapheneos.deskclock.stopwatch.util.formatStopwatchTime
 
@@ -42,7 +42,7 @@ class StopwatchNotificationManager(private val context: Context) {
                             R.string.reset
                         }
                     ),
-                    getPendingIntent(StopwatchConstants.ACTION_LAP_RESET)
+                    getPendingIntent(Constants.Stopwatch.ACTION_LAP_RESET)
                 )
 
         if (state.isRunning) {
@@ -71,7 +71,7 @@ class StopwatchNotificationManager(private val context: Context) {
         return NotificationCompat.Action(
             icon,
             title,
-            getPendingIntent(StopwatchConstants.ACTION_START_PAUSE)
+            getPendingIntent(Constants.Stopwatch.ACTION_START_PAUSE)
         )
     }
 
