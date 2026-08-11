@@ -8,15 +8,15 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import app.grapheneos.deskclock.core.notification.NotificationConstants
 import app.grapheneos.deskclock.core.service.BaseAlertService
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.stopwatch.data.StopwatchRepository
-import app.grapheneos.deskclock.stopwatch.util.StopwatchConstants
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class StopwatchService : BaseAlertService(StopwatchConstants.PM_TAG) {
+class StopwatchService : BaseAlertService(Constants.Stopwatch.PM_TAG) {
     private val stopwatchRepository: StopwatchRepository by inject()
     private val notificationManager: StopwatchNotificationManager by inject()
     private var observationJob: Job? = null

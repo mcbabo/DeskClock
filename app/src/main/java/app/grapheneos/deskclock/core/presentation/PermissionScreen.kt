@@ -115,7 +115,7 @@ fun PermissionScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .screenPadding(),
-            title = "Permissions"
+            title = stringResource(R.string.permissions)
         ) {
             permissions.forEach { permission ->
                 item(
@@ -146,7 +146,7 @@ fun PermissionScreen(
                                 )
                             } else {
                                 Text(
-                                    text = "Configure",
+                                    text = stringResource(R.string.configure),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.error
                                 )

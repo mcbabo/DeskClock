@@ -17,8 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -30,6 +32,7 @@ import app.grapheneos.deskclock.alarm.presentation.AlarmViewModel
 import app.grapheneos.deskclock.clock.presentation.ClockScreen
 import app.grapheneos.deskclock.clock.presentation.ClockViewModel
 import app.grapheneos.deskclock.core.navigation.ClockTab
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.stopwatch.presentation.StopwatchScreen
 import app.grapheneos.deskclock.stopwatch.presentation.StopwatchViewModel
 import app.grapheneos.deskclock.timer.presentation.TimerScreen
@@ -40,6 +43,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MainPagerScreen(
     onSettingsClick: () -> Unit,
+    initialAction: String? = null,
     alarmViewModel: AlarmViewModel = koinViewModel(),
     clockViewModel: ClockViewModel = koinViewModel(),
     timerViewModel: TimerViewModel = koinViewModel(),
@@ -47,6 +51,26 @@ fun MainPagerScreen(
 ) {
     val tabs = ClockTab.entries
     val pagerState = rememberPagerState(pageCount = { tabs.size })
+
+    var triggerAddAlarm by remember { mutableStateOf(false) }
+    var triggerAddClock by remember { mutableStateOf(false) }
+
+    LaunchedEffect(initialAction) {
+        initialAction?.let { action ->
+            val page = when (action) {
+                Constants.Actions.ADD_ALARM -> ClockTab.Alarm.ordinal
+                Constants.Actions.ADD_CLOCK -> ClockTab.WorldClock.ordinal
+                Constants.Actions.START_TIMER -> ClockTab.Timer.ordinal
+                Constants.Actions.START_STOPWATCH -> ClockTab.Stopwatch.ordinal
+                else -> null
+            }
+            page?.let { pagerState.scrollToPage(it) }
+
+            if (action == Constants.Actions.ADD_ALARM) triggerAddAlarm = true
+            if (action == Constants.Actions.ADD_CLOCK) triggerAddClock = true
+        }
+    }
+
     val scope = rememberCoroutineScope()
     val view = LocalView.current
 
@@ -107,7 +131,9 @@ fun MainPagerScreen(
                     AlarmScreen(
                         uiState = alarmUiState,
                         onIntent = alarmViewModel::handleIntent,
-                        onSettingsClick = onSettingsClick
+                        onSettingsClick = onSettingsClick,
+                        triggerAdd = triggerAddAlarm,
+                        onAddTriggered = { triggerAddAlarm = false }
                     )
                 }
 
@@ -118,7 +144,9 @@ fun MainPagerScreen(
                         uiState = clockUiState,
                         timeUiState = timeUiState,
                         onIntent = clockViewModel::handleIntent,
-                        onSettingsClick = onSettingsClick
+                        onSettingsClick = onSettingsClick,
+                        triggerAdd = triggerAddClock,
+                        onAddTriggered = { triggerAddClock = false }
                     )
                 }
 

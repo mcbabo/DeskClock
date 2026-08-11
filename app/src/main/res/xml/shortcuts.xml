@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_alarm_adaptive"
+        android:shortcutId="add_alarm"
+        android:shortcutLongLabel="@string/add_alarm"
+        android:shortcutShortLabel="@string/add_alarm">
+        <intent
+            android:action="app.grapheneos.deskclock.ACTION_ADD_ALARM"
+            android:targetClass="app.grapheneos.deskclock.MainActivity"
+            android:targetPackage="app.grapheneos.deskclock" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_clock_adaptive"
+        android:shortcutId="add_clock"
+        android:shortcutLongLabel="@string/add_clock"
+        android:shortcutShortLabel="@string/add_clock">
+        <intent
+            android:action="app.grapheneos.deskclock.ACTION_ADD_CLOCK"
+            android:targetClass="app.grapheneos.deskclock.MainActivity"
+            android:targetPackage="app.grapheneos.deskclock" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_timer_adaptive"
+        android:shortcutId="start_timer"
+        android:shortcutLongLabel="@string/start_timer"
+        android:shortcutShortLabel="@string/start_timer">
+        <intent
+            android:action="app.grapheneos.deskclock.ACTION_START_TIMER"
+            android:targetClass="app.grapheneos.deskclock.MainActivity"
+            android:targetPackage="app.grapheneos.deskclock" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_stopwatch_adaptive"
+        android:shortcutId="start_stopwatch"
+        android:shortcutLongLabel="@string/start_stopwatch"
+        android:shortcutShortLabel="@string/start_stopwatch">
+        <intent
+            android:action="app.grapheneos.deskclock.ACTION_START_STOPWATCH"
+            android:targetClass="app.grapheneos.deskclock.MainActivity"
+            android:targetPackage="app.grapheneos.deskclock" />
+    </shortcut>
+</shortcuts>

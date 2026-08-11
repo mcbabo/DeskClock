@@ -10,8 +10,6 @@ object Constants {
     const val TAG_AUDIO_PLAYER = "AudioPlayer"
 
     const val SCHEME_PACKAGE = "package:"
-    const val TEXT_PERMISSIONS = "Permissions"
-    const val TEXT_CONFIGURE = "Configure"
 
     const val COMPOSE_LABEL_THUMB_COLOR = "thumbColor"
     const val COMPOSE_LABEL_THEME_TRANSITION = "ThemeTransition"
@@ -52,5 +50,12 @@ object Constants {
         const val ACTION_START_PAUSE = "app.grapheneos.deskclock.STOPWATCH_START_PAUSE"
         const val ACTION_LAP_RESET = "app.grapheneos.deskclock.STOPWATCH_LAP_RESET"
         const val PM_TAG = "DeskClock:StopwatchService"
+    }
+
+    object Actions {
+        const val ADD_ALARM = "app.grapheneos.deskclock.ACTION_ADD_ALARM"
+        const val ADD_CLOCK = "app.grapheneos.deskclock.ACTION_ADD_CLOCK"
+        const val START_TIMER = "app.grapheneos.deskclock.ACTION_START_TIMER"
+        const val START_STOPWATCH = "app.grapheneos.deskclock.ACTION_START_STOPWATCH"
     }
 }

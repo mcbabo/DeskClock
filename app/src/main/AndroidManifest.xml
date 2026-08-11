@@ -45,6 +45,17 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="app.grapheneos.deskclock.ACTION_ADD_ALARM" />
+                <action android:name="app.grapheneos.deskclock.ACTION_START_TIMER" />
+                <action android:name="app.grapheneos.deskclock.ACTION_START_STOPWATCH" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <activity

@@ -23,7 +23,7 @@ class AlarmNotificationManager(private val context: Context) {
     ): Notification {
         val fullScreenIntent = getFullScreenIntent(instanceId, label, hour, minute)
         return NotificationCompat.Builder(context, NotificationConstants.Alarm.CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setSmallIcon(R.drawable.ic_alarm)
             .setContentTitle(label.ifEmpty { context.getString(R.string.alarm) })
             .setContentText(context.getString(R.string.ringing_dots))
             .setPriority(NotificationCompat.PRIORITY_MAX)

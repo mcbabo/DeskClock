@@ -21,7 +21,7 @@ class StopwatchNotificationManager(private val context: Context) {
 
         val builder =
             NotificationCompat.Builder(context, NotificationConstants.Stopwatch.CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification_stopwatch)
+                .setSmallIcon(R.drawable.ic_timer)
                 .setContentTitle(context.getString(R.string.tab_stopwatch))
                 .setContentText(formattedTime)
                 .setOngoing(state.isRunning)

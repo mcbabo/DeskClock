@@ -19,7 +19,7 @@ class TimerNotificationManager(private val context: Context) {
         val formattedTime = TimerUtils.formatRemainingTime(remaining)
 
         return NotificationCompat.Builder(context, NotificationConstants.Timer.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification_timer)
+            .setSmallIcon(R.drawable.ic_hourglass)
             .setContentTitle(context.getString(R.string.timer))
             .setContentText(formattedTime)
             .setOngoing(state.isRunning)

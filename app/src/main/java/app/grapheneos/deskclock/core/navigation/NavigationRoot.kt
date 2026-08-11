@@ -24,6 +24,7 @@ import org.koin.androidx.compose.koinViewModel
 fun NavigationRoot(
     backStack: NavBackStack<NavKey>,
     modifier: Modifier = Modifier,
+    initialAction: String? = null,
     settingsViewModel: SettingsViewModel = koinViewModel()
 ) {
     val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
@@ -51,7 +52,8 @@ fun NavigationRoot(
                 metadata = mapOf(Constants.METADATA_PERMISSIONS_REQUIRED to true)
             ) {
                 MainPagerScreen(
-                    onSettingsClick = { backStack.add(Route.Settings) }
+                    onSettingsClick = { backStack.add(Route.Settings) },
+                    initialAction = initialAction
                 )
             }
 

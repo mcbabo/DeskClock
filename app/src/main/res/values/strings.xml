@@ -92,4 +92,8 @@
     <string name="hours_short">%1$dh</string>
     <string name="minutes_short">%1$dm</string>
     <string name="less_than_a_minute">less than a minute</string>
+    <string name="start_timer">Start timer</string>
+    <string name="start_stopwatch">Start stopwatch</string>
+    <string name="configure">Configure</string>
+    <string name="permissions">Permissions</string>
 </resources>

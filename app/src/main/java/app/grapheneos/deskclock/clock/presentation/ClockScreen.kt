@@ -64,6 +64,8 @@ fun ClockScreen(
     onIntent: (ClockIntent) -> Unit,
     onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
+    triggerAdd: Boolean = false,
+    onAddTriggered: () -> Unit = {}
 ) {
     val textFieldState = rememberTextFieldState()
     val searchBarState = rememberSearchBarState()
@@ -72,6 +74,12 @@ fun ClockScreen(
 
     var isEditing by remember { mutableStateOf(false) }
 
+    LaunchedEffect(triggerAdd) {
+        if (triggerAdd) {
+            onIntent(ClockIntent.ToggleSearch(true))
+            onAddTriggered()
+        }
+    }
     LaunchedEffect(textFieldState.text) {
         snapshotFlow { textFieldState.text.toString() }.collect { text ->
             onIntent(ClockIntent.UpdateSearchQuery(text))
