@@ -31,7 +31,15 @@ This app is built with modern Android development in mind:
 
 ## Screenshots
 
-*(Coming soon - The app uses the latest Material 3 Expressive components)*
+<div align="center">
+  <img src=".github/screenshots/Screenshot_01.png" width="20%"  alt=""/>
+  <img src=".github/screenshots/Screenshot_02.png" width="20%"  alt=""/>
+  <img src=".github/screenshots/Screenshot_03.png" width="20%"  alt=""/>
+  <img src=".github/screenshots/Screenshot_04.png" width="20%"  alt=""/>
+  <img src=".github/screenshots/Screenshot_05.png" width="20%"  alt=""/>
+  <img src=".github/screenshots/Screenshot_06.png" width="20%"  alt=""/>
+  <img src=".github/screenshots/Screenshot_07.png" width="20%"  alt=""/>
+</div>
 
 ## Building
 
