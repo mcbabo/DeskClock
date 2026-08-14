@@ -15,6 +15,7 @@
     <string name="alarm_n">Wecker (%1$s)</string>
     <string name="snooze">Snooze</string>
     <string name="n_minutes">%1$d Minuten</string>
+    <string name="n_seconds">%1$d Sekunden</string>
     <string name="settings">Einstellungen</string>
     <string name="add_alarm">Wecker hinzufügen</string>
     <string name="no_alarms_yet">Keine Wecker bisher</string>
@@ -84,6 +85,9 @@
     <string name="settings_timer_popup_style">Timer Popup-Stil</string>
     <string name="settings_alarm_popup_style_desc">Popup-Stil des Weckers einstellen</string>
     <string name="settings_timer_popup_style_desc">Popup-Stil des Weckers einstellen</string>
+    <string name="settings_gradually_increase_volume">Lautstärke schrittweise erhöhen</string>
+    <string name="settings_gradually_increase_volume_desc">Lautstärke beim Klingeln langsam ansteigen lassen</string>
+    <string name="settings_gradually_increase_volume_duration">Anstiegsdauer</string>
     <string name="swipe_to_dismiss">Wischen zum Ablehnen</string>
     <string name="add_minute">1 Min.</string>
     <string name="next_alarm_in">Nächster Wecker in %1$s</string>

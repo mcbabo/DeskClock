@@ -29,6 +29,9 @@ data class AppSettings(
 
     val alarmPopUpStyle: PopUpStyle = PopUpStyle.DEFAULT,
     val timerPopUpStyle: PopUpStyle = PopUpStyle.DEFAULT,
+
+    val graduallyIncreaseVolume: Boolean = false,
+    val graduallyIncreaseVolumeDuration: Int = 30,
 )
 
 @Serializable

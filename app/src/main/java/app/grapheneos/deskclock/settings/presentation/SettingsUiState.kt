@@ -17,7 +17,9 @@ data class AppSettingsUiModel(
     val vibrate: Boolean,
     val stopwatchShowMilliseconds: Boolean,
     val alarmPopUpStyle: PopUpStyle,
-    val timerPopUpStyle: PopUpStyle
+    val timerPopUpStyle: PopUpStyle,
+    val graduallyIncreaseVolume: Boolean,
+    val graduallyIncreaseVolumeDuration: Int
 )
 
 @Immutable
@@ -47,6 +49,9 @@ sealed interface SettingsIntent {
 
     data class SetAlarmPopUpStyle(val style: PopUpStyle) : SettingsIntent
     data class SetTimerPopUpStyle(val style: PopUpStyle) : SettingsIntent
+
+    data class SetGraduallyIncreaseVolume(val enabled: Boolean) : SettingsIntent
+    data class SetGraduallyIncreaseVolumeDuration(val duration: Int) : SettingsIntent
 }
 
 fun AppSettings.toUiModel(): AppSettingsUiModel {
@@ -60,6 +65,8 @@ fun AppSettings.toUiModel(): AppSettingsUiModel {
         vibrate = vibrate,
         stopwatchShowMilliseconds = stopwatchShowMilliseconds,
         alarmPopUpStyle = alarmPopUpStyle,
-        timerPopUpStyle = timerPopUpStyle
+        timerPopUpStyle = timerPopUpStyle,
+        graduallyIncreaseVolume = graduallyIncreaseVolume,
+        graduallyIncreaseVolumeDuration = graduallyIncreaseVolumeDuration
     )
 }

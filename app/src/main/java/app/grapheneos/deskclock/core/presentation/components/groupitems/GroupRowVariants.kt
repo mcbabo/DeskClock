@@ -57,14 +57,19 @@ fun ValueGroupRow(
     modifier: Modifier = Modifier,
     leadingIcon: (@Composable () -> Unit)? = null,
     supportingContent: (@Composable () -> Unit)? = null,
+    enabled: Boolean = true,
 ) {
     val view = LocalView.current
 
     GroupRow(
         modifier = modifier,
-        onClick = {
-            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-            onClick()
+        onClick = if (enabled) {
+            {
+                view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                onClick()
+            }
+        } else {
+            null
         },
         leadingContent = leadingIcon,
         trailingContent = {
@@ -72,6 +77,7 @@ fun ValueGroupRow(
         },
         supportingContent = supportingContent,
         verticalAlignment = Alignment.CenterVertically,
+        enabled = enabled,
         content = { Text(label) }
     )
 }
@@ -120,6 +126,7 @@ fun SwitchGroupRow(
             )
         },
         verticalAlignment = Alignment.CenterVertically,
+        enabled = enabled,
         content = { Text(label) }
     )
 }
@@ -139,6 +146,7 @@ fun InlineEditableValueGroupRow(
     modifier: Modifier = Modifier,
     placeholder: String = "",
     leadingIcon: (@Composable () -> Unit)? = null,
+    enabled: Boolean = true,
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var text by remember(value) { mutableStateOf(value) }
@@ -156,7 +164,7 @@ fun InlineEditableValueGroupRow(
 
     GroupRow(
         modifier = modifier,
-        onClick = if (!isEditing) {
+        onClick = if (!isEditing && enabled) {
             {
                 isEditing = true
                 view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
@@ -175,6 +183,7 @@ fun InlineEditableValueGroupRow(
                         }
                     },
                     singleLine = true,
+                    enabled = enabled,
                     textStyle = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.End
@@ -199,6 +208,7 @@ fun InlineEditableValueGroupRow(
                 )
             }
         },
+        enabled = enabled,
         content = { Text(label) }
     )
 

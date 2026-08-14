@@ -32,9 +32,16 @@ abstract class BaseAlertService(private val tag: String) : Service() {
     protected fun startAlert(
         ringtoneUri: String? = null,
         vibrate: Boolean = true,
-        ringtoneVolume: Float? = null
+        ringtoneVolume: Float? = null,
+        graduallyIncreaseVolume: Boolean = false,
+        graduallyIncreaseVolumeDuration: Int = 30
     ) {
-        audioPlayer.playAlarm(ringtoneUri, ringtoneVolume = ringtoneVolume)
+        audioPlayer.playAlarm(
+            ringtoneUri,
+            ringtoneVolume = ringtoneVolume,
+            graduallyIncreaseVolume = graduallyIncreaseVolume,
+            graduallyIncreaseVolumeDuration = graduallyIncreaseVolumeDuration
+        )
         if (vibrate) {
             vibrationManager.startAlarmVibration()
         }

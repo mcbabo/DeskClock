@@ -56,9 +56,21 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
             val dbVibrate = alarm?.alarm?.vibrate ?: true
 
             if (!hasIntentData || intentRingtone != dbRingtone || intentVibrate != dbVibrate) {
-                startAlert(dbRingtone, dbVibrate, ringtoneVolume)
+                startAlert(
+                    dbRingtone,
+                    dbVibrate,
+                    ringtoneVolume,
+                    appSettings.graduallyIncreaseVolume,
+                    appSettings.graduallyIncreaseVolumeDuration
+                )
             } else {
-                startAlert(intentRingtone, intentVibrate, ringtoneVolume)
+                startAlert(
+                    intentRingtone,
+                    intentVibrate,
+                    ringtoneVolume,
+                    appSettings.graduallyIncreaseVolume,
+                    appSettings.graduallyIncreaseVolumeDuration
+                )
             }
 
             if (alarm != null && (label.isEmpty() || hour == -1)) {

@@ -8,6 +8,7 @@ object Constants {
     const val SETTINGS_DATASTORE_KEY = "settings_json"
 
     const val TAG_AUDIO_PLAYER = "AudioPlayer"
+    const val TAG_TIMER_SERVICE = "TimerService"
 
     const val SCHEME_PACKAGE = "package:"
 

@@ -16,6 +16,7 @@
     <string name="alarm_n">Alarm (%1$s)</string>
     <string name="snooze">Snooze</string>
     <string name="n_minutes">%1$d minutes</string>
+    <string name="n_seconds">%1$d seconds</string>
     <string name="settings">Settings</string>
     <string name="add_alarm">Add Alarm</string>
     <string name="no_alarms_yet">No alarms yet</string>
@@ -85,6 +86,9 @@
     <string name="settings_timer_popup_style">Timer popup style</string>
     <string name="settings_alarm_popup_style_desc">Set the style of the alarm popup</string>
     <string name="settings_timer_popup_style_desc">Set the style of the timer popup</string>
+    <string name="settings_gradually_increase_volume">Gradually increase volume</string>
+    <string name="settings_gradually_increase_volume_desc">Slowly ramp up volume when ringing</string>
+    <string name="settings_gradually_increase_volume_duration">Increase duration</string>
     <string name="swipe_to_dismiss">Swipe to dismiss</string>
     <string name="add_minute">1 min</string>
     <string name="next_alarm_in">Next alarm in %1$s</string>

@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.core.audio
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
@@ -15,12 +16,15 @@ class AudioPlayer(private val context: Context) {
     private var mediaPlayer: MediaPlayer? = null
     private var focusRequest: AudioFocusRequest? = null
     private val audioManager = context.getSystemService(AudioManager::class.java)
+    private var volumeAnimator: ValueAnimator? = null
 
     fun playAlarm(
         uriString: String?,
         loop: Boolean = true,
         alarm: Boolean = true,
-        ringtoneVolume: Float? = null
+        ringtoneVolume: Float? = null,
+        graduallyIncreaseVolume: Boolean = false,
+        graduallyIncreaseVolumeDuration: Int = 30
     ) {
         stop()
 
@@ -41,11 +45,25 @@ class AudioPlayer(private val context: Context) {
         }
 
         try {
-            startMediaPlayer(uri, attributes, loop, ringtoneVolume)
+            startMediaPlayer(
+                uri,
+                attributes,
+                loop,
+                ringtoneVolume,
+                graduallyIncreaseVolume,
+                graduallyIncreaseVolumeDuration
+            )
         } catch (e: IOException) {
             Log.e(Constants.TAG_AUDIO_PLAYER, "Error playing alarm", e)
             if (uriString != null) {
-                playAlarm(null, loop, alarm, ringtoneVolume)
+                playAlarm(
+                    null,
+                    loop,
+                    alarm,
+                    ringtoneVolume,
+                    graduallyIncreaseVolume,
+                    graduallyIncreaseVolumeDuration
+                )
             }
         }
     }
@@ -67,20 +85,46 @@ class AudioPlayer(private val context: Context) {
         uri: android.net.Uri,
         attributes: AudioAttributes,
         loop: Boolean,
-        ringtoneVolume: Float?
+        ringtoneVolume: Float?,
+        graduallyIncreaseVolume: Boolean,
+        graduallyIncreaseVolumeDuration: Int
     ) {
         mediaPlayer = MediaPlayer().apply {
             setDataSource(context, uri)
             setAudioAttributes(attributes)
             isLooping = loop
             prepare()
-            ringtoneVolume?.let { setVolume(it, it) }
+
+            val targetVolume = ringtoneVolume ?: 1.0f
+            if (graduallyIncreaseVolume) {
+                setVolume(0f, 0f)
+                volumeAnimator = ValueAnimator.ofFloat(0f, targetVolume).apply {
+                    duration = graduallyIncreaseVolumeDuration * 1000L
+                    addUpdateListener { animator ->
+                        val volume = animator.animatedValue as Float
+                        mediaPlayer?.let {
+                            try {
+                                it.setVolume(volume, volume)
+                            } catch (e: IllegalStateException) {
+                                animator.cancel()
+                                Log.d(Constants.TAG_AUDIO_PLAYER, e.toString())
+                            }
+                        }
+                    }
+                    start()
+                }
+            } else {
+                ringtoneVolume?.let { setVolume(it, it) }
+            }
+
             start()
         }
     }
 
     fun stop() {
         try {
+            volumeAnimator?.cancel()
+            volumeAnimator = null
             mediaPlayer?.stop()
             mediaPlayer?.release()
         } catch (e: IllegalStateException) {

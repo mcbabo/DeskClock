@@ -55,7 +55,11 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
                             } else {
                                 null
                             }
-                            startAlert(ringtoneVolume = ringtoneVolume)
+                            startAlert(
+                                ringtoneVolume = ringtoneVolume,
+                                graduallyIncreaseVolume = appSettings.graduallyIncreaseVolume,
+                                graduallyIncreaseVolumeDuration = appSettings.graduallyIncreaseVolumeDuration
+                            )
                         }
                         showNotification(state)
                     } else {
@@ -84,7 +88,7 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
             )
         } else {
-            Log.e("TimerService", "Notification permission NOT granted")
+            Log.e(Constants.TAG_TIMER_SERVICE, "Notification permission NOT granted")
         }
     }
 }

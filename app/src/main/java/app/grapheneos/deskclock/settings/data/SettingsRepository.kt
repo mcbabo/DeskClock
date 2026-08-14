@@ -49,6 +49,14 @@ class SettingsRepository(
         dataStore.updateSettings { it.copy(timerPopUpStyle = style) }
     }
 
+    suspend fun setGraduallyIncreaseVolume(enabled: Boolean) {
+        dataStore.updateSettings { it.copy(graduallyIncreaseVolume = enabled) }
+    }
+
+    suspend fun setGraduallyIncreaseVolumeDuration(duration: Int) {
+        dataStore.updateSettings { it.copy(graduallyIncreaseVolumeDuration = duration) }
+    }
+
     suspend fun resetToDefaults() {
         dataStore.updateSettings { AppSettings() }
     }

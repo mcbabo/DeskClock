@@ -73,6 +73,14 @@ class SettingsViewModel(
             is SettingsIntent.SetTimerPopUpStyle -> update {
                 settingsRepository.setTimerPopUpStyle(intent.style)
             }
+
+            is SettingsIntent.SetGraduallyIncreaseVolume -> update {
+                settingsRepository.setGraduallyIncreaseVolume(intent.enabled)
+            }
+
+            is SettingsIntent.SetGraduallyIncreaseVolumeDuration -> update {
+                settingsRepository.setGraduallyIncreaseVolumeDuration(intent.duration)
+            }
         }
     }
 

@@ -27,11 +27,12 @@ fun GroupItem(
     count: Int,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
+    enabled: Boolean = true,
     content: @Composable () -> Unit
 ) {
     Surface(
         onClick = onClick ?: {},
-        enabled = onClick != null,
+        enabled = onClick != null && enabled,
         shape = Layout.getGroupedShapes(index, count),
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         modifier = modifier.fillMaxWidth()
@@ -55,15 +56,48 @@ fun GroupRow(
     trailingContent: (@Composable () -> Unit)? = null,
     supportingContent: (@Composable () -> Unit)? = null,
     verticalAlignment: Alignment.Vertical = verticalAlignment(),
+    enabled: Boolean = true,
     content: @Composable () -> Unit
 ) {
     ListItem(
-        modifier = if (onClick != null) modifier.clickable { onClick() } else modifier,
+        modifier = if (onClick != null && enabled) {
+            modifier.clickable { onClick() }
+        } else {
+            modifier
+        },
         leadingContent = leadingContent,
         trailingContent = trailingContent,
         supportingContent = supportingContent,
         verticalAlignment = verticalAlignment,
-        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        colors = ListItemDefaults.colors(
+            containerColor = Color.Transparent,
+            headlineColor = if (enabled) {
+                Color.Unspecified
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+            },
+            supportingColor = if (enabled) {
+                Color.Unspecified
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                    alpha = 0.38f
+                )
+            },
+            leadingIconColor = if (enabled) {
+                Color.Unspecified
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                    alpha = 0.38f
+                )
+            },
+            trailingIconColor = if (enabled) {
+                Color.Unspecified
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                    alpha = 0.38f
+                )
+            },
+        ),
         content = content
     )
 }
