@@ -113,8 +113,8 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
             putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, hour)
             putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, minute)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_NO_USER_ACTION or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+                Intent.FLAG_ACTIVITY_NO_USER_ACTION or
+                Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         startActivity(intent)
     }
@@ -157,8 +157,8 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
             putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, hour)
             putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, minute)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_NO_USER_ACTION or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+                Intent.FLAG_ACTIVITY_NO_USER_ACTION or
+                Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         return PendingIntent.getActivity(
             this,
