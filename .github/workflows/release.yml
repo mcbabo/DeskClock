@@ -28,7 +28,7 @@ jobs:
     permissions:
       contents: write
     env:
-      VERSION: ${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}
+      VERSION: ${{ github.ref_name }}
 
     steps:
       - name: Checkout code

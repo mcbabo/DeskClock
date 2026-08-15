@@ -37,8 +37,8 @@ jobs:
     permissions:
       contents: write
     env:
-      VERSION_TAG: ${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}-${{ needs.prepare.outputs.shortSha }}
-      VERSION: ${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}
+      VERSION_TAG: v${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}-${{ needs.prepare.outputs.shortSha }}
+      VERSION: v${{ needs.prepare.outputs.versionName }}-${{ needs.prepare.outputs.versionCode }}
 
     steps:
       - name: Checkout code
