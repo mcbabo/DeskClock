@@ -9,7 +9,7 @@ import app.grapheneos.deskclock.core.util.Constants
 /**
  * Manages the creation of notification channels for Alarms, Timers, and Stopwatches.
  */
-class ChannelManager(private val context: Context) {
+class ChannelManager(context: Context) {
     private val nm = context.getSystemService(NotificationManager::class.java)
 
     fun createAllChannels() {
