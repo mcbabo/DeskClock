@@ -7,7 +7,7 @@ import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.ui.graphics.vector.ImageVector
 import app.grapheneos.deskclock.R
-import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
+import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.core.util.Constants
 import kotlinx.serialization.Serializable
 

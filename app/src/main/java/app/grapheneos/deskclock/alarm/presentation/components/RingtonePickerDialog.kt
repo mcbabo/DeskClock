@@ -28,11 +28,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import app.grapheneos.deskclock.R
-import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.components.groupitems.GroupItem
 import app.grapheneos.deskclock.core.presentation.components.groupitems.GroupRow
 import app.grapheneos.deskclock.core.presentation.screenPadding
+import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

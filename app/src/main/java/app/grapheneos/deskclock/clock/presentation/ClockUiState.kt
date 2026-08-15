@@ -3,12 +3,18 @@ package app.grapheneos.deskclock.clock.presentation
 import androidx.compose.runtime.Immutable
 import java.time.ZoneId
 
+/**
+ * Current local time and date for the main clock display.
+ */
 @Immutable
 data class TimeUiState(
     val localTime: String = "--:--:--",
     val localDate: String = ""
 )
 
+/**
+ * UI state for the World Clock screen.
+ */
 @Immutable
 data class ClockUiState(
     val zoneClocks: List<ClockUiModel> = emptyList(),
@@ -17,6 +23,9 @@ data class ClockUiState(
     val filteredZones: Map<Char, List<ZoneId>> = emptyMap()
 )
 
+/**
+ * UI representation of a clock in a specific time zone.
+ */
 @Immutable
 data class ClockUiModel(
     val zoneId: ZoneId,
@@ -27,6 +36,9 @@ data class ClockUiModel(
     val hoursDiff: Long
 )
 
+/**
+ * User intents for the World Clock screen.
+ */
 sealed interface ClockIntent {
     data class UpdateSearchQuery(val query: String) : ClockIntent
     data class ToggleSearch(val isActive: Boolean) : ClockIntent

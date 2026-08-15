@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.R
-import app.grapheneos.deskclock.core.presentation.PopUpButton
+import app.grapheneos.deskclock.core.presentation.components.PopUpButton
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 
 @Composable

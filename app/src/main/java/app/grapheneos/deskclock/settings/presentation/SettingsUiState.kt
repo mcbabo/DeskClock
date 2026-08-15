@@ -1,11 +1,14 @@
 package app.grapheneos.deskclock.settings.presentation
 
 import androidx.compose.runtime.Immutable
-import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
+import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.settings.data.AppSettings
 import app.grapheneos.deskclock.settings.data.PopUpStyle
 import app.grapheneos.deskclock.settings.data.ThemeMode
 
+/**
+ * UI representation of application settings.
+ */
 @Immutable
 data class AppSettingsUiModel(
     val themeMode: ThemeMode,
@@ -22,6 +25,9 @@ data class AppSettingsUiModel(
     val graduallyIncreaseVolumeDuration: Int
 )
 
+/**
+ * UI state for the Settings screen.
+ */
 @Immutable
 data class SettingsUiState(
     val settings: AppSettingsUiModel? = null,
@@ -29,6 +35,9 @@ data class SettingsUiState(
     val isLoading: Boolean = false
 )
 
+/**
+ * User intents for the Settings screen.
+ */
 sealed interface SettingsIntent {
     data object LoadSettings : SettingsIntent
     data object ResetDefaults : SettingsIntent

@@ -4,7 +4,6 @@ import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.alarm.presentation.AlarmViewModel
 import app.grapheneos.deskclock.alarm.presentation.popup.AlarmPopUpViewModel
 import app.grapheneos.deskclock.alarm.service.AlarmController
-import app.grapheneos.deskclock.alarm.service.AlarmNotificationManager
 import app.grapheneos.deskclock.clock.data.ClockRepository
 import app.grapheneos.deskclock.clock.presentation.ClockViewModel
 import app.grapheneos.deskclock.core.audio.AudioPlayer
@@ -21,100 +20,65 @@ import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.settings.presentation.SettingsViewModel
 import app.grapheneos.deskclock.stopwatch.data.StopwatchRepository
 import app.grapheneos.deskclock.stopwatch.presentation.StopwatchViewModel
-import app.grapheneos.deskclock.stopwatch.service.StopwatchController
-import app.grapheneos.deskclock.stopwatch.service.StopwatchNotificationManager
 import app.grapheneos.deskclock.timer.data.TimerRepository
 import app.grapheneos.deskclock.timer.presentation.TimerViewModel
 import app.grapheneos.deskclock.timer.presentation.popup.TimerPopUpViewModel
-import app.grapheneos.deskclock.timer.service.TimerController
-import app.grapheneos.deskclock.timer.service.TimerNotificationManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val coreModule = module {
-    single {
-        getDatabaseBuilder(context = get())
-    }
-
-    single<AppDatabase> {
-        getRoomDatabase(builder = get())
-    }
+    single { getDatabaseBuilder(get()) }
+    single { getRoomDatabase(get()) }
 
     single(named("AttributedContext")) {
         androidContext().createAttributionContext(Constants.ATTRIBUTION_TAG_DESKCLOCK_SERVICE)
     }
 
-    single { ChannelManager(get()) }
-    single { AudioPlayer(get()) }
-    single { VibrationManager(get()) }
-    single { RingtoneRepository(get()) }
+    singleOf(::ChannelManager)
+    singleOf(::AudioPlayer)
+    singleOf(::VibrationManager)
+    singleOf(::RingtoneRepository)
 
     viewModelOf(::MainActivityViewModel)
 }
 
 val settingsModule = module {
-    single { SettingsDataStore(androidContext()) }
-    single { SettingsRepository(get()) }
+    singleOf(::SettingsDataStore)
+    singleOf(::SettingsRepository)
 
     viewModelOf(::SettingsViewModel)
 }
 
 val alarmModule = module {
-    single {
-        get<AppDatabase>().alarmDao()
-    }
-
+    single { get<AppDatabase>().alarmDao() }
     single { AlarmController(get(named("AttributedContext"))) }
-
-    single {
-        AlarmRepository(
-            get(),
-            get()
-        )
-    }
-
-    single {
-        AlarmNotificationManager(
-            get(named("AttributedContext"))
-        )
-    }
+    singleOf(::AlarmRepository)
 
     viewModelOf(::AlarmViewModel)
     viewModelOf(::AlarmPopUpViewModel)
 }
 
 val clockModule = module {
-    single {
-        get<AppDatabase>().clockDao()
-    }
-
-    single {
-        ClockRepository(get())
-    }
+    single { get<AppDatabase>().clockDao() }
+    singleOf(::ClockRepository)
 
     viewModelOf(::ClockViewModel)
 }
 
 val timerModule = module {
-    single { TimerController(get(named("AttributedContext"))) }
-    single { TimerNotificationManager(get(named("AttributedContext"))) }
-
-    single {
-        TimerRepository(get<TimerController>())
-    }
+    singleOf(::TimerRepository)
 
     viewModelOf(::TimerViewModel)
     viewModelOf(::TimerPopUpViewModel)
 }
 
 val stopwatchModule = module {
-    single { StopwatchController(get()) }
-    single { StopwatchNotificationManager(get()) }
-    single { StopwatchRepository(get()) }
+    singleOf(::StopwatchRepository)
 
     viewModelOf(::StopwatchViewModel)
 }
