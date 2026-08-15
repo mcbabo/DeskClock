@@ -2,6 +2,9 @@ package app.grapheneos.deskclock.timer.presentation
 
 import androidx.compose.runtime.Immutable
 
+/**
+ * UI state for the Timer screen.
+ */
 @Immutable
 data class TimerUiState(
     val remainingTime: Long = 0L,
@@ -13,6 +16,9 @@ data class TimerUiState(
     val progress: Float = 0f
 )
 
+/**
+ * User intents for the Timer screen.
+ */
 sealed interface TimerIntent {
     data class EnterDigit(val digit: Int) : TimerIntent
     data object Backspace : TimerIntent

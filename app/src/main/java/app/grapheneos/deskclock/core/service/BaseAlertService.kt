@@ -6,14 +6,18 @@ import android.os.IBinder
 import android.os.PowerManager
 import app.grapheneos.deskclock.core.audio.AudioPlayer
 import app.grapheneos.deskclock.core.audio.VibrationManager
-import app.grapheneos.deskclock.core.notification.NotificationConstants
-import app.grapheneos.deskclock.core.util.ServiceUtils
+import app.grapheneos.deskclock.core.util.Constants
+import app.grapheneos.deskclock.core.util.acquireWakeLock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import org.koin.android.ext.android.inject
 
+/**
+ * A base class for foreground services that handle critical alerts (Alarms, Timers).
+ * Manages common concerns like wake locks, audio focus, and alert playback.
+ */
 abstract class BaseAlertService(private val tag: String) : Service() {
     protected var wakeLock: PowerManager.WakeLock? = null
     protected val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -22,19 +26,26 @@ abstract class BaseAlertService(private val tag: String) : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        wakeLock = ServiceUtils.acquireWakeLock(
+        wakeLock = acquireWakeLock(
             this,
             tag,
-            NotificationConstants.WAKE_LOCK_TIMEOUT
+            Constants.Notifications.WAKE_LOCK_TIMEOUT
         )
     }
 
     protected fun startAlert(
         ringtoneUri: String? = null,
         vibrate: Boolean = true,
-        ringtoneVolume: Float? = null
+        ringtoneVolume: Float? = null,
+        graduallyIncreaseVolume: Boolean = false,
+        graduallyIncreaseVolumeDuration: Int = 30
     ) {
-        audioPlayer.playAlarm(ringtoneUri, ringtoneVolume = ringtoneVolume)
+        audioPlayer.playAlarm(
+            ringtoneUri,
+            ringtoneVolume = ringtoneVolume,
+            graduallyIncreaseVolume = graduallyIncreaseVolume,
+            graduallyIncreaseVolumeDuration = graduallyIncreaseVolumeDuration
+        )
         if (vibrate) {
             vibrationManager.startAlarmVibration()
         }

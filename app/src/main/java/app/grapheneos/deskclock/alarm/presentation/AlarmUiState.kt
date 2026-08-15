@@ -5,13 +5,12 @@ import androidx.compose.runtime.Immutable
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter
+import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.core.util.formatSystemTime
-import kotlinx.serialization.Serializable
 
-@Immutable
-@Serializable
-data class RingtoneItem(val name: String, val uri: String)
-
+/**
+ * UI representation of an Alarm.
+ */
 @Immutable
 data class AlarmUiModel(
     val id: Long,
@@ -29,6 +28,9 @@ data class AlarmUiModel(
     val daysOfWeekText: String = ""
 )
 
+/**
+ * UI state for the Alarm screen.
+ */
 @Immutable
 data class AlarmUiState(
     val alarms: List<AlarmUiModel> = emptyList(),
@@ -37,6 +39,9 @@ data class AlarmUiState(
     val nextAlarmRemainingTime: String? = null
 )
 
+/**
+ * User intents for the Alarm screen.
+ */
 sealed interface AlarmIntent {
     // Alarm
     data object LoadAlarms : AlarmIntent

@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.AlarmIntent
 import app.grapheneos.deskclock.alarm.presentation.AlarmUiModel
-import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.components.DismissKeyboard
 import app.grapheneos.deskclock.core.presentation.components.groupitems.InlineEditableValueGroupRow
@@ -46,6 +45,7 @@ import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGrou
 import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGroupRow
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGroupRow
 import app.grapheneos.deskclock.core.presentation.screenPadding
+import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.core.util.formatSystemTime
 

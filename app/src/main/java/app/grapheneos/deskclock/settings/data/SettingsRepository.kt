@@ -1,9 +1,12 @@
 package app.grapheneos.deskclock.settings.data
 
-import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.core.database.SettingsDataStore
+import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data layer for managing all application-wide settings via [SettingsDataStore].
+ */
 class SettingsRepository(
     private val dataStore: SettingsDataStore
 ) {
@@ -47,6 +50,14 @@ class SettingsRepository(
 
     suspend fun setTimerPopUpStyle(style: PopUpStyle) {
         dataStore.updateSettings { it.copy(timerPopUpStyle = style) }
+    }
+
+    suspend fun setGraduallyIncreaseVolume(enabled: Boolean) {
+        dataStore.updateSettings { it.copy(graduallyIncreaseVolume = enabled) }
+    }
+
+    suspend fun setGraduallyIncreaseVolumeDuration(duration: Int) {
+        dataStore.updateSettings { it.copy(graduallyIncreaseVolumeDuration = duration) }
     }
 
     suspend fun resetToDefaults() {

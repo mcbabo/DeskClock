@@ -1,7 +1,9 @@
 package app.grapheneos.deskclock.timer.data
 
+import android.content.Context
 import android.os.SystemClock
-import app.grapheneos.deskclock.timer.service.TimerController
+import app.grapheneos.deskclock.core.util.startTimerService
+import app.grapheneos.deskclock.core.util.stopTimerService
 import app.grapheneos.deskclock.timer.util.TimerUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +21,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * Data layer for managing the state and lifecycle of a Timer.
+ */
 class TimerRepository(
-    private val timerController: TimerController
+    private val context: Context
 ) {
     private val _state = MutableStateFlow(TimerData())
     val state = _state.asStateFlow()
@@ -57,7 +62,7 @@ class TimerRepository(
                 isFinished = false
             )
         }
-        timerController.startTimerService()
+        context.startTimerService()
         scheduleFinish()
     }
 
@@ -101,7 +106,7 @@ class TimerRepository(
                 isFinished = false
             )
         }
-        timerController.stopTimerService()
+        context.stopTimerService()
     }
 
     fun togglePauseResume() {

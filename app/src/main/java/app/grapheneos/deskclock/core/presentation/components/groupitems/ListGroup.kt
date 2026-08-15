@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 interface ListGroupScope {
     fun item(
         onClick: (() -> Unit)? = null,
+        enabled: Boolean = true,
         content: @Composable () -> Unit
     )
 }
@@ -31,13 +32,23 @@ fun ListGroup(
     title: String? = null,
     content: ListGroupScope.() -> Unit
 ) {
+    data class ItemInfo(
+        val onClick: (() -> Unit)?,
+        val enabled: Boolean,
+        val content: @Composable () -> Unit
+    )
+
     val itemData = remember(content) {
-        mutableListOf<Pair<(() -> Unit)?, @Composable () -> Unit>>()
+        mutableListOf<ItemInfo>()
     }
     val scope = remember(itemData) {
         object : ListGroupScope {
-            override fun item(onClick: (() -> Unit)?, content: @Composable () -> Unit) {
-                itemData.add(onClick to content)
+            override fun item(
+                onClick: (() -> Unit)?,
+                enabled: Boolean,
+                content: @Composable () -> Unit
+            ) {
+                itemData.add(ItemInfo(onClick, enabled, content))
             }
         }
     }
@@ -56,12 +67,13 @@ fun ListGroup(
         Column(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            itemData.forEachIndexed { index, (onClick, itemContent) ->
+            itemData.forEachIndexed { index, item ->
                 GroupItem(
                     index = index,
                     count = itemData.size,
-                    onClick = onClick,
-                    content = itemContent
+                    onClick = item.onClick,
+                    enabled = item.enabled,
+                    content = item.content
                 )
             }
         }

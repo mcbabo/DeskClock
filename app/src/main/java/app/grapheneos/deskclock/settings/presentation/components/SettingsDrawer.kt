@@ -231,3 +231,84 @@ fun RingtoneVolumeDrawer(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GraduallyIncreaseVolumeDrawer(
+    initiallyEnabled: Boolean,
+    initialDuration: Int,
+    onConfirm: (Boolean, Int) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val predefinedIntervals = listOf(5, 10, 15, 20, 30, 60)
+
+    var enabled by remember { mutableStateOf(initiallyEnabled) }
+    var selectedDuration by remember { mutableIntStateOf(initialDuration) }
+
+    val sheetState = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)
+    )
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .screenPadding(),
+            verticalArrangement = Arrangement.spacedBy(Layout.ScreenVertical)
+        ) {
+            ListGroup {
+                item {
+                    SwitchGroupRow(
+                        label = stringResource(R.string.settings_gradually_increase_volume),
+                        checked = enabled,
+                        onCheckedChange = { enabled = it },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Tune,
+                                contentDescription = stringResource(R.string.settings_gradually_increase_volume)
+                            )
+                        }
+                    )
+                }
+
+                predefinedIntervals.forEach { interval ->
+                    item(
+                        onClick = { selectedDuration = interval },
+                        enabled = enabled
+                    ) {
+                        GroupRow(
+                            enabled = enabled,
+                            trailingContent = {
+                                if (selectedDuration == interval) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Check,
+                                        contentDescription = null
+                                    )
+                                }
+                            },
+                            content = {
+                                Text(text = stringResource(R.string.n_seconds, interval))
+                            }
+                        )
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    onClick = { onConfirm(enabled, selectedDuration) }
+                ) {
+                    Text(stringResource(R.string.save))
+                }
+            }
+        }
+    }
+}
