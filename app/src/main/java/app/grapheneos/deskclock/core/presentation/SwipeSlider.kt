@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package app.grapheneos.deskclock.core.presentation
 
 import androidx.compose.animation.animateColorAsState
@@ -33,7 +35,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -47,6 +51,13 @@ import app.grapheneos.deskclock.core.util.Constants
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
+
+data class SwipeAction(
+    val icon: ImageVector,
+    val label: String,
+    val color: @Composable () -> Color,
+    val onTrigger: () -> Unit
+)
 
 @Composable
 fun SwipeSlider(

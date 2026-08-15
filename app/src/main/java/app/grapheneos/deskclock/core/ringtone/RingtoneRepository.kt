@@ -2,10 +2,11 @@ package app.grapheneos.deskclock.core.ringtone
 
 import android.content.Context
 import android.media.RingtoneManager
+import androidx.compose.runtime.Immutable
 import androidx.core.net.toUri
-import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 
 class RingtoneRepository(private val context: Context) {
     suspend fun getSystemAlarms(): List<RingtoneItem> = withContext(Dispatchers.IO) {
@@ -27,3 +28,7 @@ class RingtoneRepository(private val context: Context) {
         RingtoneItem(ringtone.getTitle(context), uri)
     }
 }
+
+@Immutable
+@Serializable
+data class RingtoneItem(val name: String, val uri: String)

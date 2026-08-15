@@ -5,12 +5,8 @@ import androidx.compose.runtime.Immutable
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
 import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter
+import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.core.util.formatSystemTime
-import kotlinx.serialization.Serializable
-
-@Immutable
-@Serializable
-data class RingtoneItem(val name: String, val uri: String)
 
 @Immutable
 data class AlarmUiModel(

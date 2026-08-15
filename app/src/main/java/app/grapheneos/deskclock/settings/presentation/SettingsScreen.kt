@@ -32,12 +32,12 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import app.grapheneos.deskclock.R
-import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.alarm.presentation.components.RingtonePickerDialog
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
 import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGroupRow
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGroupRow
 import app.grapheneos.deskclock.core.presentation.screenPadding
+import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.settings.data.PopUpStyle
 import app.grapheneos.deskclock.settings.data.ThemeMode
@@ -103,13 +103,7 @@ fun SettingsScreen(
             )
 
             AlarmTimerSettingsSection(
-                snoozeDurationMinutes = settings.snoozeDurationMinutes,
-                defaultRingtoneName = settings.defaultRingtone.name,
-                useCustomRingtoneVolume = settings.useCustomRingtoneVolume,
-                ringtoneVolume = settings.ringtoneVolume,
-                vibrate = settings.vibrate,
-                graduallyIncreaseVolume = settings.graduallyIncreaseVolume,
-                graduallyIncreaseVolumeDuration = settings.graduallyIncreaseVolumeDuration,
+                settings = settings,
                 onSnoozeClick = { showSnoozeDialog = true },
                 onRingtoneClick = { showRingtoneDialog = true },
                 onVolumeClick = { showRingtoneVolumeDialog = true },
@@ -277,13 +271,7 @@ private fun GeneralSettingsSection(
 
 @Composable
 private fun AlarmTimerSettingsSection(
-    snoozeDurationMinutes: Int,
-    defaultRingtoneName: String,
-    useCustomRingtoneVolume: Boolean,
-    ringtoneVolume: Float,
-    vibrate: Boolean,
-    graduallyIncreaseVolume: Boolean,
-    graduallyIncreaseVolumeDuration: Int,
+    settings: AppSettingsUiModel,
     onSnoozeClick: () -> Unit,
     onRingtoneClick: () -> Unit,
     onVolumeClick: () -> Unit,
@@ -296,7 +284,7 @@ private fun AlarmTimerSettingsSection(
                 label = stringResource(R.string.settings_snooze_duration),
                 value = stringResource(
                     R.string.n_minutes,
-                    snoozeDurationMinutes
+                    settings.snoozeDurationMinutes
                 ),
                 supportingContent = {
                     Text(text = stringResource(R.string.settings_snooze_duration_desc))
@@ -314,7 +302,7 @@ private fun AlarmTimerSettingsSection(
         item {
             ValueGroupRow(
                 label = stringResource(R.string.settings_alarm_sound),
-                value = defaultRingtoneName,
+                value = settings.defaultRingtone.name,
                 supportingContent = {
                     Text(text = stringResource(R.string.settings_alarm_sound_desc))
                 },
@@ -329,8 +317,8 @@ private fun AlarmTimerSettingsSection(
         }
 
         item {
-            val value = if (useCustomRingtoneVolume) {
-                (ringtoneVolume * 100).roundToInt().toString() + "%"
+            val value = if (settings.useCustomRingtoneVolume) {
+                (settings.ringtoneVolume * 100).roundToInt().toString() + "%"
             } else {
                 stringResource(R.string.disabled)
             }
@@ -351,8 +339,8 @@ private fun AlarmTimerSettingsSection(
         }
 
         item {
-            val value = if (graduallyIncreaseVolume) {
-                stringResource(R.string.n_seconds, graduallyIncreaseVolumeDuration)
+            val value = if (settings.graduallyIncreaseVolume) {
+                stringResource(R.string.n_seconds, settings.graduallyIncreaseVolumeDuration)
             } else {
                 stringResource(R.string.disabled)
             }
@@ -378,7 +366,7 @@ private fun AlarmTimerSettingsSection(
                 supportingContent = {
                     Text(text = stringResource(R.string.settings_vibration_desc))
                 },
-                checked = vibrate,
+                checked = settings.vibrate,
                 onCheckedChange = onVibrationChange,
                 leadingIcon = {
                     Icon(

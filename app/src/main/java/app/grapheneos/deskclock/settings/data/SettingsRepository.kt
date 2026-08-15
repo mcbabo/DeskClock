@@ -1,7 +1,7 @@
 package app.grapheneos.deskclock.settings.data
 
-import app.grapheneos.deskclock.alarm.presentation.RingtoneItem
 import app.grapheneos.deskclock.core.database.SettingsDataStore
+import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import kotlinx.coroutines.flow.Flow
 
 class SettingsRepository(

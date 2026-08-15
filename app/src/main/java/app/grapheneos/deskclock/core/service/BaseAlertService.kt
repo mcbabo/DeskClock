@@ -6,8 +6,8 @@ import android.os.IBinder
 import android.os.PowerManager
 import app.grapheneos.deskclock.core.audio.AudioPlayer
 import app.grapheneos.deskclock.core.audio.VibrationManager
-import app.grapheneos.deskclock.core.notification.NotificationConstants
-import app.grapheneos.deskclock.core.util.ServiceUtils
+import app.grapheneos.deskclock.core.util.Constants
+import app.grapheneos.deskclock.core.util.acquireWakeLock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -22,10 +22,10 @@ abstract class BaseAlertService(private val tag: String) : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        wakeLock = ServiceUtils.acquireWakeLock(
+        wakeLock = acquireWakeLock(
             this,
             tag,
-            NotificationConstants.WAKE_LOCK_TIMEOUT
+            Constants.Notifications.WAKE_LOCK_TIMEOUT
         )
     }
 

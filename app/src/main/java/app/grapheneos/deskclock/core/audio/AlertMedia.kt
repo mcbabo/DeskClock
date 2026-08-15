@@ -7,11 +7,19 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.net.Uri
+import android.os.VibrationAttributes
+import android.os.VibrationEffect
+import android.os.VibratorManager
 import android.util.Log
 import androidx.core.net.toUri
 import app.grapheneos.deskclock.core.util.Constants
 import java.io.IOException
 
+/**
+ * Handles audio playback for alerts (Alarms, Timers).
+ * Supports looping, custom volumes, and gradual volume increase.
+ */
 class AudioPlayer(private val context: Context) {
     private var mediaPlayer: MediaPlayer? = null
     private var focusRequest: AudioFocusRequest? = null
@@ -82,7 +90,7 @@ class AudioPlayer(private val context: Context) {
     }
 
     private fun startMediaPlayer(
-        uri: android.net.Uri,
+        uri: Uri,
         attributes: AudioAttributes,
         loop: Boolean,
         ringtoneVolume: Float?,
@@ -133,5 +141,32 @@ class AudioPlayer(private val context: Context) {
             mediaPlayer = null
             focusRequest?.let { audioManager.abandonAudioFocusRequest(it) }
         }
+    }
+}
+
+/**
+ * Manages haptic feedback (vibration) for active alerts.
+ */
+class VibrationManager(context: Context) {
+    private val vibratorManager =
+        context.getSystemService(VibratorManager::class.java).defaultVibrator
+
+    fun startAlarmVibration() {
+        val effect = VibrationEffect.createWaveform(
+            longArrayOf(
+                0,
+                Constants.Alarm.WAVE_FORM,
+                Constants.Alarm.WAVE_FORM
+            ),
+            0
+        )
+        val attributes = VibrationAttributes.Builder()
+            .setUsage(VibrationAttributes.USAGE_ALARM)
+            .build()
+        vibratorManager.vibrate(effect, attributes)
+    }
+
+    fun stop() {
+        vibratorManager.cancel()
     }
 }

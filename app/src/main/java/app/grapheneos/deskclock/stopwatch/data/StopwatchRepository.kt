@@ -1,7 +1,9 @@
 package app.grapheneos.deskclock.stopwatch.data
 
+import android.content.Context
 import android.os.SystemClock
-import app.grapheneos.deskclock.stopwatch.service.StopwatchController
+import app.grapheneos.deskclock.core.util.startStopwatchService
+import app.grapheneos.deskclock.core.util.stopStopwatchService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +31,7 @@ data class StopwatchData(
 }
 
 class StopwatchRepository(
-    private val stopwatchController: StopwatchController
+    private val context: Context
 ) {
     private val _state = MutableStateFlow(StopwatchData())
     val state = _state.asStateFlow()
@@ -56,7 +58,7 @@ class StopwatchRepository(
                 startTime = SystemClock.elapsedRealtime()
             )
         }
-        stopwatchController.startService()
+        context.startStopwatchService()
     }
 
     fun pause() {
@@ -73,7 +75,7 @@ class StopwatchRepository(
 
     fun reset() {
         _state.value = StopwatchData()
-        stopwatchController.stopService()
+        context.stopStopwatchService()
     }
 
     fun lap() {

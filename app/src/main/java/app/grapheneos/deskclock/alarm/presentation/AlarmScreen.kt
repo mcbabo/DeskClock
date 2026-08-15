@@ -38,8 +38,8 @@ import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.components.AlarmDrawer
 import app.grapheneos.deskclock.alarm.presentation.components.AlarmListItem
 import app.grapheneos.deskclock.alarm.presentation.components.DialWithDialog
-import app.grapheneos.deskclock.core.presentation.FloatingActionButton
 import app.grapheneos.deskclock.core.presentation.Layout
+import app.grapheneos.deskclock.core.presentation.components.FloatingActionButton
 import app.grapheneos.deskclock.core.presentation.components.groupitems.lazyGroup
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import kotlinx.coroutines.launch

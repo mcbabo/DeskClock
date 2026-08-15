@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package app.grapheneos.deskclock.core.presentation
 
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -24,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +38,14 @@ import app.grapheneos.deskclock.core.permission.buildPermissionList
 import app.grapheneos.deskclock.core.presentation.components.groupitems.GroupRow
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+
+data class PermissionUiState(
+    val title: String,
+    val description: String,
+    val isGranted: Boolean,
+    val icon: ImageVector,
+    val launchAction: () -> Unit
+)
 
 @Composable
 fun PermissionGate(
