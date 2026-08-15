@@ -21,6 +21,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * Data layer for managing the state and lifecycle of a Timer.
+ */
 class TimerRepository(
     private val context: Context
 ) {

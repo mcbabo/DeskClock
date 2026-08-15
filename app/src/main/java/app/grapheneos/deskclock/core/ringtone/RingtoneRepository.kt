@@ -29,6 +29,11 @@ class RingtoneRepository(private val context: Context) {
     }
 }
 
+/**
+ * Represents a ringtone available on the system or selected by the user.
+ * @param name The user-visible title of the ringtone.
+ * @param uri The unique content URI used to play the ringtone.
+ */
 @Immutable
 @Serializable
 data class RingtoneItem(val name: String, val uri: String)

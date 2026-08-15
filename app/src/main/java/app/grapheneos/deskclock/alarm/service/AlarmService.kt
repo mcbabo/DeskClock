@@ -25,6 +25,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
+/**
+ * Foreground service that handles the ringing state of an active alarm.
+ * Manages notification display, audio playback, and vibration.
+ */
 class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
     private val alarmRepository: AlarmRepository by inject()
     private val settingsRepository: SettingsRepository by inject()
@@ -109,8 +113,8 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
             putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, hour)
             putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, minute)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_NO_USER_ACTION or
-                Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    Intent.FLAG_ACTIVITY_NO_USER_ACTION or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         startActivity(intent)
     }

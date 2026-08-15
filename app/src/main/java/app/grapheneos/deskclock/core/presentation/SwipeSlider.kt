@@ -52,6 +52,9 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+/**
+ * Configuration for an action that can be triggered by swiping the [SwipeSlider].
+ */
 data class SwipeAction(
     val icon: ImageVector,
     val label: String,

@@ -39,6 +39,9 @@ import app.grapheneos.deskclock.core.presentation.components.groupitems.GroupRow
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 
+/**
+ * UI state for a specific permission requirement.
+ */
 data class PermissionUiState(
     val title: String,
     val description: String,

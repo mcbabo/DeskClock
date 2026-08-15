@@ -4,6 +4,9 @@ import app.grapheneos.deskclock.core.database.SettingsDataStore
 import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data layer for managing all application-wide settings via [SettingsDataStore].
+ */
 class SettingsRepository(
     private val dataStore: SettingsDataStore
 ) {

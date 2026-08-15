@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.alarm.service
 
+import android.app.AlarmManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,9 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+/**
+ * Responds to alarm triggers from the system [AlarmManager] and starts the [AlarmService].
+ */
 class AlarmReceiver : BroadcastReceiver(), KoinComponent {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Constants.Alarm.ACTION_FIRE_ALARM) return
@@ -36,6 +40,9 @@ class AlarmReceiver : BroadcastReceiver(), KoinComponent {
     }
 }
 
+/**
+ * Responds to system boot or app updates to reschedule all active alarms.
+ */
 class RescheduleReceiver : BroadcastReceiver(), KoinComponent {
     private val alarmRepository: AlarmRepository by inject()
     private val controller: AlarmController by inject()

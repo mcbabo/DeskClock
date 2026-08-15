@@ -5,6 +5,10 @@ import app.grapheneos.deskclock.alarm.util.AlarmTimeCalculator
 import app.grapheneos.deskclock.core.util.Constants
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data layer for managing Alarms and their active instances.
+ * Orchestrates between [AlarmDao] for persistence and [AlarmController] for system scheduling.
+ */
 class AlarmRepository(
     private val alarmDao: AlarmDao,
     private val alarmController: AlarmController

@@ -30,6 +30,9 @@ data class StopwatchData(
     }
 }
 
+/**
+ * Data layer for managing the state and recording laps for a Stopwatch.
+ */
 class StopwatchRepository(
     private val context: Context
 ) {

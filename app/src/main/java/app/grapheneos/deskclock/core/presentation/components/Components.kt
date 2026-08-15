@@ -135,19 +135,18 @@ fun DismissKeyboard(modifier: Modifier = Modifier, content: @Composable () -> Un
     val focusManager = LocalFocusManager.current
 
     Box(
-        modifier =
-            modifier.pointerInput(Unit) {
-                awaitPointerEventScope {
-                    while (true) {
-                        val event = awaitPointerEvent(PointerEventPass.Initial)
-                        val change = event.changes.first()
+        modifier = modifier.pointerInput(Unit) {
+            awaitPointerEventScope {
+                while (true) {
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    val change = event.changes.first()
 
-                        if (change.pressed) {
-                            focusManager.clearFocus()
-                        }
+                    if (change.pressed) {
+                        focusManager.clearFocus()
                     }
                 }
             }
+        }
     ) {
         content()
     }

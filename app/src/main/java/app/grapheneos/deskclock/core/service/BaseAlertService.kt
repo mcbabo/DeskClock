@@ -14,6 +14,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import org.koin.android.ext.android.inject
 
+/**
+ * A base class for foreground services that handle critical alerts (Alarms, Timers).
+ * Manages common concerns like wake locks, audio focus, and alert playback.
+ */
 abstract class BaseAlertService(private val tag: String) : Service() {
     protected var wakeLock: PowerManager.WakeLock? = null
     protected val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)

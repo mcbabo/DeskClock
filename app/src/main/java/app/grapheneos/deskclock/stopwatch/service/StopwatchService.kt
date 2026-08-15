@@ -25,6 +25,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
+/**
+ * Foreground service that keeps the stopwatch running and updates its persistent notification.
+ */
 class StopwatchService : BaseAlertService(Constants.Stopwatch.PM_TAG) {
     private val stopwatchRepository: StopwatchRepository by inject()
     private var observationJob: Job? = null

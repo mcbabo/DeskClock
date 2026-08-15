@@ -27,6 +27,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
+/**
+ * Foreground service that tracks the countdown of an active timer and handles the finished state.
+ */
 class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
     private val timerRepository: TimerRepository by inject()
     private val settingsRepository: SettingsRepository by inject()
