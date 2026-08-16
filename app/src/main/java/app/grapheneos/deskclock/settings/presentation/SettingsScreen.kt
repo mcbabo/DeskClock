@@ -339,10 +339,10 @@ private fun AlarmTimerSettingsSection(
 
         item {
             ValueGroupRow(
-                label = "Direct Boot Sound",
+                label = stringResource(R.string.settings_direct_boot_sound),
                 value = settings.directBootRingtone.name,
                 supportingContent = {
-                    Text(text = "Fallback sound played when the device is locked after a reboot.")
+                    Text(text = stringResource(R.string.settings_direct_boot_sound_desc))
                 },
                 onClick = onDirectBootRingtoneClick,
                 leadingIcon = {
@@ -370,7 +370,7 @@ private fun AlarmTimerSettingsSection(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Tune,
-                        contentDescription = stringResource(R.string.settings_alarm_sound)
+                        contentDescription = stringResource(R.string.settings_custom_volume)
                     )
                 }
             )
