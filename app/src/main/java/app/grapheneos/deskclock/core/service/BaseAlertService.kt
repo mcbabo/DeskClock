@@ -2,6 +2,7 @@ package app.grapheneos.deskclock.core.service
 
 import android.app.Service
 import android.content.Intent
+import android.net.Uri
 import android.os.IBinder
 import android.os.PowerManager
 import app.grapheneos.deskclock.core.audio.AudioPlayer
@@ -34,19 +35,19 @@ abstract class BaseAlertService(private val tag: String) : Service() {
     }
 
     protected fun startAlert(
-        ringtoneUri: String? = null,
+        ringtoneUri: Uri? = null,
         vibrate: Boolean = true,
         ringtoneVolume: Float? = null,
         graduallyIncreaseVolume: Boolean = false,
         graduallyIncreaseVolumeDuration: Int = 30,
-        fallbackUriString: String? = null
+        fallbackUri: Uri? = null
     ) {
         audioPlayer.playAlarm(
             ringtoneUri,
             ringtoneVolume = ringtoneVolume,
             graduallyIncreaseVolume = graduallyIncreaseVolume,
             graduallyIncreaseVolumeDuration = graduallyIncreaseVolumeDuration,
-            fallbackUriString = fallbackUriString
+            fallbackUri = fallbackUri
         )
         if (vibrate) {
             vibrationManager.startAlarmVibration()

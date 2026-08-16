@@ -59,4 +59,7 @@ interface AlarmDao {
 
     @Query("SELECT * FROM instances WHERE timeInMillis > :currentTimeMs ORDER BY timeInMillis ASC")
     suspend fun getUpcomingInstances(currentTimeMs: Long): List<AlarmInstance>
+
+    @Query("SELECT * FROM alarms WHERE ringtoneUri = :uri")
+    suspend fun getAlarmsByRingtoneUri(uri: android.net.Uri): List<AlarmEntity>
 }

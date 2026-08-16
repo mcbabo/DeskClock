@@ -1,8 +1,10 @@
 package app.grapheneos.deskclock.core.presentation.components.groupitems
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ListItemDefaults.verticalAlignment
@@ -27,15 +29,20 @@ fun GroupItem(
     count: Int,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
     enabled: Boolean = true,
     content: @Composable () -> Unit
 ) {
     Surface(
-        onClick = onClick ?: {},
-        enabled = onClick != null && enabled,
         shape = Layout.getGroupedShapes(index, count),
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                enabled = (onClick != null || onLongClick != null) && enabled,
+                onClick = onClick ?: {},
+                onLongClick = onLongClick
+            )
     ) {
         content()
     }

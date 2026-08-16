@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.alarm.data
 
+import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -12,7 +13,7 @@ data class AlarmEntity(
     val isEnabled: Boolean,
     val deleteAfterUse: Boolean = false,
     val label: String = "",
-    val ringtoneUri: String = "",
+    val ringtoneUri: Uri = Uri.EMPTY,
     val vibrate: Boolean = true,
     val snoozeDurationMinutes: Int = 10
 )

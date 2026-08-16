@@ -2,6 +2,7 @@ package app.grapheneos.deskclock.core.audio
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.Resources
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -14,7 +15,6 @@ import android.os.VibrationEffect
 import android.os.VibratorManager
 import android.util.Log
 import androidx.core.net.toUri
-import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.util.Constants
 
 /**
@@ -28,13 +28,13 @@ class AudioPlayer(private val context: Context) {
     private var volumeAnimator: ValueAnimator? = null
 
     fun playAlarm(
-        uriString: String?,
+        uri: Uri?,
         loop: Boolean = true,
         alarm: Boolean = true,
         ringtoneVolume: Float? = null,
         graduallyIncreaseVolume: Boolean = false,
         graduallyIncreaseVolumeDuration: Int = 30,
-        fallbackUriString: String? = null
+        fallbackUri: Uri? = null
     ) {
         stop()
 
@@ -48,22 +48,16 @@ class AudioPlayer(private val context: Context) {
             return
         }
 
-        val uri = if (!uriString.isNullOrBlank()) {
-            uriString.toUri()
-        } else {
-            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-        }
+        val targetUri = uri ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
 
         val userManager = context.getSystemService(UserManager::class.java)
         val isUserUnlocked = userManager?.isUserUnlocked ?: true
-        val isDirectBoot = !isUserUnlocked
 
-        val isContentUri = uri.scheme == "content"
-
-        if (isDirectBoot && isContentUri) {
+        val isSafeScheme = targetUri.scheme == "android.resource" || targetUri.scheme == "file"
+        if (!isUserUnlocked && !isSafeScheme) {
             Log.d(
                 Constants.TAG_AUDIO_PLAYER,
-                "Direct Boot active: skipping locked content URI: $uri"
+                "Direct Boot: Content URI $targetUri is locked. Using fallback."
             )
             playFallback(
                 attributes,
@@ -71,14 +65,14 @@ class AudioPlayer(private val context: Context) {
                 ringtoneVolume,
                 graduallyIncreaseVolume,
                 graduallyIncreaseVolumeDuration,
-                fallbackUriString
+                fallbackUri
             )
             return
         }
 
         try {
             startMediaPlayer(
-                uri,
+                targetUri,
                 attributes,
                 loop,
                 ringtoneVolume,
@@ -86,14 +80,14 @@ class AudioPlayer(private val context: Context) {
                 graduallyIncreaseVolumeDuration
             )
         } catch (e: Exception) {
-            Log.w(Constants.TAG_AUDIO_PLAYER, "Error playing alarm from URI: $uri", e)
+            Log.w(Constants.TAG_AUDIO_PLAYER, "Failed to play URI: $uri", e)
             playFallback(
                 attributes,
                 loop,
                 ringtoneVolume,
                 graduallyIncreaseVolume,
                 graduallyIncreaseVolumeDuration,
-                fallbackUriString
+                fallbackUri
             )
         }
     }
@@ -104,24 +98,77 @@ class AudioPlayer(private val context: Context) {
         ringtoneVolume: Float?,
         graduallyIncreaseVolume: Boolean,
         graduallyIncreaseVolumeDuration: Int,
-        fallbackUriString: String? = null
+        fallbackUri: Uri? = null
     ) {
         try {
-            val fallbackUri = if (!fallbackUriString.isNullOrBlank()) {
-                fallbackUriString.toUri()
-            } else {
-                "android.resource://${context.packageName}/${R.raw.neptunium}".toUri()
-            }
+            val targetFallbackUri = fallbackUri ?: "android.resource://${context.packageName}/raw/neptunium".toUri()
             startMediaPlayer(
-                fallbackUri,
+                targetFallbackUri,
                 attributes,
                 loop,
                 ringtoneVolume,
                 graduallyIncreaseVolume,
                 graduallyIncreaseVolumeDuration
             )
-        } catch (fallbackException: Exception) {
-            Log.w(Constants.TAG_AUDIO_PLAYER, "Error playing fallback alarm", fallbackException)
+        } catch (e: Exception) {
+            Log.e(Constants.TAG_AUDIO_PLAYER, "Critical: Fallback also failed", e)
+        }
+    }
+
+    private fun startMediaPlayer(
+        uri: Uri,
+        attributes: AudioAttributes,
+        loop: Boolean,
+        ringtoneVolume: Float?,
+        graduallyIncreaseVolume: Boolean,
+        graduallyIncreaseVolumeDuration: Int
+    ) {
+        mediaPlayer = MediaPlayer().apply {
+            when (uri.scheme) {
+                "android.resource" -> {
+                    val resName = uri.lastPathSegment
+                    val resId = context.resources.getIdentifier(resName, "raw", context.packageName)
+                    if (resId != 0) {
+                        val afd = context.resources.openRawResourceFd(resId)
+                        setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                        afd.close()
+                    } else {
+                        throw Resources.NotFoundException("Raw resource not found: $resName")
+                    }
+                }
+
+                "file" -> {
+                    setDataSource(uri.path)
+                }
+
+                else -> {
+                    setDataSource(context, uri)
+                }
+            }
+
+            setAudioAttributes(attributes)
+            isLooping = loop
+            prepare()
+
+            val targetVolume = ringtoneVolume ?: 1.0f
+            if (graduallyIncreaseVolume) {
+                setVolume(0f, 0f)
+                volumeAnimator = ValueAnimator.ofFloat(0f, targetVolume).apply {
+                    duration = graduallyIncreaseVolumeDuration * 1000L
+                    addUpdateListener { animator ->
+                        val volume = animator.animatedValue as Float
+                        try {
+                            mediaPlayer?.setVolume(volume, volume)
+                        } catch (_: Exception) {
+                            animator.cancel()
+                        }
+                    }
+                    start()
+                }
+            } else {
+                setVolume(targetVolume, targetVolume)
+            }
+            start()
         }
     }
 
@@ -138,54 +185,14 @@ class AudioPlayer(private val context: Context) {
             .build()
     }
 
-    private fun startMediaPlayer(
-        uri: Uri,
-        attributes: AudioAttributes,
-        loop: Boolean,
-        ringtoneVolume: Float?,
-        graduallyIncreaseVolume: Boolean,
-        graduallyIncreaseVolumeDuration: Int
-    ) {
-        mediaPlayer = MediaPlayer().apply {
-            setDataSource(context, uri)
-            setAudioAttributes(attributes)
-            isLooping = loop
-            prepare()
-
-            val targetVolume = ringtoneVolume ?: 1.0f
-            if (graduallyIncreaseVolume) {
-                setVolume(0f, 0f)
-                volumeAnimator = ValueAnimator.ofFloat(0f, targetVolume).apply {
-                    duration = graduallyIncreaseVolumeDuration * 1000L
-                    addUpdateListener { animator ->
-                        val volume = animator.animatedValue as Float
-                        mediaPlayer?.let {
-                            try {
-                                it.setVolume(volume, volume)
-                            } catch (e: IllegalStateException) {
-                                animator.cancel()
-                                Log.d(Constants.TAG_AUDIO_PLAYER, e.toString())
-                            }
-                        }
-                    }
-                    start()
-                }
-            } else {
-                ringtoneVolume?.let { setVolume(it, it) }
-            }
-
-            start()
-        }
-    }
-
     fun stop() {
         try {
             volumeAnimator?.cancel()
             volumeAnimator = null
             mediaPlayer?.stop()
             mediaPlayer?.release()
-        } catch (e: IllegalStateException) {
-            Log.d(Constants.TAG_AUDIO_PLAYER, e.toString())
+        } catch (e: Exception) {
+            Log.d(Constants.TAG_AUDIO_PLAYER, "Error stopping player: ${e.message}")
         } finally {
             mediaPlayer = null
             focusRequest?.let { audioManager.abandonAudioFocusRequest(it) }

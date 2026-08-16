@@ -1,6 +1,8 @@
 package app.grapheneos.deskclock.settings.presentation
 
 import android.view.HapticFeedbackConstants
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -32,8 +34,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.components.RingtonePickerDialog
+import app.grapheneos.deskclock.alarm.presentation.components.RingtonePickerUiState
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGroup
 import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGroupRow
 import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGroupRow
@@ -131,12 +135,25 @@ fun SettingsScreen(
         }
     }
 
+    val picker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let {
+            onIntent(SettingsIntent.ImportRingtone(it))
+        }
+    }
+
     if (showRingtoneDialog) {
         RingtonePickerDialog(
-            ringtones = state.ringtones,
-            initialUri = settings.defaultRingtone.uri,
+            uiState = RingtonePickerUiState(
+                ringtones = state.ringtones,
+                selectedUri = settings.defaultRingtone.uri,
+                isDirectBootOnly = false
+            ),
             onPlayPreview = { onIntent(SettingsIntent.PlayPreview(it)) },
             onStopPreview = { onIntent(SettingsIntent.StopPreview) },
+            onImportRingtone = { picker.launch(arrayOf("audio/*")) },
+            onDeleteRingtone = { onIntent(SettingsIntent.DeleteCustomRingtone(it)) },
             onDismiss = {
                 onIntent(SettingsIntent.StopPreview)
                 showRingtoneDialog = false
@@ -150,10 +167,15 @@ fun SettingsScreen(
 
     if (showDirectBootRingtoneDialog) {
         RingtonePickerDialog(
-            ringtones = state.rawRingtones,
-            initialUri = settings.directBootRingtone.uri,
+            uiState = RingtonePickerUiState(
+                ringtones = state.internalRingtones,
+                selectedUri = settings.directBootRingtone.uri,
+                isDirectBootOnly = true
+            ),
             onPlayPreview = { onIntent(SettingsIntent.PlayPreview(it)) },
             onStopPreview = { onIntent(SettingsIntent.StopPreview) },
+            onImportRingtone = {},
+            onDeleteRingtone = {},
             onDismiss = {
                 onIntent(SettingsIntent.StopPreview)
                 showDirectBootRingtoneDialog = false
@@ -323,7 +345,9 @@ private fun AlarmTimerSettingsSection(
         item {
             ValueGroupRow(
                 label = stringResource(R.string.settings_alarm_sound),
-                value = settings.defaultRingtone.name,
+                value = settings.defaultRingtone.name.let { name ->
+                    if (name.length > 15) name.take(15).plus("...") else name
+                },
                 supportingContent = {
                     Text(text = stringResource(R.string.settings_alarm_sound_desc))
                 },
@@ -427,8 +451,8 @@ fun SettingsScreenPreview() {
                     themeMode = ThemeMode.SYSTEM,
                     dynamicColors = true,
                     snoozeDurationMinutes = 10,
-                    defaultRingtone = RingtoneItem("Cesium", ""),
-                    directBootRingtone = RingtoneItem("Neptunium", ""),
+                    defaultRingtone = RingtoneItem("Cesium", "".toUri()),
+                    directBootRingtone = RingtoneItem("Neptunium", "".toUri()),
                     useCustomRingtoneVolume = false,
                     ringtoneVolume = 0.5f,
                     vibrate = true,

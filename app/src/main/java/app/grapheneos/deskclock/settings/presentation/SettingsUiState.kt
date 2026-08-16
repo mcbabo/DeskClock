@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.settings.presentation
 
+import android.net.Uri
 import androidx.compose.runtime.Immutable
 import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.settings.data.AppSettings
@@ -33,7 +34,7 @@ data class AppSettingsUiModel(
 data class SettingsUiState(
     val settings: AppSettingsUiModel? = null,
     val ringtones: List<RingtoneItem> = emptyList(),
-    val rawRingtones: List<RingtoneItem> = emptyList(),
+    val internalRingtones: List<RingtoneItem> = emptyList(),
     val isLoading: Boolean = false
 )
 
@@ -44,16 +45,19 @@ sealed interface SettingsIntent {
     data object LoadSettings : SettingsIntent
     data object ResetDefaults : SettingsIntent
     data object LoadSystemRingtones : SettingsIntent
-    data object LoadRawRingtones : SettingsIntent
-    data class PlayPreview(val uri: String) : SettingsIntent
+    data object LoadInternalRingtones : SettingsIntent
+    data object RefreshRingtones : SettingsIntent
+    data class ImportRingtone(val uri: Uri) : SettingsIntent
+    data class DeleteCustomRingtone(val ringtone: RingtoneItem) : SettingsIntent
+    data class PlayPreview(val uri: Uri) : SettingsIntent
     data object StopPreview : SettingsIntent
 
     data class UpdateTheme(val theme: ThemeMode) : SettingsIntent
     data class SetDynamicColors(val enabled: Boolean) : SettingsIntent
 
     data class SetSnoozeTime(val minutes: Int) : SettingsIntent
-    data class SetDefaultRingtone(val uri: String) : SettingsIntent
-    data class SetDirectBootRingtone(val uri: String) : SettingsIntent
+    data class SetDefaultRingtone(val uri: Uri) : SettingsIntent
+    data class SetDirectBootRingtone(val uri: Uri) : SettingsIntent
 
     data class SetCustomRingtoneVolumeEnabled(val enabled: Boolean) : SettingsIntent
     data class SetCustomRingtoneVolume(val volume: Float) : SettingsIntent

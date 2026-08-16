@@ -1,6 +1,7 @@
 package app.grapheneos.deskclock.alarm.presentation.popup
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
@@ -68,7 +69,7 @@ class AlarmPopUpViewModel(
                         isEnabled = true,
                         deleteAfterUse = false,
                         label = intent.label,
-                        ringtoneUri = "",
+                        ringtoneUri = Uri.EMPTY,
                         vibrate = true,
                         snoozeDurationMinutes = 10,
                         timeText = formatSystemTime(application, intent.hour, intent.minute),
