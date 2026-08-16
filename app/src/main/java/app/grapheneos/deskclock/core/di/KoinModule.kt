@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.core.di
 
+import android.content.Context
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.alarm.presentation.AlarmViewModel
 import app.grapheneos.deskclock.alarm.presentation.popup.AlarmPopUpViewModel
@@ -32,31 +33,42 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val coreModule = module {
-    single { getDatabaseBuilder(get()) }
-    single { getRoomDatabase(get()) }
+    val deContext = named(Constants.DEVICE_PROTECTED_CONTEXT)
 
-    single(named("AttributedContext")) {
-        androidContext().createAttributionContext(Constants.ATTRIBUTION_TAG_DESKCLOCK_SERVICE)
+    single(deContext) {
+        androidContext().createDeviceProtectedStorageContext()
     }
 
-    singleOf(::ChannelManager)
-    singleOf(::AudioPlayer)
-    singleOf(::VibrationManager)
-    singleOf(::RingtoneRepository)
+    single { getDatabaseBuilder(get(deContext)) }
+    single { getRoomDatabase(get()) }
+
+    single(named(Constants.ATTRIBUTED_CONTEXT)) {
+        // Use DE context as base for attribution to ensure Direct Boot compatibility
+        val context = get<Context>(deContext)
+        context.createAttributionContext(Constants.ATTRIBUTION_TAG_DESKCLOCK_SERVICE)
+    }
+
+    single { ChannelManager(get(deContext)) }
+    single { AudioPlayer(get(deContext)) }
+    single { VibrationManager(get(deContext)) }
+    single { RingtoneRepository(get(deContext)) }
 
     viewModelOf(::MainActivityViewModel)
 }
 
 val settingsModule = module {
-    singleOf(::SettingsDataStore)
+    val deContext = named(Constants.DEVICE_PROTECTED_CONTEXT)
+    single { SettingsDataStore(get(deContext)) }
     singleOf(::SettingsRepository)
 
     viewModelOf(::SettingsViewModel)
 }
 
 val alarmModule = module {
+    val deContext = named(Constants.DEVICE_PROTECTED_CONTEXT)
+
     single { get<AppDatabase>().alarmDao() }
-    single { AlarmController(get(named("AttributedContext"))) }
+    single { AlarmController(get(deContext)) }
     singleOf(::AlarmRepository)
 
     viewModelOf(::AlarmViewModel)
