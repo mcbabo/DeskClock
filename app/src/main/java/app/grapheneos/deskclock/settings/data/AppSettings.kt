@@ -21,6 +21,10 @@ data class AppSettings(
         "Cesium",
         "content://media/internal/audio/media/138?title=Cesium&canonical=1"
     ),
+    val directBootRingtone: RingtoneItem = RingtoneItem(
+        "Cesium",
+        "android.resource://app.grapheneos.deskclock/raw/cesium"
+    ),
     val useCustomRingtoneVolume: Boolean = false,
     val ringtoneVolume: Float = 0.5F,
     val vibrate: Boolean = true,

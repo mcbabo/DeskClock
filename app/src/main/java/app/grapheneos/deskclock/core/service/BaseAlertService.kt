@@ -38,13 +38,15 @@ abstract class BaseAlertService(private val tag: String) : Service() {
         vibrate: Boolean = true,
         ringtoneVolume: Float? = null,
         graduallyIncreaseVolume: Boolean = false,
-        graduallyIncreaseVolumeDuration: Int = 30
+        graduallyIncreaseVolumeDuration: Int = 30,
+        fallbackUriString: String? = null
     ) {
         audioPlayer.playAlarm(
             ringtoneUri,
             ringtoneVolume = ringtoneVolume,
             graduallyIncreaseVolume = graduallyIncreaseVolume,
-            graduallyIncreaseVolumeDuration = graduallyIncreaseVolumeDuration
+            graduallyIncreaseVolumeDuration = graduallyIncreaseVolumeDuration,
+            fallbackUriString = fallbackUriString
         )
         if (vibrate) {
             vibrationManager.startAlarmVibration()

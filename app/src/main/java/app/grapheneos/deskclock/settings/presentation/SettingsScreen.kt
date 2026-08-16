@@ -12,6 +12,7 @@ import androidx.compose.material.icons.outlined.Colorize
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Snooze
+import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,6 +63,7 @@ fun SettingsScreen(
 
     var showSnoozeDialog by remember { mutableStateOf(false) }
     var showRingtoneDialog by remember { mutableStateOf(false) }
+    var showDirectBootRingtoneDialog by remember { mutableStateOf(false) }
     var showRingtoneVolumeDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showGraduallyIncreaseVolumeDialog by remember { mutableStateOf(false) }
@@ -106,6 +108,7 @@ fun SettingsScreen(
                 settings = settings,
                 onSnoozeClick = { showSnoozeDialog = true },
                 onRingtoneClick = { showRingtoneDialog = true },
+                onDirectBootRingtoneClick = { showDirectBootRingtoneDialog = true },
                 onVolumeClick = { showRingtoneVolumeDialog = true },
                 onVibrationChange = { onIntent(SettingsIntent.SetDefaultVibration(it)) },
                 onGraduallyIncreaseVolumeClick = {
@@ -141,6 +144,23 @@ fun SettingsScreen(
             onConfirm = {
                 onIntent(SettingsIntent.SetDefaultRingtone(it))
                 showRingtoneDialog = false
+            }
+        )
+    }
+
+    if (showDirectBootRingtoneDialog) {
+        RingtonePickerDialog(
+            ringtones = state.rawRingtones,
+            initialUri = settings.directBootRingtone.uri,
+            onPlayPreview = { onIntent(SettingsIntent.PlayPreview(it)) },
+            onStopPreview = { onIntent(SettingsIntent.StopPreview) },
+            onDismiss = {
+                onIntent(SettingsIntent.StopPreview)
+                showDirectBootRingtoneDialog = false
+            },
+            onConfirm = {
+                onIntent(SettingsIntent.SetDirectBootRingtone(it))
+                showDirectBootRingtoneDialog = false
             }
         )
     }
@@ -274,6 +294,7 @@ private fun AlarmTimerSettingsSection(
     settings: AppSettingsUiModel,
     onSnoozeClick: () -> Unit,
     onRingtoneClick: () -> Unit,
+    onDirectBootRingtoneClick: () -> Unit,
     onVolumeClick: () -> Unit,
     onVibrationChange: (Boolean) -> Unit,
     onGraduallyIncreaseVolumeClick: () -> Unit
@@ -311,6 +332,23 @@ private fun AlarmTimerSettingsSection(
                     Icon(
                         imageVector = Icons.Outlined.MusicNote,
                         contentDescription = stringResource(R.string.settings_alarm_sound)
+                    )
+                }
+            )
+        }
+
+        item {
+            ValueGroupRow(
+                label = "Direct Boot Sound",
+                value = settings.directBootRingtone.name,
+                supportingContent = {
+                    Text(text = "Fallback sound played when the device is locked after a reboot.")
+                },
+                onClick = onDirectBootRingtoneClick,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.SystemUpdate,
+                        contentDescription = null
                     )
                 }
             )
@@ -390,6 +428,7 @@ fun SettingsScreenPreview() {
                     dynamicColors = true,
                     snoozeDurationMinutes = 10,
                     defaultRingtone = RingtoneItem("Cesium", ""),
+                    directBootRingtone = RingtoneItem("Neptunium", ""),
                     useCustomRingtoneVolume = false,
                     ringtoneVolume = 0.5f,
                     vibrate = true,
