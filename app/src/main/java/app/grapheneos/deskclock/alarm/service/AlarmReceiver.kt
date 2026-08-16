@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.core.util.Constants
@@ -25,7 +26,7 @@ class AlarmReceiver : BroadcastReceiver(), KoinComponent {
         val label = intent.getStringExtra(Constants.Alarm.EXTRA_ALARM_LABEL)
         val hour = intent.getIntExtra(Constants.Alarm.EXTRA_ALARM_HOUR, -1)
         val minute = intent.getIntExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, -1)
-        val ringtoneUri = intent.getStringExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI)
+        val ringtoneUri = intent.getParcelableExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI, Uri::class.java)
         val vibrate = intent.getBooleanExtra(Constants.Alarm.EXTRA_ALARM_VIBRATE, true)
 
         val serviceIntent = Intent(context, AlarmService::class.java).apply {

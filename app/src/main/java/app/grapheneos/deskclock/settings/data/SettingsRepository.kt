@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.settings.data
 
+import android.net.Uri
 import app.grapheneos.deskclock.core.database.SettingsDataStore
 import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import kotlinx.coroutines.flow.Flow
@@ -66,5 +67,19 @@ class SettingsRepository(
 
     suspend fun resetToDefaults() {
         dataStore.updateSettings { AppSettings() }
+    }
+
+    suspend fun onRingtoneDeleted(deletedUri: Uri) {
+        val defaults = AppSettings()
+        dataStore.updateSettings { current ->
+            var updated = current
+            if (current.defaultRingtone.uri == deletedUri) {
+                updated = updated.copy(defaultRingtone = defaults.defaultRingtone)
+            }
+            if (current.directBootRingtone.uri == deletedUri) {
+                updated = updated.copy(directBootRingtone = defaults.directBootRingtone)
+            }
+            updated
+        }
     }
 }
