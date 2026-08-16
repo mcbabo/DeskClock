@@ -29,10 +29,10 @@ abstract class AppDatabase : RoomDatabase() {
 }
 
 fun getDatabaseBuilder(context: Context): RoomDatabase.Builder<AppDatabase> {
-    val dbFile = context.getDatabasePath(Constants.DATABASE_NAME)
     return Room.databaseBuilder(
-        context = context,
-        name = dbFile.absolutePath
+        context,
+        AppDatabase::class.java,
+        Constants.DATABASE_NAME
     )
 }
 
