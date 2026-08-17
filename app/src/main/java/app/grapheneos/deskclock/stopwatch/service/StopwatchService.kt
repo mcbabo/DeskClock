@@ -2,8 +2,6 @@ package app.grapheneos.deskclock.stopwatch.service
 
 import android.Manifest
 import android.app.Notification
-import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
@@ -14,8 +12,8 @@ import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.notification.baseNotificationBuilder
 import app.grapheneos.deskclock.core.service.BaseAlertService
 import app.grapheneos.deskclock.core.util.Constants
+import app.grapheneos.deskclock.core.util.Intents
 import app.grapheneos.deskclock.stopwatch.data.StopwatchData
-import app.grapheneos.deskclock.stopwatch.data.StopwatchReceiver
 import app.grapheneos.deskclock.stopwatch.data.StopwatchRepository
 import app.grapheneos.deskclock.stopwatch.util.StopwatchPrecision
 import app.grapheneos.deskclock.stopwatch.util.formatStopwatchTime
@@ -101,7 +99,10 @@ class StopwatchService : BaseAlertService(Constants.Stopwatch.PM_TAG) {
                         R.string.reset
                     }
                 ),
-                getPendingIntent(Constants.Stopwatch.ACTION_LAP_RESET)
+                Intents.Stopwatch.createStopwatchReceiverPendingIntent(
+                    this,
+                    Constants.Stopwatch.ACTION_LAP_RESET
+                )
             )
 
         if (state.isRunning) {
@@ -130,20 +131,10 @@ class StopwatchService : BaseAlertService(Constants.Stopwatch.PM_TAG) {
         return NotificationCompat.Action(
             icon,
             title,
-            getPendingIntent(Constants.Stopwatch.ACTION_START_PAUSE)
-        )
-    }
-
-    private fun getPendingIntent(action: String): PendingIntent {
-        val intent = Intent().apply {
-            component = ComponentName(this@StopwatchService, StopwatchReceiver::class.java)
-            this.action = action
-        }
-        return PendingIntent.getBroadcast(
-            this,
-            action.hashCode(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            Intents.Stopwatch.createStopwatchReceiverPendingIntent(
+                this,
+                Constants.Stopwatch.ACTION_START_PAUSE
+            )
         )
     }
 }

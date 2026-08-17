@@ -122,7 +122,8 @@ class RingtoneRepository(private val context: Context) {
     suspend fun addCustomRingtone(sourceUri: Uri): RingtoneItem? = withContext(Dispatchers.IO) {
         try {
             val extension = getExtension(sourceUri)
-            val fileName = getFileName(sourceUri) ?: "custom_${System.currentTimeMillis()}.$extension"
+            val fileName =
+                getFileName(sourceUri) ?: "custom_${System.currentTimeMillis()}.$extension"
             val destFile = File(customRingtonesDir, fileName)
 
             context.contentResolver.openInputStream(sourceUri)?.use { input ->

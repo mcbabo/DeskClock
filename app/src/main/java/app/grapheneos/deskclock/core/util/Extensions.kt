@@ -12,8 +12,6 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import app.grapheneos.deskclock.stopwatch.service.StopwatchService
-import app.grapheneos.deskclock.timer.service.TimerService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -72,17 +70,17 @@ fun formatSystemTime(context: Context, hour: Int, minute: Int): String {
 }
 
 fun Context.startTimerService() {
-    startForegroundService(Intent(this, TimerService::class.java))
+    startForegroundService(Intents.Timer.createTimerServiceIntent(this))
 }
 
 fun Context.stopTimerService() {
-    stopService(Intent(this, TimerService::class.java))
+    stopService(Intents.Timer.createTimerServiceIntent(this))
 }
 
 fun Context.startStopwatchService() {
-    startForegroundService(Intent(this, StopwatchService::class.java))
+    startForegroundService(Intents.Stopwatch.createStopwatchServiceIntent(this))
 }
 
 fun Context.stopStopwatchService() {
-    stopService(Intent(this, StopwatchService::class.java))
+    stopService(Intents.Stopwatch.createStopwatchServiceIntent(this))
 }

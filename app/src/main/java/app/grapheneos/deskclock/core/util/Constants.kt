@@ -17,6 +17,9 @@ object Constants {
 
     const val SCHEME_PACKAGE = "package:"
 
+    const val REQUEST_CODE_TIMER = 100
+    const val REQUEST_CODE_STOPWATCH = 200
+
     const val COMPOSE_LABEL_THUMB_COLOR = "thumbColor"
     const val COMPOSE_LABEL_THEME_TRANSITION = "ThemeTransition"
 

@@ -5,22 +5,18 @@ import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.net.Uri
-import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import app.grapheneos.deskclock.MainActivity
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
-import app.grapheneos.deskclock.alarm.presentation.popup.AlarmPopUpActivity
 import app.grapheneos.deskclock.core.notification.baseNotificationBuilder
 import app.grapheneos.deskclock.core.service.BaseAlertService
 import app.grapheneos.deskclock.core.util.Constants
+import app.grapheneos.deskclock.core.util.Intents
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -35,15 +31,17 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
     private val settingsRepository: SettingsRepository by inject()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val instanceId = intent?.getLongExtra(Constants.Alarm.EXTRA_INSTANCE_ID, -1L) ?: -1L
-        val label = intent?.getStringExtra(Constants.Alarm.EXTRA_ALARM_LABEL) ?: ""
-        val hour = intent?.getIntExtra(Constants.Alarm.EXTRA_ALARM_HOUR, -1) ?: -1
-        val minute = intent?.getIntExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, -1) ?: -1
+        if (intent == null) return START_NOT_STICKY
+        val alarmData = Intents.Alarm.extractAlarmData(intent) ?: return START_NOT_STICKY
 
-        val hasIntentData = intent?.hasExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI) == true
-        val intentRingtone = intent?.getParcelableExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI, Uri::class.java)
-        val intentVibrate =
-            intent?.getBooleanExtra(Constants.Alarm.EXTRA_ALARM_VIBRATE, true) ?: true
+        val instanceId = alarmData.instanceId
+        val label = alarmData.label
+        val hour = alarmData.hour
+        val minute = alarmData.minute
+
+        val hasIntentData = intent.hasExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI)
+        val intentRingtone = alarmData.ringtoneUri
+        val intentVibrate = alarmData.vibrate
 
         val notification = buildAlarmNotification(
             instanceId = instanceId,
@@ -110,15 +108,7 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
     }
 
     private fun launchPopUp(instanceId: Long, label: String, hour: Int, minute: Int) {
-        val intent = Intent(this, AlarmPopUpActivity::class.java).apply {
-            putExtra(Constants.Alarm.EXTRA_INSTANCE_ID, instanceId)
-            putExtra(Constants.Alarm.EXTRA_ALARM_LABEL, label)
-            putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, hour)
-            putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, minute)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_NO_USER_ACTION or
-                Intent.FLAG_ACTIVITY_SINGLE_TOP
-        }
+        val intent = Intents.Alarm.createAlarmPopUpIntent(this, instanceId, label, hour, minute)
         startActivity(intent)
     }
 
@@ -153,22 +143,7 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
         hour: Int,
         minute: Int
     ): PendingIntent {
-        val intent = Intent().apply {
-            component = ComponentName(this@AlarmService, AlarmPopUpActivity::class.java)
-            putExtra(Constants.Alarm.EXTRA_INSTANCE_ID, id)
-            putExtra(Constants.Alarm.EXTRA_ALARM_LABEL, label)
-            putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, hour)
-            putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, minute)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_NO_USER_ACTION or
-                Intent.FLAG_ACTIVITY_SINGLE_TOP
-        }
-        return PendingIntent.getActivity(
-            this,
-            id.toInt(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        return Intents.Alarm.createAlarmPopUpPendingIntent(this, id, label, hour, minute)
     }
 }
 
@@ -180,15 +155,12 @@ class AlarmController(private val context: Context) {
 
     fun scheduleInstance(alarm: AlarmEntity, instanceId: Long, triggerTime: Long) {
         if (!alarmManager.canScheduleExactAlarms()) {
-            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            context.startActivity(intent)
+            context.startActivity(Intents.System.createRequestExactAlarmIntent())
             return
         }
 
-        val operation = createReceiverPendingIntent(instanceId, alarm)
-        val showIntent = createShowPendingIntent(alarm.id)
+        val operation = Intents.Alarm.createFireAlarmPendingIntent(context, instanceId, alarm)
+        val showIntent = Intents.createShowMainActivityPendingIntent(context, alarm.id.toInt())
         val alarmInfo = AlarmManager.AlarmClockInfo(triggerTime, showIntent)
 
         try {
@@ -199,49 +171,8 @@ class AlarmController(private val context: Context) {
     }
 
     fun cancelInstance(alarmId: Long) {
-        val intent = Intent().apply {
-            component = ComponentName(context, AlarmReceiver::class.java)
-            action = Constants.Alarm.ACTION_FIRE_ALARM
-        }
-        val operation = PendingIntent.getBroadcast(
-            context,
-            alarmId.toInt(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        val operation = Intents.Alarm.createCancelAlarmPendingIntent(context, alarmId)
         alarmManager.cancel(operation)
         operation.cancel()
-    }
-
-    private fun createShowPendingIntent(alarmId: Long): PendingIntent {
-        val intent = Intent().apply {
-            component = ComponentName(context, MainActivity::class.java)
-        }
-
-        return PendingIntent.getActivity(
-            context,
-            alarmId.toInt(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-    }
-
-    private fun createReceiverPendingIntent(instanceId: Long, alarm: AlarmEntity): PendingIntent {
-        val intent = Intent().apply {
-            component = ComponentName(context, AlarmReceiver::class.java)
-            action = Constants.Alarm.ACTION_FIRE_ALARM
-            putExtra(Constants.Alarm.EXTRA_INSTANCE_ID, instanceId)
-            putExtra(Constants.Alarm.EXTRA_ALARM_LABEL, alarm.label)
-            putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, alarm.hour)
-            putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, alarm.minute)
-            putExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI, alarm.ringtoneUri)
-            putExtra(Constants.Alarm.EXTRA_ALARM_VIBRATE, alarm.vibrate)
-        }
-        return PendingIntent.getBroadcast(
-            context,
-            alarm.id.toInt(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
     }
 }

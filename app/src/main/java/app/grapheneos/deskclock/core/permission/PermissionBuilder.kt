@@ -1,7 +1,6 @@
 package app.grapheneos.deskclock.core.permission
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,12 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BatteryAlert
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.core.net.toUri
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.presentation.PermissionUiState
-import app.grapheneos.deskclock.core.util.Constants
+import app.grapheneos.deskclock.core.util.Intents
 
-@SuppressLint("BatteryLife")
 fun buildPermissionList(
     context: Context,
     notificationLauncher: ActivityResultLauncher<String>,
@@ -45,11 +42,7 @@ fun buildPermissionList(
             isGranted = isOverlayGranted,
             icon = Icons.Outlined.Layers,
             launchAction = {
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    "${Constants.SCHEME_PACKAGE}${context.packageName}".toUri()
-                )
-                settingsLauncher.launch(intent)
+                settingsLauncher.launch(Intents.System.createManageOverlayPermissionIntent(context))
             }
         )
     )
@@ -63,11 +56,11 @@ fun buildPermissionList(
             isGranted = isBatteryIgnored,
             icon = Icons.Outlined.BatteryAlert,
             launchAction = {
-                val intent = Intent(
-                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                    "${Constants.SCHEME_PACKAGE}${context.packageName}".toUri()
+                settingsLauncher.launch(
+                    Intents.System.createRequestIgnoreBatteryOptimizationsIntent(
+                        context
+                    )
                 )
-                settingsLauncher.launch(intent)
             }
         )
     )

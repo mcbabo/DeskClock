@@ -2,8 +2,6 @@ package app.grapheneos.deskclock.timer.service
 
 import android.Manifest
 import android.app.Notification
-import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
@@ -14,11 +12,10 @@ import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.notification.baseNotificationBuilder
 import app.grapheneos.deskclock.core.service.BaseAlertService
 import app.grapheneos.deskclock.core.util.Constants
+import app.grapheneos.deskclock.core.util.Intents
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import app.grapheneos.deskclock.timer.data.TimerData
-import app.grapheneos.deskclock.timer.data.TimerReceiver
 import app.grapheneos.deskclock.timer.data.TimerRepository
-import app.grapheneos.deskclock.timer.presentation.popup.TimerPopUpActivity
 import app.grapheneos.deskclock.timer.util.TimerUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
@@ -79,9 +76,7 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
     }
 
     private fun launchPopUp() {
-        val intent = Intent(this, TimerPopUpActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        }
+        val intent = Intents.Timer.createTimerPopUpIntent(this)
         startActivity(intent)
     }
 
@@ -117,7 +112,7 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
             .addAction(
                 android.R.drawable.ic_menu_close_clear_cancel,
                 getString(R.string.reset),
-                getPendingIntent(Constants.Timer.ACTION_RESET)
+                Intents.Timer.createTimerReceiverPendingIntent(this, Constants.Timer.ACTION_RESET)
             )
             .build()
     }
@@ -136,20 +131,7 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
         return NotificationCompat.Action(
             icon,
             title,
-            getPendingIntent(Constants.Timer.ACTION_PAUSE_RESUME)
-        )
-    }
-
-    private fun getPendingIntent(action: String): PendingIntent {
-        val intent = Intent().apply {
-            component = ComponentName(this@TimerService, TimerReceiver::class.java)
-            this.action = action
-        }
-        return PendingIntent.getBroadcast(
-            this,
-            action.hashCode(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            Intents.Timer.createTimerReceiverPendingIntent(this, Constants.Timer.ACTION_PAUSE_RESUME)
         )
     }
 }

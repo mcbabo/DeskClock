@@ -12,7 +12,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.grapheneos.deskclock.alarm.service.AlarmService
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.core.theme.SystemBarsTheme
-import app.grapheneos.deskclock.core.util.Constants
+import app.grapheneos.deskclock.core.util.Intents
 import app.grapheneos.deskclock.core.util.collectEffectsOnStart
 import app.grapheneos.deskclock.core.util.configureShowOnLockScreen
 import app.grapheneos.deskclock.core.util.stopServiceAndFinish
@@ -70,11 +70,10 @@ class AlarmPopUpActivity : ComponentActivity() {
     }
 
     private fun handleAlarmIntent(intent: Intent) {
-        val instanceId = intent.getLongExtra(Constants.Alarm.EXTRA_INSTANCE_ID, -1L)
-        val label = intent.getStringExtra(Constants.Alarm.EXTRA_ALARM_LABEL) ?: ""
-        val hour = intent.getIntExtra(Constants.Alarm.EXTRA_ALARM_HOUR, -1)
-        val minute = intent.getIntExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, -1)
-
-        viewModel.handleIntent(AlarmPopUpIntent.Init(instanceId, label, hour, minute))
+        Intents.Alarm.extractAlarmData(intent)?.let { data ->
+            viewModel.handleIntent(
+                AlarmPopUpIntent.Init(data.instanceId, data.label, data.hour, data.minute)
+            )
+        }
     }
 }
