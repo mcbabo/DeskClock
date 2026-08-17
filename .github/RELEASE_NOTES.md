@@ -1,26 +1,35 @@
-## What's new in 1.0.1
+## What's new in 1.1.0
 
 > [!IMPORTANT]
 > **Early Release / Potential Instability**
 >
-> This build is provided as a release for testing and early adoption, but it is not yet fully
-> stable. You may encounter bugs or performance issues.
+> This build is provided as a release for testing and early adoption. You may encounter bugs or
+> performance issues.
 
 ### Features
 
-* **Popup Styles**: Added a third interaction model ("Tertiary") featuring a bidirectional swipe
-  slider for both alarms and timers.
-* **Slider Actions**:
-    * **Alarms**: Swipe left to snooze, right to dismiss.
-    * **Timers**: Swipe left to add 1 minute, right to stop.
-* **"Next Alarm" Display**: The Alarm screen now shows the time remaining until the next scheduled
-  alarm (e.g., "Next alarm in 8h 15m").
-* **Tactile Feedback**: Added haptic feedback across the app, including swipe actions, the timer
-  keypad.
-* **Timer Improvements**: Added a quick "1 min" extension button to all timer popup styles.
-* **Localization**: Full German support for new styles and interactions.
+#### Gradual Volume Increase
+
+* Gradual Volume Increase: Added a new setting to slowly ramp up the alarm and timer volume when
+  ringing, providing a gentler wake-up experience.
+* Configurable Duration: Choose the duration for the volume ramp-up, ranging from 5 to 60
+  seconds.
+
+#### Direct Boot Mode support
+
+* Alarms are rescheduled after a reboot even when the device is still locked.
+* Migrated Preferences and Database: Preferences (except ringtones) can still be used even when the
+  device is locked.
+* Fallback Ringtones: Fallback ringtones were added which can be used even when `content://` is
+  locked after reboot.
 
 ### Maintenance
 
-* Refactored popup architecture into shared base components to ensure UI consistency.
-* Standardized popup buttons and slider logic across the app.
+* **Refined Settings UI**: Implemented a new unified drawer for volume settings, keeping the
+  main settings screen clean and consistent.
+* **UI Stability**: Disabled settings now remain visible but grayed out, ensuring a more stable
+  layout while clearly showing available options.
+* **Localization**: Full German support for all new volume-related settings.
+* Enhanced core UI primitives (`GroupRow`, `GroupItem`) with built-in support for disabled states
+  and consistent Material 3 styling.
+* Refactored `AudioPlayer` core to support dynamic volume animation via `ValueAnimator`.

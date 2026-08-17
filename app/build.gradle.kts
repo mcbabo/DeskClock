@@ -30,8 +30,8 @@ android {
         applicationId = "app.grapheneos.deskclock"
         minSdk = 37
         targetSdk = 37
-        versionCode = 1_00_01
-        versionName = "1.0.1"
+        versionCode = 1_01_00
+        versionName = "1.1.0"
 
         ndk {
             if (project.hasProperty("ABI_FILTER")) {
