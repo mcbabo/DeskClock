@@ -33,3 +33,4 @@
 * Enhanced core UI primitives (`GroupRow`, `GroupItem`) with built-in support for disabled states
   and consistent Material 3 styling.
 * Refactored `AudioPlayer` core to support dynamic volume animation via `ValueAnimator`.
+* Refactored all Intents to use `Intents.kt`
