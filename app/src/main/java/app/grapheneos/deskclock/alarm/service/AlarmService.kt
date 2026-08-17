@@ -153,7 +153,7 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
         hour: Int,
         minute: Int
     ): PendingIntent {
-        val intent = Intent(applicationContext, AlarmPopUpActivity::class.java).apply {
+        val intent = Intent(this, AlarmPopUpActivity::class.java).apply {
             putExtra(Constants.Alarm.EXTRA_INSTANCE_ID, id)
             putExtra(Constants.Alarm.EXTRA_ALARM_LABEL, label)
             putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, hour)
@@ -164,7 +164,7 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
                 Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         return PendingIntent.getActivity(
-            applicationContext,
+            this,
             id.toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -204,7 +204,7 @@ class AlarmController(private val context: Context) {
             setPackage(context.packageName)
         }
         val operation = PendingIntent.getBroadcast(
-            context.applicationContext,
+            context,
             alarmId.toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -219,7 +219,7 @@ class AlarmController(private val context: Context) {
         }
 
         return PendingIntent.getActivity(
-            context.applicationContext,
+            context,
             alarmId.toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -238,7 +238,7 @@ class AlarmController(private val context: Context) {
             putExtra(Constants.Alarm.EXTRA_ALARM_VIBRATE, alarm.vibrate)
         }
         return PendingIntent.getBroadcast(
-            context.applicationContext,
+            context,
             alarm.id.toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

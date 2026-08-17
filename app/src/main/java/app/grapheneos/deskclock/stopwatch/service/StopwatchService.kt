@@ -134,12 +134,12 @@ class StopwatchService : BaseAlertService(Constants.Stopwatch.PM_TAG) {
     }
 
     private fun getPendingIntent(action: String): PendingIntent {
-        val intent = Intent(applicationContext, StopwatchReceiver::class.java).apply {
+        val intent = Intent(this, StopwatchReceiver::class.java).apply {
             this.action = action
             setPackage(packageName)
         }
         return PendingIntent.getBroadcast(
-            applicationContext,
+            this,
             action.hashCode(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

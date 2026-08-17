@@ -79,7 +79,9 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
 
     private fun launchPopUp() {
         val intent = Intent(this, TimerPopUpActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            setPackage(packageName)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
         startActivity(intent)
     }
