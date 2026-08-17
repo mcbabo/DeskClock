@@ -1,6 +1,7 @@
 package app.grapheneos.deskclock.alarm.presentation
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.Immutable
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmWithInstance
@@ -20,7 +21,7 @@ data class AlarmUiModel(
     val isEnabled: Boolean,
     val deleteAfterUse: Boolean,
     val label: String,
-    val ringtoneUri: String,
+    val ringtoneUri: Uri,
     val vibrate: Boolean,
     val snoozeDurationMinutes: Int,
     val hasInstance: Boolean = false,
@@ -44,7 +45,6 @@ data class AlarmUiState(
  */
 sealed interface AlarmIntent {
     // Alarm
-    data object LoadAlarms : AlarmIntent
     data class ToggleAlarm(val alarm: AlarmUiModel) : AlarmIntent
     data class UpdateAlarm(val alarm: AlarmUiModel) : AlarmIntent
     data class DeleteAlarm(val alarm: AlarmUiModel) : AlarmIntent
@@ -58,8 +58,9 @@ sealed interface AlarmIntent {
     ) : AlarmIntent
 
     // Ringtones
-    data object LoadSystemRingtones : AlarmIntent
-    data class PlayPreview(val uri: String) : AlarmIntent
+    data class ImportRingtone(val uri: Uri) : AlarmIntent
+    data class DeleteCustomRingtone(val ringtone: RingtoneItem) : AlarmIntent
+    data class PlayPreview(val uri: Uri) : AlarmIntent
     data object StopPreview : AlarmIntent
 }
 

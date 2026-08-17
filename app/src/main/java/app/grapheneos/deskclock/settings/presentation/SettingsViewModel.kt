@@ -1,13 +1,16 @@
 package app.grapheneos.deskclock.settings.presentation
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.grapheneos.deskclock.alarm.data.AlarmRepository
 import app.grapheneos.deskclock.core.audio.AudioPlayer
 import app.grapheneos.deskclock.core.ringtone.RingtoneRepository
 import app.grapheneos.deskclock.settings.data.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -16,6 +19,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val audioPlayer: AudioPlayer,
     private val settingsRepository: SettingsRepository,
+    private val alarmRepository: AlarmRepository,
     private val ringtoneRepository: RingtoneRepository,
 ) : ViewModel() {
 
@@ -26,16 +30,32 @@ class SettingsViewModel(
 
     init {
         handleIntent(SettingsIntent.LoadSettings)
-        handleIntent(SettingsIntent.LoadSystemRingtones)
-        handleIntent(SettingsIntent.LoadRawRingtones)
+        handleIntent(SettingsIntent.RefreshRingtones)
     }
 
     fun handleIntent(intent: SettingsIntent) {
         when (intent) {
             is SettingsIntent.LoadSettings -> observeSettings()
+            is SettingsIntent.RefreshRingtones -> {
+                loadAllRingtones()
+                loadInternalRingtones()
+            }
+
             is SettingsIntent.ResetDefaults -> update { settingsRepository.resetToDefaults() }
-            is SettingsIntent.LoadSystemRingtones -> loadRingtones()
-            is SettingsIntent.LoadRawRingtones -> loadRawRingtones()
+            is SettingsIntent.LoadSystemRingtones -> loadAllRingtones()
+            is SettingsIntent.LoadInternalRingtones -> loadInternalRingtones()
+            is SettingsIntent.ImportRingtone -> importCustomRingtone(intent.uri)
+            is SettingsIntent.DeleteCustomRingtone -> viewModelScope.launch {
+                ringtoneRepository.deleteCustomRingtone(intent.ringtone)
+                settingsRepository.onRingtoneDeleted(intent.ringtone.uri)
+                val currentSettings = settingsRepository.settings.first()
+                alarmRepository.updateRingtoneUri(
+                    oldUri = intent.ringtone.uri,
+                    newUri = currentSettings.defaultRingtone.uri
+                )
+                handleIntent(SettingsIntent.RefreshRingtones)
+            }
+
             is SettingsIntent.PlayPreview -> {
                 audioPlayer.playAlarm(intent.uri, loop = false, alarm = false)
             }
@@ -43,9 +63,7 @@ class SettingsViewModel(
             is SettingsIntent.StopPreview -> audioPlayer.stop()
             is SettingsIntent.UpdateTheme -> update { settingsRepository.setTheme(intent.theme) }
             is SettingsIntent.SetDynamicColors -> update {
-                settingsRepository.setDynamicColors(
-                    intent.enabled
-                )
+                settingsRepository.setDynamicColors(intent.enabled)
             }
 
             is SettingsIntent.SetSnoozeTime -> update { settingsRepository.setSnoozeTime(intent.minutes) }
@@ -55,8 +73,8 @@ class SettingsViewModel(
             }
 
             is SettingsIntent.SetDirectBootRingtone -> viewModelScope.launch {
-                val ringtoneItem = if (intent.uri.startsWith("android.resource")) {
-                    _uiState.value.rawRingtones.find { it.uri == intent.uri }
+                val ringtoneItem = if (intent.uri.scheme == "android.resource") {
+                    _uiState.value.internalRingtones.find { it.uri == intent.uri }
                 } else {
                     ringtoneRepository.getRingtoneItem(intent.uri)
                 }
@@ -72,9 +90,7 @@ class SettingsViewModel(
             }
 
             is SettingsIntent.SetDefaultVibration -> update {
-                settingsRepository.setDefaultVibration(
-                    intent.enabled
-                )
+                settingsRepository.setDefaultVibration(intent.enabled)
             }
 
             is SettingsIntent.SetAlarmPopUpStyle -> update {
@@ -95,6 +111,28 @@ class SettingsViewModel(
         }
     }
 
+    private fun loadAllRingtones() {
+        viewModelScope.launch {
+            val allRingtones = ringtoneRepository.getRingtones()
+            _uiState.update { it.copy(ringtones = allRingtones) }
+        }
+    }
+
+    private fun importCustomRingtone(uri: Uri) {
+        viewModelScope.launch {
+            ringtoneRepository.addCustomRingtone(uri)?.let { _ ->
+                loadAllRingtones()
+            }
+        }
+    }
+
+    private fun loadInternalRingtones() {
+        viewModelScope.launch {
+            val ringtones = ringtoneRepository.getInternalRingtones()
+            _uiState.update { it.copy(internalRingtones = ringtones) }
+        }
+    }
+
     private fun observeSettings() {
         if (settingsJob != null) return
         settingsJob = settingsRepository.settings
@@ -107,20 +145,6 @@ class SettingsViewModel(
     private fun update(block: suspend () -> Unit) {
         viewModelScope.launch {
             block()
-        }
-    }
-
-    private fun loadRingtones() {
-        viewModelScope.launch {
-            val ringtones = ringtoneRepository.getSystemAlarms()
-            _uiState.update { it.copy(ringtones = ringtones) }
-        }
-    }
-
-    private fun loadRawRingtones() {
-        viewModelScope.launch {
-            val ringtones = ringtoneRepository.getRawRingtones()
-            _uiState.update { it.copy(rawRingtones = ringtones) }
         }
     }
 }

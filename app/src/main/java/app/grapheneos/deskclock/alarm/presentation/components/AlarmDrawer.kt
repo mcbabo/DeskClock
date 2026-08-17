@@ -1,6 +1,9 @@
 package app.grapheneos.deskclock.alarm.presentation.components
 
+import android.net.Uri
 import android.view.HapticFeedbackConstants
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -161,12 +164,29 @@ fun AlarmDrawerContent(
         )
     }
 
+    val picker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let {
+            onIntent(AlarmIntent.ImportRingtone(it))
+        }
+    }
+
     if (showRingtonePicker) {
         RingtonePickerDialog(
-            ringtones = ringtones,
-            initialUri = localAlarm.ringtoneUri,
+            uiState = RingtonePickerUiState(
+                ringtones = ringtones,
+                selectedUri = localAlarm.ringtoneUri,
+                isDirectBootOnly = false
+            ),
             onPlayPreview = { uri -> onIntent(AlarmIntent.PlayPreview(uri)) },
             onStopPreview = { onIntent(AlarmIntent.StopPreview) },
+            onImportRingtone = {
+                picker.launch(arrayOf("audio/*"))
+            },
+            onDeleteRingtone = { ringtone ->
+                onIntent(AlarmIntent.DeleteCustomRingtone(ringtone))
+            },
             onDismiss = {
                 onIntent(AlarmIntent.StopPreview)
                 showRingtonePicker = false
@@ -335,7 +355,7 @@ fun AlarmDrawerContentPreview() {
                 isEnabled = true,
                 deleteAfterUse = false,
                 label = "",
-                ringtoneUri = "",
+                ringtoneUri = Uri.EMPTY,
                 vibrate = true,
                 snoozeDurationMinutes = 10,
                 timeText = "7:30",

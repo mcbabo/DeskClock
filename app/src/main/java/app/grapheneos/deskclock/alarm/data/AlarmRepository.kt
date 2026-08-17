@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.alarm.data
 
+import android.net.Uri
 import app.grapheneos.deskclock.alarm.service.AlarmController
 import app.grapheneos.deskclock.alarm.util.AlarmTimeCalculator
 import app.grapheneos.deskclock.core.util.Constants
@@ -105,5 +106,12 @@ class AlarmRepository(
 
     suspend fun getAlarmByInstanceId(instanceId: Long): AlarmWithInstance? {
         return alarmDao.getAlarmWithInstanceByInstanceId(instanceId)
+    }
+
+    suspend fun updateRingtoneUri(oldUri: Uri, newUri: Uri) {
+        val alarms = alarmDao.getAlarmsByRingtoneUri(oldUri)
+        alarms.forEach { alarm ->
+            updateAlarm(alarm.copy(ringtoneUri = newUri))
+        }
     }
 }

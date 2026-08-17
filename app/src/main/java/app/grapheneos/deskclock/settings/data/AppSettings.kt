@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.net.toUri
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.core.util.Constants
@@ -19,11 +20,11 @@ data class AppSettings(
     val snoozeDurationMinutes: Int = Constants.Alarm.DEFAULT_SNOOZE_TIME,
     val defaultRingtone: RingtoneItem = RingtoneItem(
         "Cesium",
-        "content://media/internal/audio/media/138?title=Cesium&canonical=1"
+        "content://media/internal/audio/media/138?title=Cesium&canonical=1".toUri()
     ),
     val directBootRingtone: RingtoneItem = RingtoneItem(
         "Cesium",
-        "android.resource://app.grapheneos.deskclock/raw/cesium"
+        "android.resource://app.grapheneos.deskclock/raw/cesium".toUri()
     ),
     val useCustomRingtoneVolume: Boolean = false,
     val ringtoneVolume: Float = 0.5F,

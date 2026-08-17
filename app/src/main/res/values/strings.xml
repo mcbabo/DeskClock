@@ -102,4 +102,11 @@
     <string name="permissions">Permissions</string>
     <string name="settings_direct_boot_sound">Reboot ringtone</string>
     <string name="settings_direct_boot_sound_desc">Fallback sound played when the device is locked after a reboot.</string>
+    <string name="custom">Custom</string>
+    <string name="system">System</string>
+    <string name="internal">Resources</string>
+    <string name="import_ringtone">Import Ringtone</string>
+    <string name="delete_ringtone">Delete Ringtone</string>
+    <string name="delete_ringtone_confirmation">Are you sure you want to delete \"%1$s\"?</string>
+    <string name="cancel">Cancel</string>
 </resources>
