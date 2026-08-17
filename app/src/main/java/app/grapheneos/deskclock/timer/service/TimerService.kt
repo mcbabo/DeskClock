@@ -3,7 +3,6 @@ package app.grapheneos.deskclock.timer.service
 import android.Manifest
 import android.app.Notification
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
@@ -141,9 +140,9 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
     }
 
     private fun getPendingIntent(action: String): PendingIntent {
-        val intent = Intent().apply {
-            component = ComponentName(this@TimerService, TimerReceiver::class.java)
+        val intent = Intent(this, TimerReceiver::class.java).apply {
             this.action = action
+            setPackage(packageName)
         }
         return PendingIntent.getBroadcast(
             this,
