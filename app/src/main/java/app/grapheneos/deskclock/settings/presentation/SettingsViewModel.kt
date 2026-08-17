@@ -27,6 +27,7 @@ class SettingsViewModel(
     init {
         handleIntent(SettingsIntent.LoadSettings)
         handleIntent(SettingsIntent.LoadSystemRingtones)
+        handleIntent(SettingsIntent.LoadRawRingtones)
     }
 
     fun handleIntent(intent: SettingsIntent) {
@@ -34,6 +35,7 @@ class SettingsViewModel(
             is SettingsIntent.LoadSettings -> observeSettings()
             is SettingsIntent.ResetDefaults -> update { settingsRepository.resetToDefaults() }
             is SettingsIntent.LoadSystemRingtones -> loadRingtones()
+            is SettingsIntent.LoadRawRingtones -> loadRawRingtones()
             is SettingsIntent.PlayPreview -> {
                 audioPlayer.playAlarm(intent.uri, loop = false, alarm = false)
             }
@@ -50,6 +52,15 @@ class SettingsViewModel(
             is SettingsIntent.SetDefaultRingtone -> viewModelScope.launch {
                 val ringtoneItem = ringtoneRepository.getRingtoneItem(intent.uri)
                 settingsRepository.setDefaultRingtone(ringtoneItem)
+            }
+
+            is SettingsIntent.SetDirectBootRingtone -> viewModelScope.launch {
+                val ringtoneItem = if (intent.uri.startsWith("android.resource")) {
+                    _uiState.value.rawRingtones.find { it.uri == intent.uri }
+                } else {
+                    ringtoneRepository.getRingtoneItem(intent.uri)
+                }
+                ringtoneItem?.let { settingsRepository.setDirectBootRingtone(it) }
             }
 
             is SettingsIntent.SetCustomRingtoneVolumeEnabled -> update {
@@ -103,6 +114,13 @@ class SettingsViewModel(
         viewModelScope.launch {
             val ringtones = ringtoneRepository.getSystemAlarms()
             _uiState.update { it.copy(ringtones = ringtones) }
+        }
+    }
+
+    private fun loadRawRingtones() {
+        viewModelScope.launch {
+            val ringtones = ringtoneRepository.getRawRingtones()
+            _uiState.update { it.copy(rawRingtones = ringtones) }
         }
     }
 }

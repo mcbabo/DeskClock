@@ -4,11 +4,16 @@ object Constants {
     const val METADATA_PERMISSIONS_REQUIRED = "permissions_required"
     const val ATTRIBUTION_TAG_DESKCLOCK_SERVICE = "deskclock_service"
     const val DATABASE_NAME = "deskclock.db"
+    const val DEVICE_PROTECTED_CONTEXT = "DeviceProtectedContext"
+    const val ATTRIBUTED_CONTEXT = "AttributedContext"
     const val SETTINGS_DATASTORE_NAME = "app_settings"
     const val SETTINGS_DATASTORE_KEY = "settings_json"
 
+    const val TAG_APPLICATION = "DeskClockApp"
     const val TAG_AUDIO_PLAYER = "AudioPlayer"
     const val TAG_TIMER_SERVICE = "TimerService"
+    const val TAG_RESCHEDULE_RECEIVER = "RescheduleReceiver"
+    const val TAG_RINGTONE_REPOSITORY = "RingtoneRepository"
 
     const val SCHEME_PACKAGE = "package:"
 

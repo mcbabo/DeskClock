@@ -99,4 +99,6 @@
     <string name="start_stopwatch">Stoppuhr starten</string>
     <string name="configure">Konfigurieren</string>
     <string name="permissions">Berechtigungen</string>
+    <string name="settings_direct_boot_sound">Klingelton nach Neustart</string>
+    <string name="settings_direct_boot_sound_desc">Ersatzton, der abgespielt wird, wenn das Gerät nach einem Neustart gesperrt ist.</string>
 </resources>

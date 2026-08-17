@@ -8,13 +8,14 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.UserManager
 import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.VibratorManager
 import android.util.Log
 import androidx.core.net.toUri
+import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.util.Constants
-import java.io.IOException
 
 /**
  * Handles audio playback for alerts (Alarms, Timers).
@@ -32,7 +33,8 @@ class AudioPlayer(private val context: Context) {
         alarm: Boolean = true,
         ringtoneVolume: Float? = null,
         graduallyIncreaseVolume: Boolean = false,
-        graduallyIncreaseVolumeDuration: Int = 30
+        graduallyIncreaseVolumeDuration: Int = 30,
+        fallbackUriString: String? = null
     ) {
         stop()
 
@@ -52,6 +54,28 @@ class AudioPlayer(private val context: Context) {
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
         }
 
+        val userManager = context.getSystemService(UserManager::class.java)
+        val isUserUnlocked = userManager?.isUserUnlocked ?: true
+        val isDirectBoot = !isUserUnlocked
+
+        val isContentUri = uri.scheme == "content"
+
+        if (isDirectBoot && isContentUri) {
+            Log.d(
+                Constants.TAG_AUDIO_PLAYER,
+                "Direct Boot active: skipping locked content URI: $uri"
+            )
+            playFallback(
+                attributes,
+                loop,
+                ringtoneVolume,
+                graduallyIncreaseVolume,
+                graduallyIncreaseVolumeDuration,
+                fallbackUriString
+            )
+            return
+        }
+
         try {
             startMediaPlayer(
                 uri,
@@ -61,18 +85,43 @@ class AudioPlayer(private val context: Context) {
                 graduallyIncreaseVolume,
                 graduallyIncreaseVolumeDuration
             )
-        } catch (e: IOException) {
-            Log.e(Constants.TAG_AUDIO_PLAYER, "Error playing alarm", e)
-            if (uriString != null) {
-                playAlarm(
-                    null,
-                    loop,
-                    alarm,
-                    ringtoneVolume,
-                    graduallyIncreaseVolume,
-                    graduallyIncreaseVolumeDuration
-                )
+        } catch (e: Exception) {
+            Log.w(Constants.TAG_AUDIO_PLAYER, "Error playing alarm from URI: $uri", e)
+            playFallback(
+                attributes,
+                loop,
+                ringtoneVolume,
+                graduallyIncreaseVolume,
+                graduallyIncreaseVolumeDuration,
+                fallbackUriString
+            )
+        }
+    }
+
+    private fun playFallback(
+        attributes: AudioAttributes,
+        loop: Boolean,
+        ringtoneVolume: Float?,
+        graduallyIncreaseVolume: Boolean,
+        graduallyIncreaseVolumeDuration: Int,
+        fallbackUriString: String? = null
+    ) {
+        try {
+            val fallbackUri = if (!fallbackUriString.isNullOrBlank()) {
+                fallbackUriString.toUri()
+            } else {
+                "android.resource://${context.packageName}/${R.raw.neptunium}".toUri()
             }
+            startMediaPlayer(
+                fallbackUri,
+                attributes,
+                loop,
+                ringtoneVolume,
+                graduallyIncreaseVolume,
+                graduallyIncreaseVolumeDuration
+            )
+        } catch (fallbackException: Exception) {
+            Log.w(Constants.TAG_AUDIO_PLAYER, "Error playing fallback alarm", fallbackException)
         }
     }
 

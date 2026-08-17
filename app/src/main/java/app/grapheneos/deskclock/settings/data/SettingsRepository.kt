@@ -28,6 +28,10 @@ class SettingsRepository(
         dataStore.updateSettings { it.copy(defaultRingtone = ringtone) }
     }
 
+    suspend fun setDirectBootRingtone(ringtone: RingtoneItem) {
+        dataStore.updateSettings { it.copy(directBootRingtone = ringtone) }
+    }
+
     suspend fun setCustomRingtoneVolumeEnabled(enabled: Boolean) {
         dataStore.updateSettings {
             it.copy(useCustomRingtoneVolume = enabled)

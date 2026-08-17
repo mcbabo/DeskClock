@@ -15,6 +15,7 @@ data class AppSettingsUiModel(
     val dynamicColors: Boolean,
     val snoozeDurationMinutes: Int,
     val defaultRingtone: RingtoneItem,
+    val directBootRingtone: RingtoneItem,
     val useCustomRingtoneVolume: Boolean,
     val ringtoneVolume: Float,
     val vibrate: Boolean,
@@ -32,6 +33,7 @@ data class AppSettingsUiModel(
 data class SettingsUiState(
     val settings: AppSettingsUiModel? = null,
     val ringtones: List<RingtoneItem> = emptyList(),
+    val rawRingtones: List<RingtoneItem> = emptyList(),
     val isLoading: Boolean = false
 )
 
@@ -42,6 +44,7 @@ sealed interface SettingsIntent {
     data object LoadSettings : SettingsIntent
     data object ResetDefaults : SettingsIntent
     data object LoadSystemRingtones : SettingsIntent
+    data object LoadRawRingtones : SettingsIntent
     data class PlayPreview(val uri: String) : SettingsIntent
     data object StopPreview : SettingsIntent
 
@@ -50,6 +53,7 @@ sealed interface SettingsIntent {
 
     data class SetSnoozeTime(val minutes: Int) : SettingsIntent
     data class SetDefaultRingtone(val uri: String) : SettingsIntent
+    data class SetDirectBootRingtone(val uri: String) : SettingsIntent
 
     data class SetCustomRingtoneVolumeEnabled(val enabled: Boolean) : SettingsIntent
     data class SetCustomRingtoneVolume(val volume: Float) : SettingsIntent
@@ -69,6 +73,7 @@ fun AppSettings.toUiModel(): AppSettingsUiModel {
         dynamicColors = dynamicColors,
         snoozeDurationMinutes = snoozeDurationMinutes,
         defaultRingtone = defaultRingtone,
+        directBootRingtone = directBootRingtone,
         useCustomRingtoneVolume = useCustomRingtoneVolume,
         ringtoneVolume = ringtoneVolume,
         vibrate = vibrate,

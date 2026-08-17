@@ -29,6 +29,7 @@
         android:name=".DeskClockApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:directBootAware="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -37,6 +38,7 @@
         android:theme="@style/Theme.DeskClock">
         <activity
             android:name=".MainActivity"
+            android:directBootAware="true"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.App.Starting"
@@ -62,6 +64,7 @@
             android:name=".alarm.presentation.popup.AlarmPopUpActivity"
             android:attributionTags="deskclock_service"
             android:configChanges="orientation|screenSize|keyboardHidden"
+            android:directBootAware="true"
             android:excludeFromRecents="true"
             android:exported="false"
             android:icon="@mipmap/ic_launcher"
@@ -87,15 +90,18 @@
         <receiver
             android:name=".alarm.service.AlarmReceiver"
             android:attributionTags="deskclock_service"
+            android:directBootAware="true"
             android:exported="false" />
 
         <receiver
             android:name=".alarm.service.RescheduleReceiver"
             android:attributionTags="deskclock_service"
+            android:directBootAware="true"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
@@ -104,6 +110,7 @@
         <service
             android:name=".alarm.service.AlarmService"
             android:attributionTags="deskclock_service"
+            android:directBootAware="true"
             android:exported="false"
             android:foregroundServiceType="specialUse">
             <property

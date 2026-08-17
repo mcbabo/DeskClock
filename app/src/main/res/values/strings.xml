@@ -100,4 +100,6 @@
     <string name="start_stopwatch">Start stopwatch</string>
     <string name="configure">Configure</string>
     <string name="permissions">Permissions</string>
+    <string name="settings_direct_boot_sound">Reboot ringtone</string>
+    <string name="settings_direct_boot_sound_desc">Fallback sound played when the device is locked after a reboot.</string>
 </resources>

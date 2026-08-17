@@ -77,7 +77,8 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
                     dbVibrate,
                     ringtoneVolume,
                     appSettings.graduallyIncreaseVolume,
-                    appSettings.graduallyIncreaseVolumeDuration
+                    appSettings.graduallyIncreaseVolumeDuration,
+                    appSettings.directBootRingtone.uri
                 )
             } else {
                 startAlert(
@@ -85,7 +86,8 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
                     intentVibrate,
                     ringtoneVolume,
                     appSettings.graduallyIncreaseVolume,
-                    appSettings.graduallyIncreaseVolumeDuration
+                    appSettings.graduallyIncreaseVolumeDuration,
+                    appSettings.directBootRingtone.uri
                 )
             }
 
