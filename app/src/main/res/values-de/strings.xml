@@ -101,4 +101,11 @@
     <string name="permissions">Berechtigungen</string>
     <string name="settings_direct_boot_sound">Klingelton nach Neustart</string>
     <string name="settings_direct_boot_sound_desc">Ersatzton, der abgespielt wird, wenn das Gerät nach einem Neustart gesperrt ist.</string>
+    <string name="custom">Benutzerdefiniert</string>
+    <string name="system">System</string>
+    <string name="internal">Intern</string>
+    <string name="import_ringtone">Klingelton importieren</string>
+    <string name="delete_ringtone">Klingelton löschen</string>
+    <string name="delete_ringtone_confirmation">Bist du sicher, dass du \"%1$s\" löschen möchtest?</string>
+    <string name="cancel">Abbrechen</string>
 </resources>

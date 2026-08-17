@@ -12,6 +12,7 @@ import app.grapheneos.deskclock.clock.data.ClockConverters
 import app.grapheneos.deskclock.clock.data.ClockDao
 import app.grapheneos.deskclock.clock.data.ClockEntity
 import app.grapheneos.deskclock.core.util.Constants
+import app.grapheneos.deskclock.core.util.UriConverter
 import kotlinx.coroutines.Dispatchers
 
 @Database(
@@ -22,7 +23,7 @@ import kotlinx.coroutines.Dispatchers
     ],
     version = 2
 )
-@TypeConverters(ClockConverters::class)
+@TypeConverters(ClockConverters::class, UriConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
     abstract fun clockDao(): ClockDao

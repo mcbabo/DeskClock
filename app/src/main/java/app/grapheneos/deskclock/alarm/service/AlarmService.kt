@@ -5,10 +5,10 @@ import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.net.Uri
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -40,7 +40,7 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
         val minute = intent?.getIntExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, -1) ?: -1
 
         val hasIntentData = intent?.hasExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI) == true
-        val intentRingtone = intent?.getStringExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI)
+        val intentRingtone = intent?.getParcelableExtra(Constants.Alarm.EXTRA_ALARM_RINGTONE_URI, Uri::class.java)
         val intentVibrate =
             intent?.getBooleanExtra(Constants.Alarm.EXTRA_ALARM_VIBRATE, true) ?: true
 
@@ -114,6 +114,7 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
             putExtra(Constants.Alarm.EXTRA_ALARM_LABEL, label)
             putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, hour)
             putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, minute)
+            setPackage(packageName)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                 Intent.FLAG_ACTIVITY_NO_USER_ACTION or
                 Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -152,12 +153,12 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
         hour: Int,
         minute: Int
     ): PendingIntent {
-        val intent = Intent().apply {
-            component = ComponentName(this@AlarmService, AlarmPopUpActivity::class.java)
+        val intent = Intent(this, AlarmPopUpActivity::class.java).apply {
             putExtra(Constants.Alarm.EXTRA_INSTANCE_ID, id)
             putExtra(Constants.Alarm.EXTRA_ALARM_LABEL, label)
             putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, hour)
             putExtra(Constants.Alarm.EXTRA_ALARM_MINUTE, minute)
+            setPackage(packageName)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                 Intent.FLAG_ACTIVITY_NO_USER_ACTION or
                 Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -198,9 +199,9 @@ class AlarmController(private val context: Context) {
     }
 
     fun cancelInstance(alarmId: Long) {
-        val intent = Intent().apply {
-            component = ComponentName(context, AlarmReceiver::class.java)
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = Constants.Alarm.ACTION_FIRE_ALARM
+            setPackage(context.packageName)
         }
         val operation = PendingIntent.getBroadcast(
             context,
@@ -213,8 +214,8 @@ class AlarmController(private val context: Context) {
     }
 
     private fun createShowPendingIntent(alarmId: Long): PendingIntent {
-        val intent = Intent().apply {
-            component = ComponentName(context, MainActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            setPackage(context.packageName)
         }
 
         return PendingIntent.getActivity(
@@ -226,9 +227,9 @@ class AlarmController(private val context: Context) {
     }
 
     private fun createReceiverPendingIntent(instanceId: Long, alarm: AlarmEntity): PendingIntent {
-        val intent = Intent().apply {
-            component = ComponentName(context, AlarmReceiver::class.java)
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = Constants.Alarm.ACTION_FIRE_ALARM
+            setPackage(context.packageName)
             putExtra(Constants.Alarm.EXTRA_INSTANCE_ID, instanceId)
             putExtra(Constants.Alarm.EXTRA_ALARM_LABEL, alarm.label)
             putExtra(Constants.Alarm.EXTRA_ALARM_HOUR, alarm.hour)

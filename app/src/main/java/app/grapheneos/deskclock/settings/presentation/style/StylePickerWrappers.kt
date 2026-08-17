@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.settings.presentation.style
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import app.grapheneos.deskclock.R
@@ -31,7 +32,7 @@ fun AlarmStylePickerScreen(
         isEnabled = true,
         deleteAfterUse = false,
         label = stringResource(R.string.wake_up),
-        ringtoneUri = "",
+        ringtoneUri = Uri.EMPTY,
         vibrate = true,
         snoozeDurationMinutes = 10,
         timeText = "7:30",

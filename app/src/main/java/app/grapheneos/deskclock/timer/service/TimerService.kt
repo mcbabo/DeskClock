@@ -3,7 +3,6 @@ package app.grapheneos.deskclock.timer.service
 import android.Manifest
 import android.app.Notification
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
@@ -80,7 +79,9 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
 
     private fun launchPopUp() {
         val intent = Intent(this, TimerPopUpActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            setPackage(packageName)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
         startActivity(intent)
     }
@@ -141,12 +142,12 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
     }
 
     private fun getPendingIntent(action: String): PendingIntent {
-        val intent = Intent().apply {
-            component = ComponentName(this@TimerService, TimerReceiver::class.java)
+        val intent = Intent(applicationContext, TimerReceiver::class.java).apply {
             this.action = action
+            setPackage(packageName)
         }
         return PendingIntent.getBroadcast(
-            this,
+            applicationContext,
             action.hashCode(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

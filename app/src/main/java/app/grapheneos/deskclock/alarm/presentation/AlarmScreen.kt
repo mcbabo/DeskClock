@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.alarm.presentation
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -219,7 +220,7 @@ fun AlarmScreenPreview() {
                         isEnabled = true,
                         deleteAfterUse = false,
                         label = "Wake up",
-                        ringtoneUri = "",
+                        ringtoneUri = Uri.EMPTY,
                         vibrate = true,
                         snoozeDurationMinutes = 10,
                         timeText = "7:30",
@@ -233,7 +234,7 @@ fun AlarmScreenPreview() {
                         isEnabled = false,
                         deleteAfterUse = false,
                         label = "Gym",
-                        ringtoneUri = "",
+                        ringtoneUri = Uri.EMPTY,
                         vibrate = true,
                         snoozeDurationMinutes = 10,
                         timeText = "16:00",

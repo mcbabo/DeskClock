@@ -1,5 +1,6 @@
 package app.grapheneos.deskclock.alarm.presentation.components
 
+import android.net.Uri
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -100,7 +101,7 @@ fun AlarmListItemPreview() {
                     isEnabled = true,
                     deleteAfterUse = false,
                     label = "",
-                    ringtoneUri = "",
+                    ringtoneUri = Uri.EMPTY,
                     vibrate = true,
                     snoozeDurationMinutes = 10,
                     timeText = "2:30",
