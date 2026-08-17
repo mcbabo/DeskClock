@@ -1,9 +1,7 @@
 name: Nightly Build
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 
 concurrency:
   group: nightly-release
