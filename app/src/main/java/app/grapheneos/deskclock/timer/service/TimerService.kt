@@ -140,12 +140,12 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
     }
 
     private fun getPendingIntent(action: String): PendingIntent {
-        val intent = Intent(this, TimerReceiver::class.java).apply {
+        val intent = Intent(applicationContext, TimerReceiver::class.java).apply {
             this.action = action
             setPackage(packageName)
         }
         return PendingIntent.getBroadcast(
-            this,
+            applicationContext,
             action.hashCode(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
