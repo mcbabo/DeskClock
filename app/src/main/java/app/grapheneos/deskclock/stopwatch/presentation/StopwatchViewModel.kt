@@ -15,16 +15,20 @@ class StopwatchViewModel(
 
     val uiState: StateFlow<StopwatchUiState> = stopwatchRepository.state
         .map { d ->
-            StopwatchUiState(
-                isRunning = d.isRunning,
-                elapsedMillis = d.accumulatedMillis,
-                laps = d.laps
-            )
+            if (d.accumulatedMillis == 0L && !d.isRunning && d.laps.isEmpty()) {
+                StopwatchUiState.Idle
+            } else {
+                StopwatchUiState.Active(
+                    isRunning = d.isRunning,
+                    elapsedMillis = d.accumulatedMillis,
+                    laps = d.laps
+                )
+            }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = StopwatchUiState()
+            initialValue = StopwatchUiState.Idle
         )
 
     val elapsedMillis: Flow<Long> = stopwatchRepository.elapsedMillis

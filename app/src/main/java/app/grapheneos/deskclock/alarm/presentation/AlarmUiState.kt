@@ -37,7 +37,9 @@ data class AlarmUiState(
     val alarms: List<AlarmUiModel> = emptyList(),
     val ringtones: List<RingtoneItem> = emptyList(),
     val isLoading: Boolean = false,
-    val nextAlarmRemainingTime: String? = null
+    val nextAlarmRemainingTime: String? = null,
+    val editingAlarmId: Long? = null,
+    val isTimePickerVisible: Boolean = false
 )
 
 /**
@@ -56,6 +58,8 @@ sealed interface AlarmIntent {
         val deleteAfterUse: Boolean,
         val label: String
     ) : AlarmIntent
+    data class SetEditingAlarm(val id: Long?) : AlarmIntent
+    data class SetTimePickerVisible(val visible: Boolean) : AlarmIntent
 
     // Ringtones
     data class ImportRingtone(val uri: Uri) : AlarmIntent

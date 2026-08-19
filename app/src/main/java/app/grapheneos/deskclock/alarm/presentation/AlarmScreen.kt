@@ -26,11 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -63,18 +60,15 @@ fun AlarmScreen(
     val alarmDeletedText = stringResource(R.string.alarm_deleted)
     val undoText = stringResource(R.string.undo)
 
-    var editingAlarmId by remember { mutableStateOf<Long?>(null) }
-    var showTimePicker by remember { mutableStateOf(false) }
-
     LaunchedEffect(triggerAdd) {
         if (triggerAdd) {
-            showTimePicker = true
+            onIntent(AlarmIntent.SetTimePickerVisible(true))
             onAddTriggered()
         }
     }
 
-    val editingAlarm = remember(editingAlarmId, uiState.alarms) {
-        uiState.alarms.find { it.id == editingAlarmId }
+    val editingAlarm = remember(uiState.editingAlarmId, uiState.alarms) {
+        uiState.alarms.find { it.id == uiState.editingAlarmId }
     }
 
     Scaffold(
@@ -114,7 +108,7 @@ fun AlarmScreen(
                         contentDescription = stringResource(R.string.add_alarm)
                     )
                 },
-                onClick = { showTimePicker = true }
+                onClick = { onIntent(AlarmIntent.SetTimePickerVisible(true)) }
             )
         }
     ) { innerPadding ->
@@ -143,12 +137,12 @@ fun AlarmScreen(
                     lazyGroup(
                         items = uiState.alarms,
                         key = { it.id },
-                        onClick = { editingAlarmId = it.id }
+                        onClick = { onIntent(AlarmIntent.SetEditingAlarm(it.id)) }
                     ) { alarmUiModel ->
                         AlarmListItem(
                             alarm = alarmUiModel,
                             onToggle = { onIntent(AlarmIntent.ToggleAlarm(alarmUiModel)) },
-                            onClick = { editingAlarmId = alarmUiModel.id }
+                            onClick = { onIntent(AlarmIntent.SetEditingAlarm(alarmUiModel.id)) }
                         )
                     }
                 }
@@ -156,7 +150,7 @@ fun AlarmScreen(
         }
     }
 
-    if (showTimePicker) {
+    if (uiState.isTimePickerVisible) {
         val now = Calendar.getInstance()
         DialWithDialog(
             initialHour = now.get(Calendar.HOUR_OF_DAY),
@@ -171,9 +165,9 @@ fun AlarmScreen(
                         label = ""
                     )
                 )
-                showTimePicker = false
+                onIntent(AlarmIntent.SetTimePickerVisible(false))
             },
-            onDismiss = { showTimePicker = false }
+            onDismiss = { onIntent(AlarmIntent.SetTimePickerVisible(false)) }
         )
     }
 
@@ -183,12 +177,12 @@ fun AlarmScreen(
             ringtones = uiState.ringtones,
             onDismissRequest = {
                 onIntent(AlarmIntent.StopPreview)
-                editingAlarmId = null
+                onIntent(AlarmIntent.SetEditingAlarm(null))
             },
             onIntent = onIntent,
             onDelete = {
                 onIntent(AlarmIntent.DeleteAlarm(alarmUiModel))
-                editingAlarmId = null
+                onIntent(AlarmIntent.SetEditingAlarm(null))
 
                 scope.launch {
                     val result = snackbarHostState.showSnackbar(

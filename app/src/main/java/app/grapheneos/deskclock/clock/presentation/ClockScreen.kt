@@ -35,10 +35,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,8 +67,6 @@ fun ClockScreen(
     val searchBarState = rememberSearchBarState()
     val searchListState = rememberLazyListState()
     val listState = rememberLazyListState()
-
-    var isEditing by remember { mutableStateOf(false) }
 
     LaunchedEffect(triggerAdd) {
         if (triggerAdd) {
@@ -125,7 +119,7 @@ fun ClockScreen(
                 },
                 actions = {
                     AnimatedVisibility(visible = uiState.zoneClocks.isNotEmpty()) {
-                        IconButton(onClick = { isEditing = !isEditing }) {
+                        IconButton(onClick = { onIntent(ClockIntent.SetEditing(!uiState.isEditing)) }) {
                             Icon(
                                 imageVector = Icons.Outlined.Edit,
                                 contentDescription = null
@@ -198,7 +192,7 @@ fun ClockScreen(
                         horizontalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
                         AnimatedVisibility(
-                            visible = isEditing,
+                            visible = uiState.isEditing,
                             enter = fadeIn() + expandHorizontally(),
                             exit = fadeOut() + shrinkHorizontally()
                         ) {

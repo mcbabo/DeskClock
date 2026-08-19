@@ -108,6 +108,10 @@ class SettingsViewModel(
             is SettingsIntent.SetGraduallyIncreaseVolumeDuration -> update {
                 settingsRepository.setGraduallyIncreaseVolumeDuration(intent.duration)
             }
+
+            is SettingsIntent.SetVisibleDialog -> _uiState.update {
+                it.copy(visibleDialog = intent.dialog)
+            }
         }
     }
 

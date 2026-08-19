@@ -154,6 +154,7 @@ fun MainPagerScreen(
                     val timerUiState by timerViewModel.uiState.collectAsStateWithLifecycle()
                     TimerScreen(
                         uiState = timerUiState,
+                        remainingMillisFlow = timerViewModel.remainingMillis,
                         onIntent = timerViewModel::handleIntent,
                         onSettingsClick = onSettingsClick
                     )

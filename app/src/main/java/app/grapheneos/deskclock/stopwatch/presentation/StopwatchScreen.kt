@@ -68,6 +68,8 @@ fun StopwatchScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(Layout.SectionSpacing)
         ) {
+            val activeState = uiState as? StopwatchUiState.Active
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -76,8 +78,8 @@ fun StopwatchScreen(
             ) {
                 StopwatchTimeText(
                     elapsedMillisFlow = elapsedMillisFlow,
-                    initialMillis = uiState.elapsedMillis,
-                    isRunning = uiState.isRunning,
+                    initialMillis = activeState?.elapsedMillis ?: 0L,
+                    isRunning = activeState?.isRunning ?: false,
                     style = MaterialTheme.typography.displayLarge.copy(
                         fontFeatureSettings = "tnum"
                     )
@@ -85,17 +87,17 @@ fun StopwatchScreen(
             }
 
             StopwatchControls(
-                isRunning = uiState.isRunning,
-                canReset = uiState.canReset,
+                isRunning = activeState?.isRunning ?: false,
+                canReset = activeState?.canReset ?: false,
                 onStartPause = {
-                    if (uiState.isRunning) {
+                    if (activeState?.isRunning == true) {
                         onIntent(StopwatchIntent.Pause)
                     } else {
                         onIntent(StopwatchIntent.StartOrResume)
                     }
                 },
                 onLapOrReset = {
-                    if (uiState.isRunning) {
+                    if (activeState?.isRunning == true) {
                         onIntent(StopwatchIntent.Lap)
                     } else {
                         onIntent(StopwatchIntent.Reset)
@@ -103,7 +105,7 @@ fun StopwatchScreen(
                 }
             )
 
-            if (uiState.hasLaps) {
+            if (activeState != null && activeState.hasLaps) {
                 val lapString = stringResource(R.string.lap)
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -111,7 +113,7 @@ fun StopwatchScreen(
                     contentPadding = Layout.contentPadding(extraBottom = Layout.ScreenVertical)
                 ) {
                     lazyGroup(
-                        items = uiState.laps,
+                        items = activeState.laps,
                         title = lapString,
                         key = { it.number }
                     ) { lap ->
@@ -128,7 +130,7 @@ fun StopwatchScreen(
 fun StopwatchScreenPreview() {
     DeskClockTheme {
         StopwatchScreen(
-            uiState = StopwatchUiState(
+            uiState = StopwatchUiState.Active(
                 isRunning = true,
                 elapsedMillis = 65_320L,
                 laps = listOf(

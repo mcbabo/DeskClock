@@ -113,7 +113,17 @@ class AlarmViewModel(
 
             is AlarmIntent.StopPreview -> audioPlayer.stop()
 
-            else -> {}
+            is AlarmIntent.SetEditingAlarm -> {
+                _uiState.update { it.copy(editingAlarmId = intent.id) }
+            }
+
+            is AlarmIntent.SetTimePickerVisible -> {
+                _uiState.update { it.copy(isTimePickerVisible = intent.visible) }
+            }
+
+            is AlarmIntent.RestoreAlarm -> viewModelScope.launch {
+                alarmRepository.addAlarm(intent.alarm.toEntity())
+            }
         }
     }
 

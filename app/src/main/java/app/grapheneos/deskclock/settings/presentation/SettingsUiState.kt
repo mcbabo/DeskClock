@@ -28,6 +28,19 @@ data class AppSettingsUiModel(
 )
 
 /**
+ * Dialogs available on the Settings screen.
+ */
+enum class SettingsDialog {
+    NONE,
+    SNOOZE,
+    RINGTONE,
+    DIRECT_BOOT_RINGTONE,
+    VOLUME,
+    THEME,
+    GRADUALLY_INCREASE_VOLUME
+}
+
+/**
  * UI state for the Settings screen.
  */
 @Immutable
@@ -35,7 +48,8 @@ data class SettingsUiState(
     val settings: AppSettingsUiModel? = null,
     val ringtones: List<RingtoneItem> = emptyList(),
     val internalRingtones: List<RingtoneItem> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val visibleDialog: SettingsDialog = SettingsDialog.NONE
 )
 
 /**
@@ -69,6 +83,7 @@ sealed interface SettingsIntent {
 
     data class SetGraduallyIncreaseVolume(val enabled: Boolean) : SettingsIntent
     data class SetGraduallyIncreaseVolumeDuration(val duration: Int) : SettingsIntent
+    data class SetVisibleDialog(val dialog: SettingsDialog) : SettingsIntent
 }
 
 fun AppSettings.toUiModel(): AppSettingsUiModel {

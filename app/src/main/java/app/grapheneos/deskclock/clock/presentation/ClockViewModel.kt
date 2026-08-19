@@ -9,9 +9,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -20,18 +26,10 @@ import kotlin.time.Duration.Companion.seconds
 
 class ClockViewModel(private val clockRepository: ClockRepository) : ViewModel() {
 
-    private val _searchQuery = MutableStateFlow("")
-    private val _isSearchActive = MutableStateFlow(false)
-    private val _allAvailableZones = MutableStateFlow<List<ZoneId>>(emptyList())
+    private val _uiState = MutableStateFlow(ClockUiState())
+    val uiState: StateFlow<ClockUiState> = _uiState.asStateFlow()
 
-    init {
-        viewModelScope.launch(Dispatchers.Default) {
-            val zones = ZoneId.getAvailableZoneIds()
-                .map { ZoneId.of(it) }
-                .sortedBy { it.id.substringAfter('/') }
-            _allAvailableZones.value = zones
-        }
-    }
+    private val _allAvailableZones = MutableStateFlow<List<ZoneId>>(emptyList())
 
     val timeUiState: StateFlow<TimeUiState> = flow {
         while (true) {
@@ -46,40 +44,55 @@ class ClockViewModel(private val clockRepository: ClockRepository) : ViewModel()
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TimeUiState())
 
-    private val filteredZonesFlow = combine(_searchQuery, _allAvailableZones) { query, allZones ->
-        val filtered = if (query.isBlank()) {
-            allZones
-        } else {
-            allZones.filter {
-                it.id.contains(query, ignoreCase = true) ||
-                    it.id.replace('_', ' ').contains(query, ignoreCase = true)
-            }
+    init {
+        viewModelScope.launch(Dispatchers.Default) {
+            val zones = ZoneId.getAvailableZoneIds()
+                .map { ZoneId.of(it) }
+                .sortedBy { it.id.substringAfter('/') }
+            _allAvailableZones.value = zones
         }
 
-        filtered.groupBy { it.id.substringAfter('/').first().uppercaseChar() }
-            .toSortedMap()
+        observeSelectedClocks()
+        observeFilteredZones()
     }
 
-    val uiState: StateFlow<ClockUiState> = combine(
-        clockRepository.getSelectedClocks(),
-        _searchQuery,
-        _isSearchActive,
-        filteredZonesFlow,
-        timeUiState
-    ) { selectedZones, query, isSearch, filtered, _ ->
-        val now = ZonedDateTime.now()
-        ClockUiState(
-            zoneClocks = selectedZones.map { formatToClockUiModel(now, it.zoneId) },
-            searchQuery = query,
-            isSearchActive = isSearch,
-            filteredZones = filtered
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ClockUiState())
+    private fun observeSelectedClocks() {
+        combine(
+            clockRepository.getSelectedClocks(),
+            timeUiState
+        ) { selectedZones, _ ->
+            val now = ZonedDateTime.now()
+            selectedZones.map { formatToClockUiModel(now, it.zoneId) }
+        }.onEach { uiModels ->
+            _uiState.update { it.copy(zoneClocks = uiModels) }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun observeFilteredZones() {
+        combine(
+            _uiState.map { it.searchQuery }.distinctUntilChanged(),
+            _allAvailableZones
+        ) { query, allZones ->
+            val filtered = if (query.isBlank()) {
+                allZones
+            } else {
+                allZones.filter {
+                    it.id.contains(query, ignoreCase = true) ||
+                        it.id.replace('_', ' ').contains(query, ignoreCase = true)
+                }
+            }
+
+            filtered.groupBy { it.id.substringAfter('/').first().uppercaseChar() }
+                .toSortedMap()
+        }.onEach { filtered ->
+            _uiState.update { it.copy(filteredZones = filtered) }
+        }.launchIn(viewModelScope)
+    }
 
     fun handleIntent(intent: ClockIntent) {
         when (intent) {
-            is ClockIntent.UpdateSearchQuery -> _searchQuery.value = intent.query
-            is ClockIntent.ToggleSearch -> _isSearchActive.value = intent.isActive
+            is ClockIntent.UpdateSearchQuery -> _uiState.update { it.copy(searchQuery = intent.query) }
+            is ClockIntent.ToggleSearch -> _uiState.update { it.copy(isSearchActive = intent.isActive) }
             is ClockIntent.AddTimeZone -> viewModelScope.launch {
                 clockRepository.addZone(intent.zoneId)
                 handleIntent(ClockIntent.ToggleSearch(false))
@@ -88,6 +101,8 @@ class ClockViewModel(private val clockRepository: ClockRepository) : ViewModel()
             is ClockIntent.RemoveTimeZone -> viewModelScope.launch {
                 clockRepository.removeZone(intent.zoneId)
             }
+
+            is ClockIntent.SetEditing -> _uiState.update { it.copy(isEditing = intent.isEditing) }
         }
     }
 

@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.WavyProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,11 +37,14 @@ import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import app.grapheneos.deskclock.timer.presentation.components.TimerKeypad
 import app.grapheneos.deskclock.timer.util.TimerUtils
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimerScreen(
     uiState: TimerUiState,
+    remainingMillisFlow: Flow<Long>,
     onIntent: (TimerIntent) -> Unit,
     onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -69,16 +73,17 @@ fun TimerScreen(
             verticalArrangement = Arrangement.Center
         ) {
             AnimatedContent(
-                targetState = uiState.isStarted || uiState.isFinished,
+                targetState = uiState is TimerUiState.Active,
                 label = "TimerMode"
-            ) { isStarted ->
-                if (isStarted) {
+            ) { isActive ->
+                if (isActive && uiState is TimerUiState.Active) {
                     TimerRunningLayout(
                         uiState,
+                        remainingMillisFlow,
                         { onIntent(TimerIntent.TogglePauseResume) },
                         { onIntent(TimerIntent.Reset) }
                     )
-                } else {
+                } else if (uiState is TimerUiState.Idle) {
                     TimerSetupLayout(
                         uiState,
                         { digit -> onIntent(TimerIntent.EnterDigit(digit)) },
@@ -93,7 +98,7 @@ fun TimerScreen(
 
 @Composable
 private fun TimerSetupLayout(
-    uiState: TimerUiState,
+    uiState: TimerUiState.Idle,
     onDigitClick: (Int) -> Unit,
     onBackspace: () -> Unit,
     onStartClick: () -> Unit
@@ -112,7 +117,7 @@ private fun TimerSetupLayout(
         Button(
             onClick = onStartClick,
             modifier = Modifier.size(80.dp),
-            enabled = uiState.inputTime.toLong() > 0
+            enabled = uiState.canStart
         ) {
             Icon(
                 imageVector = Icons.Outlined.PlayArrow,
@@ -124,14 +129,15 @@ private fun TimerSetupLayout(
 
 @Composable
 private fun TimerRunningLayout(
-    uiState: TimerUiState,
+    uiState: TimerUiState.Active,
+    remainingMillisFlow: Flow<Long>,
     onPauseResumeClick: () -> Unit,
     onResetClick: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerIndicator(
             progress = uiState.progress,
-            remainingTime = TimerUtils.formatRemainingTime(uiState.remainingTime),
+            remainingMillisFlow = remainingMillisFlow,
             isRunning = uiState.isRunning
         )
         Spacer(modifier = Modifier.height(48.dp))
@@ -157,9 +163,11 @@ private fun TimerRunningLayout(
 @Composable
 private fun TimerIndicator(
     progress: Float,
-    remainingTime: String,
+    remainingMillisFlow: Flow<Long>,
     isRunning: Boolean
 ) {
+    val remainingTimeMillis by remainingMillisFlow.collectAsState(initial = 0L)
+
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
         animationSpec = WavyProgressIndicatorDefaults.ProgressAnimationSpec,
@@ -180,7 +188,7 @@ private fun TimerIndicator(
             waveSpeed = if (isRunning) wavelength else 0.dp
         )
         Text(
-            text = remainingTime,
+            text = TimerUtils.formatRemainingTime(remainingTimeMillis),
             style = MaterialTheme.typography.displayMedium
         )
     }
@@ -191,7 +199,8 @@ private fun TimerIndicator(
 fun TimerSetupPreview() {
     DeskClockTheme {
         TimerScreen(
-            uiState = TimerUiState(inputTime = "001000"),
+            uiState = TimerUiState.Idle(inputTime = "001000"),
+            remainingMillisFlow = flowOf(0L),
             onIntent = {},
             onSettingsClick = {},
         )
@@ -203,12 +212,13 @@ fun TimerSetupPreview() {
 fun TimerRunningPreview() {
     DeskClockTheme {
         TimerScreen(
-            uiState = TimerUiState(
-                isStarted = true,
+            uiState = TimerUiState.Active(
                 isRunning = true,
-                remainingTime = 45000,
-                progress = 0.75f
+                isFinished = false,
+                progress = 0.75f,
+                totalTime = 60000L
             ),
+            remainingMillisFlow = flowOf(45000L),
             onIntent = {},
             onSettingsClick = {},
         )

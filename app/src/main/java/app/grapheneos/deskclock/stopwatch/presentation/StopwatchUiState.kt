@@ -7,14 +7,18 @@ import app.grapheneos.deskclock.stopwatch.data.Lap
  * UI state for the Stopwatch screen.
  */
 @Immutable
-data class StopwatchUiState(
-    val isRunning: Boolean = false,
-    val elapsedMillis: Long = 0L,
-    val laps: List<Lap> = emptyList()
-) {
-    val hasLaps: Boolean get() = laps.isNotEmpty()
+sealed interface StopwatchUiState {
+    data object Idle : StopwatchUiState
 
-    val canReset: Boolean get() = !isRunning && elapsedMillis > 0L
+    @Immutable
+    data class Active(
+        val isRunning: Boolean,
+        val elapsedMillis: Long,
+        val laps: List<Lap> = emptyList()
+    ) : StopwatchUiState {
+        val hasLaps: Boolean get() = laps.isNotEmpty()
+        val canReset: Boolean get() = !isRunning && elapsedMillis > 0L
+    }
 }
 
 /**

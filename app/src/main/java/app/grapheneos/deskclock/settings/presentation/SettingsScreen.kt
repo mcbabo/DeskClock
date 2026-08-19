@@ -25,10 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.exitUntilCollapsedScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalView
@@ -65,13 +61,6 @@ fun SettingsScreen(
     val view = LocalView.current
     val scrollBehavior = exitUntilCollapsedScrollBehavior()
 
-    var showSnoozeDialog by remember { mutableStateOf(false) }
-    var showRingtoneDialog by remember { mutableStateOf(false) }
-    var showDirectBootRingtoneDialog by remember { mutableStateOf(false) }
-    var showRingtoneVolumeDialog by remember { mutableStateOf(false) }
-    var showThemeDialog by remember { mutableStateOf(false) }
-    var showGraduallyIncreaseVolumeDialog by remember { mutableStateOf(false) }
-
     val settings = state.settings ?: return
 
     Scaffold(
@@ -103,35 +92,26 @@ fun SettingsScreen(
                 alarmPopUpStyle = settings.alarmPopUpStyle,
                 timerPopUpStyle = settings.timerPopUpStyle,
                 onDynamicColorsChange = { onIntent(SettingsIntent.SetDynamicColors(it)) },
-                onThemeClick = { showThemeDialog = true },
+                onThemeClick = { onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.THEME)) },
                 onAlarmPopUpStyleClick = onNavigateToAlarmStylePicker,
                 onTimerPopUpStyleClick = onNavigateToTimerStylePicker
             )
 
             AlarmTimerSettingsSection(
                 settings = settings,
-                onSnoozeClick = { showSnoozeDialog = true },
-                onRingtoneClick = { showRingtoneDialog = true },
-                onDirectBootRingtoneClick = { showDirectBootRingtoneDialog = true },
-                onVolumeClick = { showRingtoneVolumeDialog = true },
+                onSnoozeClick = { onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.SNOOZE)) },
+                onRingtoneClick = { onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.RINGTONE)) },
+                onDirectBootRingtoneClick = {
+                    onIntent(
+                        SettingsIntent.SetVisibleDialog(SettingsDialog.DIRECT_BOOT_RINGTONE)
+                    )
+                },
+                onVolumeClick = { onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.VOLUME)) },
                 onVibrationChange = { onIntent(SettingsIntent.SetDefaultVibration(it)) },
                 onGraduallyIncreaseVolumeClick = {
-                    showGraduallyIncreaseVolumeDialog = true
+                    onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.GRADUALLY_INCREASE_VOLUME))
                 }
             )
-        }
-    }
-
-    if (showSnoozeDialog) {
-        SnoozeDrawer(
-            settings.snoozeDurationMinutes,
-            onConfirm = {
-                onIntent(SettingsIntent.SetSnoozeTime(it))
-                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                showSnoozeDialog = false
-            }
-        ) {
-            showSnoozeDialog = false
         }
     }
 
@@ -143,89 +123,106 @@ fun SettingsScreen(
         }
     }
 
-    if (showRingtoneDialog) {
-        RingtonePickerDialog(
-            uiState = RingtonePickerUiState(
-                ringtones = state.ringtones,
-                selectedUri = settings.defaultRingtone.uri,
-                isDirectBootOnly = false
-            ),
-            onPlayPreview = { onIntent(SettingsIntent.PlayPreview(it)) },
-            onStopPreview = { onIntent(SettingsIntent.StopPreview) },
-            onImportRingtone = { picker.launch(arrayOf("audio/*")) },
-            onDeleteRingtone = { onIntent(SettingsIntent.DeleteCustomRingtone(it)) },
-            onDismiss = {
-                onIntent(SettingsIntent.StopPreview)
-                showRingtoneDialog = false
-            },
-            onConfirm = {
-                onIntent(SettingsIntent.SetDefaultRingtone(it))
-                showRingtoneDialog = false
+    when (state.visibleDialog) {
+        SettingsDialog.SNOOZE -> {
+            SnoozeDrawer(
+                settings.snoozeDurationMinutes,
+                onConfirm = {
+                    onIntent(SettingsIntent.SetSnoozeTime(it))
+                    view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                    onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE))
+                }
+            ) {
+                onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE))
             }
-        )
-    }
-
-    if (showDirectBootRingtoneDialog) {
-        RingtonePickerDialog(
-            uiState = RingtonePickerUiState(
-                ringtones = state.internalRingtones,
-                selectedUri = settings.directBootRingtone.uri,
-                isDirectBootOnly = true
-            ),
-            onPlayPreview = { onIntent(SettingsIntent.PlayPreview(it)) },
-            onStopPreview = { onIntent(SettingsIntent.StopPreview) },
-            onImportRingtone = {},
-            onDeleteRingtone = {},
-            onDismiss = {
-                onIntent(SettingsIntent.StopPreview)
-                showDirectBootRingtoneDialog = false
-            },
-            onConfirm = {
-                onIntent(SettingsIntent.SetDirectBootRingtone(it))
-                showDirectBootRingtoneDialog = false
-            }
-        )
-    }
-
-    if (showRingtoneVolumeDialog) {
-        RingtoneVolumeDrawer(
-            customRingtoneVolumeEnabled = settings.useCustomRingtoneVolume,
-            currentVolume = settings.ringtoneVolume,
-            onChange = { enabled, volume ->
-                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                onIntent(SettingsIntent.SetCustomRingtoneVolumeEnabled(enabled))
-                onIntent(SettingsIntent.SetCustomRingtoneVolume(volume))
-                showRingtoneVolumeDialog = false
-            }
-        ) {
-            showRingtoneVolumeDialog = false
         }
-    }
 
-    if (showThemeDialog) {
-        ThemeDrawer(
-            settings.themeMode,
-            onThemeChange = {
-                onIntent(SettingsIntent.UpdateTheme(it))
-                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                showThemeDialog = false
-            },
-            onDismissRequest = { showThemeDialog = false }
-        )
-    }
+        SettingsDialog.RINGTONE -> {
+            RingtonePickerDialog(
+                uiState = RingtonePickerUiState(
+                    ringtones = state.ringtones,
+                    selectedUri = settings.defaultRingtone.uri,
+                    isDirectBootOnly = false
+                ),
+                onPlayPreview = { onIntent(SettingsIntent.PlayPreview(it)) },
+                onStopPreview = { onIntent(SettingsIntent.StopPreview) },
+                onImportRingtone = { picker.launch(arrayOf("audio/*")) },
+                onDeleteRingtone = { onIntent(SettingsIntent.DeleteCustomRingtone(it)) },
+                onDismiss = {
+                    onIntent(SettingsIntent.StopPreview)
+                    onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE))
+                },
+                onConfirm = {
+                    onIntent(SettingsIntent.SetDefaultRingtone(it))
+                    onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE))
+                }
+            )
+        }
 
-    if (showGraduallyIncreaseVolumeDialog) {
-        GraduallyIncreaseVolumeDrawer(
-            initiallyEnabled = settings.graduallyIncreaseVolume,
-            initialDuration = settings.graduallyIncreaseVolumeDuration,
-            onConfirm = { enabled, duration ->
-                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                onIntent(SettingsIntent.SetGraduallyIncreaseVolume(enabled))
-                onIntent(SettingsIntent.SetGraduallyIncreaseVolumeDuration(duration))
-                showGraduallyIncreaseVolumeDialog = false
-            },
-            onDismiss = { showGraduallyIncreaseVolumeDialog = false }
-        )
+        SettingsDialog.DIRECT_BOOT_RINGTONE -> {
+            RingtonePickerDialog(
+                uiState = RingtonePickerUiState(
+                    ringtones = state.internalRingtones,
+                    selectedUri = settings.directBootRingtone.uri,
+                    isDirectBootOnly = true
+                ),
+                onPlayPreview = { onIntent(SettingsIntent.PlayPreview(it)) },
+                onStopPreview = { onIntent(SettingsIntent.StopPreview) },
+                onImportRingtone = {},
+                onDeleteRingtone = {},
+                onDismiss = {
+                    onIntent(SettingsIntent.StopPreview)
+                    onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE))
+                },
+                onConfirm = {
+                    onIntent(SettingsIntent.SetDirectBootRingtone(it))
+                    onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE))
+                }
+            )
+        }
+
+        SettingsDialog.VOLUME -> {
+            RingtoneVolumeDrawer(
+                customRingtoneVolumeEnabled = settings.useCustomRingtoneVolume,
+                currentVolume = settings.ringtoneVolume,
+                onChange = { enabled, volume ->
+                    view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                    onIntent(SettingsIntent.SetCustomRingtoneVolumeEnabled(enabled))
+                    onIntent(SettingsIntent.SetCustomRingtoneVolume(volume))
+                    onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE))
+                }
+            ) {
+                onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE))
+            }
+        }
+
+        SettingsDialog.THEME -> {
+            ThemeDrawer(
+                settings.themeMode,
+                onThemeChange = {
+                    onIntent(SettingsIntent.UpdateTheme(it))
+                    view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                    onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE))
+                },
+                onDismissRequest = { onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE)) }
+            )
+        }
+
+        SettingsDialog.GRADUALLY_INCREASE_VOLUME -> {
+            GraduallyIncreaseVolumeDrawer(
+                initiallyEnabled = settings.graduallyIncreaseVolume,
+                initialDuration = settings.graduallyIncreaseVolumeDuration,
+                onConfirm = { enabled, duration ->
+                    view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                    onIntent(SettingsIntent.SetGraduallyIncreaseVolume(enabled))
+                    onIntent(SettingsIntent.SetGraduallyIncreaseVolumeDuration(duration))
+                    onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE))
+                },
+                onDismiss = { onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.NONE)) }
+            )
+        }
+
+        SettingsDialog.NONE -> {}
     }
 }
 

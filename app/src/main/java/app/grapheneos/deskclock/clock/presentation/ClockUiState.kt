@@ -20,6 +20,7 @@ data class ClockUiState(
     val zoneClocks: List<ClockUiModel> = emptyList(),
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
+    val isEditing: Boolean = false,
     val filteredZones: Map<Char, List<ZoneId>> = emptyMap()
 )
 
@@ -44,4 +45,5 @@ sealed interface ClockIntent {
     data class ToggleSearch(val isActive: Boolean) : ClockIntent
     data class AddTimeZone(val zoneId: ZoneId) : ClockIntent
     data class RemoveTimeZone(val zoneId: ZoneId) : ClockIntent
+    data class SetEditing(val isEditing: Boolean) : ClockIntent
 }
