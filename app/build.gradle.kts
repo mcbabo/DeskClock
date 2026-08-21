@@ -25,13 +25,17 @@ android {
         version = release(37)
     }
 
+    val isNightly = true
+    val baseVersion = "1.1.0"
+    val baseCode = 1_01_00_00
+
     defaultConfig {
         // not official!
         applicationId = "app.grapheneos.deskclock"
         minSdk = 37
         targetSdk = 37
-        versionCode = 1_01_00
-        versionName = "1.1.0"
+        versionCode = if (isNightly) baseCode + 50 else baseCode
+        versionName = if (isNightly) "$baseVersion-nightly" else baseVersion
 
         ndk {
             if (project.hasProperty("ABI_FILTER")) {
