@@ -15,6 +15,7 @@ import android.os.VibrationEffect
 import android.os.VibratorManager
 import android.util.Log
 import androidx.core.net.toUri
+import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.util.Constants
 
 /**
@@ -26,6 +27,29 @@ class AudioPlayer(private val context: Context) {
     private var focusRequest: AudioFocusRequest? = null
     private val audioManager = context.getSystemService(AudioManager::class.java)
     private var volumeAnimator: ValueAnimator? = null
+
+    companion object {
+        private val RAW_RESOURCE_MAP = mapOf(
+            "neon" to R.raw.neon,
+            "argon" to R.raw.argon,
+            "barium" to R.raw.barium,
+            "carbon" to R.raw.carbon,
+            "cesium" to R.raw.cesium,
+            "helium" to R.raw.helium,
+            "osmium" to R.raw.osmium,
+            "oxygen" to R.raw.oxygen,
+            "krypton" to R.raw.krypton,
+            "platinum" to R.raw.platinum,
+            "scandium" to R.raw.scandium,
+            "neptunium" to R.raw.neptunium,
+            "promethium" to R.raw.promethium,
+            "piezo_alarm" to R.raw.piezo_alarm,
+            "buzzer_alarm" to R.raw.buzzer_alarm,
+            "rooster_alarm" to R.raw.rooster_alarm,
+            "beepbeep_alarm" to R.raw.beepbeep_alarm,
+            "beepbeepbeep_alarm" to R.raw.beepbeepbeep_alarm
+        )
+    }
 
     fun playAlarm(
         uri: Uri?,
@@ -132,11 +156,7 @@ class AudioPlayer(private val context: Context) {
             when (uri.scheme) {
                 "android.resource" -> {
                     val resName = uri.lastPathSegment
-                    val resId = if (resName?.toIntOrNull() != null) {
-                        resName.toInt()
-                    } else {
-                        context.resources.getIdentifier(resName, "raw", context.packageName)
-                    }
+                    val resId = resName?.toIntOrNull() ?: RAW_RESOURCE_MAP[resName] ?: 0
 
                     if (resId != 0) {
                         val afd = context.resources.openRawResourceFd(resId)
