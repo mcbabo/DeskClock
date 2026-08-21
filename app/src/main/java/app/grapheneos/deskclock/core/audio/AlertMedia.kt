@@ -38,17 +38,21 @@ class AudioPlayer(private val context: Context) {
     ) {
         stop()
 
-        val attributes = buildAudioAttributes(alarm, ringtoneVolume)
-        focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+        val attributes = buildAudioAttributes(alarm)
+        focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
             .setAudioAttributes(attributes)
             .build()
 
         val focusResult = audioManager.requestAudioFocus(focusRequest!!)
         if (focusResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            return
+            Log.w(
+                Constants.TAG_AUDIO_PLAYER,
+                "Audio focus request denied, but proceeding with alarm."
+            )
         }
 
         val targetUri = uri ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            ?: "android.resource://${context.packageName}/raw/neptunium".toUri()
 
         val userManager = context.getSystemService(UserManager::class.java)
         val isUserUnlocked = userManager?.isUserUnlocked ?: true
@@ -101,7 +105,8 @@ class AudioPlayer(private val context: Context) {
         fallbackUri: Uri? = null
     ) {
         try {
-            val targetFallbackUri = fallbackUri ?: "android.resource://${context.packageName}/raw/neptunium".toUri()
+            val targetFallbackUri =
+                fallbackUri ?: "android.resource://${context.packageName}/raw/neptunium".toUri()
             startMediaPlayer(
                 targetFallbackUri,
                 attributes,
@@ -127,7 +132,12 @@ class AudioPlayer(private val context: Context) {
             when (uri.scheme) {
                 "android.resource" -> {
                     val resName = uri.lastPathSegment
-                    val resId = context.resources.getIdentifier(resName, "raw", context.packageName)
+                    val resId = if (resName?.toIntOrNull() != null) {
+                        resName.toInt()
+                    } else {
+                        context.resources.getIdentifier(resName, "raw", context.packageName)
+                    }
+
                     if (resId != 0) {
                         val afd = context.resources.openRawResourceFd(resId)
                         setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
@@ -172,11 +182,11 @@ class AudioPlayer(private val context: Context) {
         }
     }
 
-    private fun buildAudioAttributes(alarm: Boolean, ringtoneVolume: Float?): AudioAttributes {
-        val usage = if (ringtoneVolume != null || !alarm) {
-            AudioAttributes.USAGE_MEDIA
-        } else {
+    private fun buildAudioAttributes(alarm: Boolean): AudioAttributes {
+        val usage = if (alarm) {
             AudioAttributes.USAGE_ALARM
+        } else {
+            AudioAttributes.USAGE_MEDIA
         }
 
         return AudioAttributes.Builder()
