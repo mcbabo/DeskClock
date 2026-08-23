@@ -15,6 +15,7 @@ fun StopwatchTimeText(
     elapsedMillisFlow: Flow<Long>,
     initialMillis: Long,
     isRunning: Boolean,
+    showMilliseconds: Boolean,
     style: TextStyle,
     modifier: Modifier = Modifier
 ) {
@@ -22,6 +23,7 @@ fun StopwatchTimeText(
     StopwatchTimeText(
         elapsedMillis = elapsedMillis,
         isRunning = isRunning,
+        showMilliseconds = showMilliseconds,
         style = style,
         modifier = modifier
     )
@@ -31,13 +33,14 @@ fun StopwatchTimeText(
 fun StopwatchTimeText(
     elapsedMillis: Long,
     isRunning: Boolean,
+    showMilliseconds: Boolean,
     style: TextStyle,
     modifier: Modifier = Modifier
 ) {
-    val precision = if (isRunning) {
-        StopwatchPrecision.TENTHS
-    } else {
-        StopwatchPrecision.CENTISECONDS
+    val precision = when {
+        !showMilliseconds -> StopwatchPrecision.NONE
+        isRunning -> StopwatchPrecision.TENTHS
+        else -> StopwatchPrecision.CENTISECONDS
     }
 
     Text(

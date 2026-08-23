@@ -41,7 +41,7 @@ import app.grapheneos.deskclock.core.presentation.components.FloatingActionButto
 import app.grapheneos.deskclock.core.presentation.components.groupitems.lazyGroup
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
 import kotlinx.coroutines.launch
-import java.util.Calendar
+import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,10 +151,10 @@ fun AlarmScreen(
     }
 
     if (uiState.isTimePickerVisible) {
-        val now = Calendar.getInstance()
+        val now = LocalTime.now()
         DialWithDialog(
-            initialHour = now.get(Calendar.HOUR_OF_DAY),
-            initialMinute = now.get(Calendar.MINUTE),
+            initialHour = now.hour,
+            initialMinute = now.minute,
             onConfirm = { pickerState ->
                 onIntent(
                     AlarmIntent.AddAlarm(

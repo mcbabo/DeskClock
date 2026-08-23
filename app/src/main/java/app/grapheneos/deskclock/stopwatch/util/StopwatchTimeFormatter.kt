@@ -20,15 +20,12 @@ fun formatStopwatchTime(
     return buildString {
         if (hours > 0) {
             append(hours).append(':')
-            if (minutes < 10) append('0')
-            append(minutes).append(':')
+            append(minutes.toString().padStart(2, '0')).append(':')
         } else {
-            if (minutes < 10) append('0')
-            append(minutes).append(':')
+            append(minutes.toString().padStart(2, '0')).append(':')
         }
 
-        if (seconds < 10) append('0')
-        append(seconds)
+        append(seconds.toString().padStart(2, '0'))
 
         when (precision) {
             StopwatchPrecision.TENTHS -> {
@@ -36,15 +33,10 @@ fun formatStopwatchTime(
             }
 
             StopwatchPrecision.CENTISECONDS -> {
-                val centis = millis / 10
-                append('.')
-                if (centis < 10) append('0')
-                append(centis)
+                append('.').append((millis / 10).toString().padStart(2, '0'))
             }
 
-            StopwatchPrecision.NONE -> {
-                // No suffix
-            }
+            StopwatchPrecision.NONE -> {}
         }
     }
 }

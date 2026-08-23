@@ -64,6 +64,8 @@
     <string name="settings_alarm_sound_desc">Den Standartton für Alarme und Timer setzen</string>
     <string name="settings_vibration">Vibration</string>
     <string name="settings_vibration_desc">Standardeinstellung für Wecker</string>
+    <string name="settings_stopwatch_milliseconds">Millisekunden anzeigen</string>
+    <string name="settings_stopwatch_milliseconds_desc">Millisekunden auf der Stoppuhr anzeigen</string>
     <string name="lap">Runde</string>
     <string name="stop">Stopp</string>
     <string name="alarm_deleted">Wecker gelöscht</string>

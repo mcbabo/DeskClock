@@ -65,6 +65,8 @@
     <string name="settings_alarm_sound_desc">Set default sound for alarms and timers</string>
     <string name="settings_vibration">Vibration</string>
     <string name="settings_vibration_desc">Default preference for alarms</string>
+    <string name="settings_stopwatch_milliseconds">Show milliseconds</string>
+    <string name="settings_stopwatch_milliseconds_desc">Display milliseconds on the stopwatch</string>
     <string name="lap">Lap</string>
     <string name="stop">Stop</string>
     <string name="alarm_deleted">Alarm deleted</string>

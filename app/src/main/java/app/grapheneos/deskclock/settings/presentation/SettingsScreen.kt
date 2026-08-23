@@ -91,10 +91,14 @@ fun SettingsScreen(
                 themeMode = settings.themeMode,
                 alarmPopUpStyle = settings.alarmPopUpStyle,
                 timerPopUpStyle = settings.timerPopUpStyle,
+                showStopwatchMilliseconds = settings.stopwatchShowMilliseconds,
                 onDynamicColorsChange = { onIntent(SettingsIntent.SetDynamicColors(it)) },
                 onThemeClick = { onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.THEME)) },
                 onAlarmPopUpStyleClick = onNavigateToAlarmStylePicker,
-                onTimerPopUpStyleClick = onNavigateToTimerStylePicker
+                onTimerPopUpStyleClick = onNavigateToTimerStylePicker,
+                onShowStopwatchMillisecondsChange = {
+                    onIntent(SettingsIntent.SetStopwatchShowMilliseconds(it))
+                }
             )
 
             AlarmTimerSettingsSection(
@@ -232,10 +236,12 @@ private fun GeneralSettingsSection(
     themeMode: ThemeMode,
     alarmPopUpStyle: PopUpStyle,
     timerPopUpStyle: PopUpStyle,
+    showStopwatchMilliseconds: Boolean,
     onDynamicColorsChange: (Boolean) -> Unit,
     onThemeClick: () -> Unit,
     onAlarmPopUpStyleClick: () -> Unit,
-    onTimerPopUpStyleClick: () -> Unit
+    onTimerPopUpStyleClick: () -> Unit,
+    onShowStopwatchMillisecondsChange: (Boolean) -> Unit
 ) {
     ListGroup(title = stringResource(R.string.general)) {
         item {
@@ -258,7 +264,7 @@ private fun GeneralSettingsSection(
         item {
             ValueGroupRow(
                 label = stringResource(R.string.setting_theme),
-                value = stringResource(themeMode.displayNameRes),
+                value = stringResource(themeMode.getDisplayNameRes()),
                 supportingContent = {
                     Text(text = stringResource(R.string.setting_theme_desc))
                 },
@@ -275,7 +281,7 @@ private fun GeneralSettingsSection(
         item {
             ValueGroupRow(
                 label = stringResource(R.string.settings_alarm_popup_style),
-                value = stringResource(alarmPopUpStyle.titleRes),
+                value = stringResource(alarmPopUpStyle.getTitleRes()),
                 supportingContent = {
                     Text(text = stringResource(R.string.settings_alarm_popup_style_desc))
                 },
@@ -292,7 +298,7 @@ private fun GeneralSettingsSection(
         item {
             ValueGroupRow(
                 label = stringResource(R.string.settings_timer_popup_style),
-                value = stringResource(timerPopUpStyle.titleRes),
+                value = stringResource(timerPopUpStyle.getTitleRes()),
                 supportingContent = {
                     Text(text = stringResource(R.string.settings_timer_popup_style_desc))
                 },
@@ -300,6 +306,23 @@ private fun GeneralSettingsSection(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Palette,
+                        contentDescription = null
+                    )
+                }
+            )
+        }
+
+        item {
+            SwitchGroupRow(
+                label = stringResource(R.string.settings_stopwatch_milliseconds),
+                supportingContent = {
+                    Text(text = stringResource(R.string.settings_stopwatch_milliseconds_desc))
+                },
+                checked = showStopwatchMilliseconds,
+                onCheckedChange = onShowStopwatchMillisecondsChange,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Tune,
                         contentDescription = null
                     )
                 }

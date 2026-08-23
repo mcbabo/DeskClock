@@ -73,17 +73,17 @@ fun TimerScreen(
             verticalArrangement = Arrangement.Center
         ) {
             AnimatedContent(
-                targetState = uiState is TimerUiState.Active,
+                targetState = uiState.isStarted || uiState.isFinished,
                 label = "TimerMode"
             ) { isActive ->
-                if (isActive && uiState is TimerUiState.Active) {
+                if (isActive) {
                     TimerRunningLayout(
                         uiState,
                         remainingMillisFlow,
                         { onIntent(TimerIntent.TogglePauseResume) },
                         { onIntent(TimerIntent.Reset) }
                     )
-                } else if (uiState is TimerUiState.Idle) {
+                } else {
                     TimerSetupLayout(
                         uiState,
                         { digit -> onIntent(TimerIntent.EnterDigit(digit)) },
@@ -98,7 +98,7 @@ fun TimerScreen(
 
 @Composable
 private fun TimerSetupLayout(
-    uiState: TimerUiState.Idle,
+    uiState: TimerUiState,
     onDigitClick: (Int) -> Unit,
     onBackspace: () -> Unit,
     onStartClick: () -> Unit
@@ -129,14 +129,14 @@ private fun TimerSetupLayout(
 
 @Composable
 private fun TimerRunningLayout(
-    uiState: TimerUiState.Active,
+    uiState: TimerUiState,
     remainingMillisFlow: Flow<Long>,
     onPauseResumeClick: () -> Unit,
     onResetClick: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerIndicator(
-            progress = uiState.progress,
+            totalTime = uiState.totalTime,
             remainingMillisFlow = remainingMillisFlow,
             isRunning = uiState.isRunning
         )
@@ -162,11 +162,17 @@ private fun TimerRunningLayout(
 
 @Composable
 private fun TimerIndicator(
-    progress: Float,
+    totalTime: Long,
     remainingMillisFlow: Flow<Long>,
     isRunning: Boolean
 ) {
     val remainingTimeMillis by remainingMillisFlow.collectAsState(initial = 0L)
+
+    val progress = if (totalTime > 0) {
+        (remainingTimeMillis.toFloat() / totalTime).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
 
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
@@ -199,7 +205,7 @@ private fun TimerIndicator(
 fun TimerSetupPreview() {
     DeskClockTheme {
         TimerScreen(
-            uiState = TimerUiState.Idle(inputTime = "001000"),
+            uiState = TimerUiState(inputTime = "001000"),
             remainingMillisFlow = flowOf(0L),
             onIntent = {},
             onSettingsClick = {},
@@ -212,10 +218,10 @@ fun TimerSetupPreview() {
 fun TimerRunningPreview() {
     DeskClockTheme {
         TimerScreen(
-            uiState = TimerUiState.Active(
+            uiState = TimerUiState(
                 isRunning = true,
+                isStarted = true,
                 isFinished = false,
-                progress = 0.75f,
                 totalTime = 60000L
             ),
             remainingMillisFlow = flowOf(45000L),
