@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -19,21 +18,20 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModel()
-    private val actionState = mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        actionState.value = intent?.action
+        viewModel.onNewIntentAction(intent?.action)
         setContent {
-            val settings by viewModel.settings.collectAsStateWithLifecycle()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val backStack = rememberNavBackStack(Route.Main)
 
-            settings?.let {
-                DeskClockAppTheme(settings = it) {
+            uiState.settings?.let { settings ->
+                DeskClockAppTheme(settings = settings) {
                     SystemBarsTheme()
-                    NavigationRoot(backStack, initialAction = actionState.value)
+                    NavigationRoot(backStack, initialAction = uiState.initialAction)
                 }
             }
         }
@@ -41,6 +39,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        actionState.value = intent.action
+        viewModel.onNewIntentAction(intent.action)
     }
 }
