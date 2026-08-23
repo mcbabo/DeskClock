@@ -52,16 +52,8 @@ class ClockViewModel(private val clockRepository: ClockRepository) : ViewModel()
         emit(zones)
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val uiState: StateFlow<ClockUiState> = combine(
-        clockRepository.getSelectedClocks(),
-        internalState,
-        allAvailableZones,
-        timeUiState
-    ) { selectedZones, internal, allZones, _ ->
-        val now = ZonedDateTime.now()
-        val zoneClocks = selectedZones.map { formatToClockUiModel(now, it.zoneId) }
-
-        val filteredZones = if (internal.searchQuery.isBlank()) {
+    private val filteredZones = combine(internalState, allAvailableZones) { internal, allZones ->
+        if (internal.searchQuery.isBlank()) {
             allZones
         } else {
             allZones.filter {
@@ -70,10 +62,26 @@ class ClockViewModel(private val clockRepository: ClockRepository) : ViewModel()
             }
         }.groupBy { it.id.substringAfter('/').first().uppercaseChar() }
             .toSortedMap()
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
+
+    val uiState: StateFlow<ClockUiState> = combine(
+        clockRepository.getSelectedClocks(),
+        internalState,
+        filteredZones,
+        flow {
+            while (true) {
+                emit(Unit)
+                // World clocks only need minute precision
+                delay(60.seconds)
+            }
+        }
+    ) { selectedZones, internal, filtered, _ ->
+        val now = ZonedDateTime.now()
+        val zoneClocks = selectedZones.map { formatToClockUiModel(now, it.zoneId) }
 
         ClockUiState(
             zoneClocks = zoneClocks,
-            filteredZones = filteredZones,
+            filteredZones = filtered,
             searchQuery = internal.searchQuery,
             isSearchActive = internal.isSearchActive,
             isEditing = internal.isEditing
