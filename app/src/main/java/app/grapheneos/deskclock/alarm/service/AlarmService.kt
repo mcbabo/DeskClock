@@ -72,21 +72,21 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
 
             if (!hasIntentData || intentRingtone != dbRingtone || intentVibrate != dbVibrate) {
                 startAlert(
-                    dbRingtone,
-                    dbVibrate,
-                    ringtoneVolume,
-                    appSettings.graduallyIncreaseVolume,
-                    appSettings.graduallyIncreaseVolumeDuration,
-                    appSettings.directBootRingtone.uri
+                    uri = dbRingtone,
+                    vibrate = dbVibrate,
+                    volume = ringtoneVolume,
+                    graduallyIncreaseVolume = appSettings.graduallyIncreaseVolume,
+                    graduallyIncreaseVolumeDuration = appSettings.graduallyIncreaseVolumeDuration,
+                    fallbackUri = appSettings.directBootRingtone.uri
                 )
             } else {
                 startAlert(
-                    intentRingtone,
-                    intentVibrate,
-                    ringtoneVolume,
-                    appSettings.graduallyIncreaseVolume,
-                    appSettings.graduallyIncreaseVolumeDuration,
-                    appSettings.directBootRingtone.uri
+                    uri = intentRingtone,
+                    vibrate = intentVibrate,
+                    volume = ringtoneVolume,
+                    graduallyIncreaseVolume = appSettings.graduallyIncreaseVolume,
+                    graduallyIncreaseVolumeDuration = appSettings.graduallyIncreaseVolumeDuration,
+                    fallbackUri = appSettings.directBootRingtone.uri
                 )
             }
 

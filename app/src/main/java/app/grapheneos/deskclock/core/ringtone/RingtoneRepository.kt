@@ -9,7 +9,9 @@ import android.webkit.MimeTypeMap
 import androidx.compose.runtime.Immutable
 import androidx.core.net.toUri
 import app.grapheneos.deskclock.core.util.Constants
+import app.grapheneos.deskclock.core.util.UriScheme
 import app.grapheneos.deskclock.core.util.UriSerializer
+import app.grapheneos.deskclock.core.util.uriScheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -48,10 +50,8 @@ class RingtoneRepository(private val context: Context) {
             }
 
             val all = mutableListOf<RingtoneItem>()
-
             all.addAll(getCustomRingtones())
             all.addAll(getSystemRingtones())
-
             all
         }
 
@@ -59,7 +59,7 @@ class RingtoneRepository(private val context: Context) {
         INTERNAL_MAP.map { (resName, displayName) ->
             RingtoneItem(
                 name = displayName,
-                uri = "android.resource://${context.packageName}/raw/$resName".toUri()
+                uri = "${UriScheme.RESOURCE.value}://${context.packageName}/raw/$resName".toUri()
             )
         }
     }
@@ -87,15 +87,15 @@ class RingtoneRepository(private val context: Context) {
     }
 
     suspend fun getRingtoneItem(uri: Uri): RingtoneItem = withContext(Dispatchers.IO) {
-        when (uri.scheme) {
-            "android.resource" -> {
+        when (uri.uriScheme) {
+            UriScheme.RESOURCE -> {
                 val resName = uri.lastPathSegment ?: ""
                 val displayName =
                     INTERNAL_MAP[resName] ?: resName.replaceFirstChar { it.uppercase() }
                 RingtoneItem(name = displayName, uri = uri)
             }
 
-            "file" -> {
+            UriScheme.FILE -> {
                 RingtoneItem(
                     name = uri.lastPathSegment?.substringBeforeLast(".") ?: "Custom Alarm",
                     uri = uri
@@ -156,7 +156,7 @@ class RingtoneRepository(private val context: Context) {
 
     suspend fun deleteCustomRingtone(item: RingtoneItem) = withContext(Dispatchers.IO) {
         val uri = item.uri
-        if (uri.scheme == "file") {
+        if (uri.uriScheme == UriScheme.FILE) {
             uri.path?.let { File(it).delete() }
         }
     }

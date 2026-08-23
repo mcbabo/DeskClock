@@ -35,16 +35,16 @@ abstract class BaseAlertService(private val tag: String) : Service() {
     }
 
     protected fun startAlert(
-        ringtoneUri: Uri? = null,
+        uri: Uri? = null,
         vibrate: Boolean = true,
-        ringtoneVolume: Float? = null,
+        volume: Float? = null,
         graduallyIncreaseVolume: Boolean = false,
         graduallyIncreaseVolumeDuration: Int = 30,
         fallbackUri: Uri? = null
     ) {
         audioPlayer.playAlarm(
-            ringtoneUri,
-            ringtoneVolume = ringtoneVolume,
+            uri = uri,
+            volume = volume,
             graduallyIncreaseVolume = graduallyIncreaseVolume,
             graduallyIncreaseVolumeDuration = graduallyIncreaseVolumeDuration,
             fallbackUri = fallbackUri

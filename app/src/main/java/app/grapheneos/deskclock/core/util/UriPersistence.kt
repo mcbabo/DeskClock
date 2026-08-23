@@ -40,3 +40,18 @@ object UriSerializer : KSerializer<Uri> {
         return decoder.decodeString().toUri()
     }
 }
+
+/**
+ * Enumeration of URI schemes used within the application.
+ */
+enum class UriScheme(val value: String) {
+    RESOURCE("android.resource"),
+    FILE("file"),
+    CONTENT("content");
+
+    companion object {
+        fun from(scheme: String?): UriScheme? = entries.find { it.value == scheme }
+    }
+}
+
+val Uri.uriScheme: UriScheme? get() = UriScheme.from(scheme)

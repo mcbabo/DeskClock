@@ -6,28 +6,31 @@ import java.time.ZonedDateTime
 import java.time.temporal.TemporalAdjusters
 
 object AlarmTimeCalculator {
-    fun calculateNextTriggerTime(hour: Int, minute: Int, daysOfWeekBitmask: Int): Long {
+    fun calculateNextTriggerTime(hour: Int, minute: Int, daysOfWeek: Int): Long {
         val now = ZonedDateTime.now()
-        val alarmTimeToday = now.with(LocalTime.of(hour, minute, 0, 0))
+        val targetTime = LocalTime.of(hour, minute)
 
-        if (daysOfWeekBitmask == 0) {
-            val result =
-                if (alarmTimeToday.isBefore(now)) alarmTimeToday.plusDays(1) else alarmTimeToday
-            return result.toInstant().toEpochMilli()
+        if (daysOfWeek == 0) {
+            val triggerToday = now.with(targetTime).withSecond(0).withNano(0)
+            return (if (triggerToday.isAfter(now)) triggerToday else triggerToday.plusDays(1))
+                .toInstant()
+                .toEpochMilli()
         }
 
-        var nearest: ZonedDateTime? = null
-        for (day in DayOfWeek.entries) {
-            val shift = if (day == DayOfWeek.SUNDAY) 0 else day.value
-            if ((daysOfWeekBitmask and (1 shl shift)) != 0) {
-                var candidate = now.with(TemporalAdjusters.nextOrSame(day))
-                    .with(LocalTime.of(hour, minute, 0, 0))
-
-                if (candidate.isBefore(now)) candidate = candidate.plusWeeks(1)
-
-                if (nearest == null || candidate.isBefore(nearest)) nearest = candidate
+        return DayOfWeek.entries.asSequence()
+            .filter { day ->
+                val bit = if (day == DayOfWeek.SUNDAY) 0 else day.value
+                (daysOfWeek and (1 shl bit)) != 0
             }
-        }
-        return nearest!!.toInstant().toEpochMilli()
+            .map { day ->
+                val trigger = now.with(TemporalAdjusters.nextOrSame(day))
+                    .with(targetTime)
+                    .withSecond(0)
+                    .withNano(0)
+                if (trigger.isBefore(now)) trigger.plusWeeks(1) else trigger
+            }
+            .minOf { it }
+            .toInstant()
+            .toEpochMilli()
     }
 }

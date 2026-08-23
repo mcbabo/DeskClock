@@ -62,7 +62,7 @@ class TimerService : BaseAlertService(Constants.Timer.PM_TAG) {
                                 null
                             }
                             startAlert(
-                                ringtoneVolume = ringtoneVolume,
+                                volume = ringtoneVolume,
                                 graduallyIncreaseVolume = appSettings.graduallyIncreaseVolume,
                                 graduallyIncreaseVolumeDuration = appSettings.graduallyIncreaseVolumeDuration
                             )

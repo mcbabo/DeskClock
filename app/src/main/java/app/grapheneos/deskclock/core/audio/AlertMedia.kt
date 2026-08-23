@@ -2,7 +2,6 @@ package app.grapheneos.deskclock.core.audio
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.content.res.Resources
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -15,8 +14,9 @@ import android.os.VibrationEffect
 import android.os.VibratorManager
 import android.util.Log
 import androidx.core.net.toUri
-import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.util.Constants
+import app.grapheneos.deskclock.core.util.UriScheme
+import app.grapheneos.deskclock.core.util.uriScheme
 
 /**
  * Handles audio playback for alerts (Alarms, Timers).
@@ -28,34 +28,15 @@ class AudioPlayer(private val context: Context) {
     private val audioManager = context.getSystemService(AudioManager::class.java)
     private var volumeAnimator: ValueAnimator? = null
 
-    companion object {
-        private val RAW_RESOURCE_MAP = mapOf(
-            "neon" to R.raw.neon,
-            "argon" to R.raw.argon,
-            "barium" to R.raw.barium,
-            "carbon" to R.raw.carbon,
-            "cesium" to R.raw.cesium,
-            "helium" to R.raw.helium,
-            "osmium" to R.raw.osmium,
-            "oxygen" to R.raw.oxygen,
-            "krypton" to R.raw.krypton,
-            "platinum" to R.raw.platinum,
-            "scandium" to R.raw.scandium,
-            "neptunium" to R.raw.neptunium,
-            "promethium" to R.raw.promethium,
-            "piezo_alarm" to R.raw.piezo_alarm,
-            "buzzer_alarm" to R.raw.buzzer_alarm,
-            "rooster_alarm" to R.raw.rooster_alarm,
-            "beepbeep_alarm" to R.raw.beepbeep_alarm,
-            "beepbeepbeep_alarm" to R.raw.beepbeepbeep_alarm
-        )
-    }
+    private val defaultUri: Uri
+        get() = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            ?: "${UriScheme.RESOURCE.value}://${context.packageName}/raw/neptunium".toUri()
 
     fun playAlarm(
         uri: Uri?,
         loop: Boolean = true,
         alarm: Boolean = true,
-        ringtoneVolume: Float? = null,
+        volume: Float? = null,
         graduallyIncreaseVolume: Boolean = false,
         graduallyIncreaseVolumeDuration: Int = 30,
         fallbackUri: Uri? = null
@@ -67,30 +48,19 @@ class AudioPlayer(private val context: Context) {
             .setAudioAttributes(attributes)
             .build()
 
-        val focusResult = audioManager.requestAudioFocus(focusRequest!!)
-        if (focusResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            Log.w(
-                Constants.TAG_AUDIO_PLAYER,
-                "Audio focus request denied, but proceeding with alarm."
-            )
-        }
+        audioManager.requestAudioFocus(focusRequest!!)
 
-        val targetUri = uri ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            ?: "android.resource://${context.packageName}/raw/neptunium".toUri()
-
+        val ringtoneUri = uri ?: defaultUri
         val userManager = context.getSystemService(UserManager::class.java)
         val isUserUnlocked = userManager?.isUserUnlocked ?: true
 
-        val isSafeScheme = targetUri.scheme == "android.resource" || targetUri.scheme == "file"
+        val isSafeScheme =
+            ringtoneUri.uriScheme == UriScheme.RESOURCE || ringtoneUri.uriScheme == UriScheme.FILE
         if (!isUserUnlocked && !isSafeScheme) {
-            Log.d(
-                Constants.TAG_AUDIO_PLAYER,
-                "Direct Boot: Content URI $targetUri is locked. Using fallback."
-            )
             playFallback(
                 attributes,
                 loop,
-                ringtoneVolume,
+                volume,
                 graduallyIncreaseVolume,
                 graduallyIncreaseVolumeDuration,
                 fallbackUri
@@ -98,21 +68,21 @@ class AudioPlayer(private val context: Context) {
             return
         }
 
-        try {
+        runCatching {
             startMediaPlayer(
-                targetUri,
+                ringtoneUri,
                 attributes,
                 loop,
-                ringtoneVolume,
+                volume,
                 graduallyIncreaseVolume,
                 graduallyIncreaseVolumeDuration
             )
-        } catch (e: Exception) {
-            Log.w(Constants.TAG_AUDIO_PLAYER, "Failed to play URI: $uri", e)
+        }.onFailure {
+            Log.w(Constants.TAG_AUDIO_PLAYER, "Failed to play URI: $uri", it)
             playFallback(
                 attributes,
                 loop,
-                ringtoneVolume,
+                volume,
                 graduallyIncreaseVolume,
                 graduallyIncreaseVolumeDuration,
                 fallbackUri
@@ -123,24 +93,23 @@ class AudioPlayer(private val context: Context) {
     private fun playFallback(
         attributes: AudioAttributes,
         loop: Boolean,
-        ringtoneVolume: Float?,
+        volume: Float?,
         graduallyIncreaseVolume: Boolean,
         graduallyIncreaseVolumeDuration: Int,
         fallbackUri: Uri? = null
     ) {
-        try {
-            val targetFallbackUri =
-                fallbackUri ?: "android.resource://${context.packageName}/raw/neptunium".toUri()
+        runCatching {
+            val ringtoneUri = fallbackUri ?: defaultUri
             startMediaPlayer(
-                targetFallbackUri,
+                ringtoneUri,
                 attributes,
                 loop,
-                ringtoneVolume,
+                volume,
                 graduallyIncreaseVolume,
                 graduallyIncreaseVolumeDuration
             )
-        } catch (e: Exception) {
-            Log.e(Constants.TAG_AUDIO_PLAYER, "Critical: Fallback also failed", e)
+        }.onFailure {
+            Log.e(Constants.TAG_AUDIO_PLAYER, "Critical: Fallback also failed", it)
         }
     }
 
@@ -148,50 +117,25 @@ class AudioPlayer(private val context: Context) {
         uri: Uri,
         attributes: AudioAttributes,
         loop: Boolean,
-        ringtoneVolume: Float?,
+        volume: Float?,
         graduallyIncreaseVolume: Boolean,
         graduallyIncreaseVolumeDuration: Int
     ) {
         mediaPlayer = MediaPlayer().apply {
-            when (uri.scheme) {
-                "android.resource" -> {
-                    val resName = uri.lastPathSegment
-                    val resId = resName?.toIntOrNull() ?: RAW_RESOURCE_MAP[resName] ?: 0
-
-                    if (resId != 0) {
-                        val afd = context.resources.openRawResourceFd(resId)
-                        setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
-                        afd.close()
-                    } else {
-                        throw Resources.NotFoundException("Raw resource not found: $resName")
-                    }
-                }
-
-                "file" -> {
-                    setDataSource(uri.path)
-                }
-
-                else -> {
-                    setDataSource(context, uri)
-                }
-            }
-
+            setDataSource(context, uri)
             setAudioAttributes(attributes)
             isLooping = loop
             prepare()
 
-            val targetVolume = ringtoneVolume ?: 1.0f
+            val targetVolume = volume ?: 1.0f
             if (graduallyIncreaseVolume) {
                 setVolume(0f, 0f)
                 volumeAnimator = ValueAnimator.ofFloat(0f, targetVolume).apply {
                     duration = graduallyIncreaseVolumeDuration * 1000L
                     addUpdateListener { animator ->
-                        val volume = animator.animatedValue as Float
-                        try {
-                            mediaPlayer?.setVolume(volume, volume)
-                        } catch (_: Exception) {
-                            animator.cancel()
-                        }
+                        val currentVolume = animator.animatedValue as Float
+                        runCatching { mediaPlayer?.setVolume(currentVolume, currentVolume) }
+                            .onFailure { animator.cancel() }
                     }
                     start()
                 }
@@ -239,11 +183,7 @@ class VibrationManager(context: Context) {
 
     fun startAlarmVibration() {
         val effect = VibrationEffect.createWaveform(
-            longArrayOf(
-                0,
-                Constants.Alarm.WAVE_FORM,
-                Constants.Alarm.WAVE_FORM
-            ),
+            longArrayOf(0, Constants.Alarm.WAVE_FORM, Constants.Alarm.WAVE_FORM),
             0
         )
         val attributes = VibrationAttributes.Builder()

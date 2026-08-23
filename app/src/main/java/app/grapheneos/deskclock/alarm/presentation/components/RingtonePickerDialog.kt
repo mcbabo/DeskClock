@@ -41,6 +41,8 @@ import app.grapheneos.deskclock.core.presentation.components.groupitems.groupHea
 import app.grapheneos.deskclock.core.presentation.components.groupitems.lazyGroup
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.ringtone.RingtoneItem
+import app.grapheneos.deskclock.core.util.UriScheme
+import app.grapheneos.deskclock.core.util.uriScheme
 
 @Immutable
 data class RingtonePickerUiState(
@@ -74,13 +76,20 @@ fun RingtonePickerDialog(
         val listState = rememberLazyListState()
         val selectedUriObj = selectedUri
 
-        val customRingtones = uiState.ringtones.filter { it.uri.scheme == "file" }
-        val systemRingtones = uiState.ringtones.filter { it.uri.scheme == "content" }
-        val internalRingtones = uiState.ringtones.filter { it.uri.scheme == "android.resource" }
-
         val customTitle = stringResource(R.string.custom)
         val systemTitle = stringResource(R.string.system)
         val internalTitle = stringResource(R.string.internal)
+
+        val ringtoneGroups = remember(uiState.ringtones, customTitle, systemTitle, internalTitle) {
+            uiState.ringtones.groupBy {
+                when (it.uri.uriScheme) {
+                    UriScheme.FILE -> customTitle
+                    UriScheme.CONTENT -> systemTitle
+                    UriScheme.RESOURCE -> internalTitle
+                    else -> "Unknown"
+                }
+            }
+        }
 
         Scaffold(
             topBar = {
@@ -109,10 +118,16 @@ fun RingtonePickerDialog(
                 state = listState,
                 verticalArrangement = Arrangement.spacedBy(Layout.GroupedList.ItemSpacing)
             ) {
+                val customRingtones = ringtoneGroups[customTitle] ?: emptyList()
                 val showCustomSection = !uiState.isDirectBootOnly || customRingtones.isNotEmpty()
+
                 if (showCustomSection) {
                     groupHeader(customTitle)
-                    val customCount = if (!uiState.isDirectBootOnly) customRingtones.size + 1 else customRingtones.size
+                    val customCount = if (!uiState.isDirectBootOnly) {
+                        customRingtones.size + 1
+                    } else {
+                        customRingtones.size
+                    }
 
                     if (!uiState.isDirectBootOnly) {
                         item {
@@ -131,7 +146,10 @@ fun RingtonePickerDialog(
                         }
                     }
 
-                    itemsIndexed(customRingtones, key = { _, item -> item.uri }) { index, ringtoneItem ->
+                    itemsIndexed(
+                        customRingtones,
+                        key = { _, item -> item.uri }
+                    ) { index, ringtoneItem ->
                         val adjustedIndex = if (!uiState.isDirectBootOnly) index + 1 else index
                         GroupItem(
                             index = adjustedIndex,
@@ -152,6 +170,7 @@ fun RingtonePickerDialog(
                     }
                 }
 
+                val systemRingtones = ringtoneGroups[systemTitle] ?: emptyList()
                 if (systemRingtones.isNotEmpty()) {
                     lazyGroup(
                         items = systemRingtones,
@@ -169,6 +188,7 @@ fun RingtonePickerDialog(
                     }
                 }
 
+                val internalRingtones = ringtoneGroups[internalTitle] ?: emptyList()
                 if (internalRingtones.isNotEmpty()) {
                     lazyGroup(
                         items = internalRingtones,
