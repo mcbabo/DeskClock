@@ -5,18 +5,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.grapheneos.deskclock.alarm.service.AlarmService
-import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.core.theme.DeskClockAppTheme
 import app.grapheneos.deskclock.core.theme.SystemBarsTheme
 import app.grapheneos.deskclock.core.util.Intents
 import app.grapheneos.deskclock.core.util.collectEffectsOnStart
 import app.grapheneos.deskclock.core.util.configureShowOnLockScreen
 import app.grapheneos.deskclock.core.util.stopServiceAndFinish
-import app.grapheneos.deskclock.settings.data.ThemeMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AlarmPopUpActivity : ComponentActivity() {
@@ -38,18 +36,8 @@ class AlarmPopUpActivity : ComponentActivity() {
         setContent {
             val settings by viewModel.settings.collectAsStateWithLifecycle()
 
-            if (settings != null) {
-                val isDarkTheme =
-                    when (settings!!.themeMode) {
-                        ThemeMode.LIGHT -> false
-                        ThemeMode.DARK -> true
-                        ThemeMode.SYSTEM -> isSystemInDarkTheme()
-                    }
-
-                DeskClockTheme(
-                    darkTheme = isDarkTheme,
-                    dynamicColor = settings!!.dynamicColors
-                ) {
+            settings?.let {
+                DeskClockAppTheme(settings = it) {
                     SystemBarsTheme()
 
                     val uiState by viewModel.uiState.collectAsState()
