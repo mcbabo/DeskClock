@@ -1,6 +1,5 @@
 package app.grapheneos.deskclock.alarm.util
 
-import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.temporal.TemporalAdjusters
@@ -17,11 +16,7 @@ object AlarmTimeCalculator {
                 .toEpochMilli()
         }
 
-        return DayOfWeek.entries.asSequence()
-            .filter { day ->
-                val bit = if (day == DayOfWeek.SUNDAY) 0 else day.value
-                (daysOfWeek and (1 shl bit)) != 0
-            }
+        return AlarmDays.fromBitmask(daysOfWeek).asSequence()
             .map { day ->
                 val trigger = now.with(TemporalAdjusters.nextOrSame(day))
                     .with(targetTime)

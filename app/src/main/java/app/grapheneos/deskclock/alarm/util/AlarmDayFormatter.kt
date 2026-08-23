@@ -3,7 +3,6 @@ package app.grapheneos.deskclock.alarm.util
 import android.content.Context
 import androidx.compose.runtime.Immutable
 import app.grapheneos.deskclock.R
-import app.grapheneos.deskclock.core.util.Constants
 import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.Locale
@@ -28,41 +27,32 @@ object AlarmDayFormatter {
 
     fun formatDaysOfWeek(context: Context, daysOfWeek: Int): String {
         val locale = context.resources.configuration.locales[0]
-        val dayBits = daysOfWeek and Constants.Alarm.BIT_ALL_DAYS
-        return when (dayBits) {
-            0 -> context.getString(R.string.one_time)
-            Constants.Alarm.BIT_ALL_DAYS -> context.getString(R.string.daily)
-            Constants.Alarm.BIT_WEEKDAYS -> context.getString(R.string.mon_fri)
-            Constants.Alarm.BIT_WEEKEND -> context.getString(R.string.sat_sun)
+        return when {
+            daysOfWeek == 0 -> context.getString(R.string.one_time)
+            AlarmDays.isAllDays(daysOfWeek) -> context.getString(R.string.daily)
+            AlarmDays.isWeekdays(daysOfWeek) -> context.getString(R.string.mon_fri)
+            AlarmDays.isWeekends(daysOfWeek) -> context.getString(R.string.sat_sun)
             else -> {
-                val selectedDays = mutableListOf<String>()
-                daysOrder.forEach { dayOfWeek ->
-                    val shift = getShiftForDay(dayOfWeek)
-                    if ((daysOfWeek and (1 shl shift)) != 0) {
-                        selectedDays.add(dayOfWeek.getDisplayName(TextStyle.SHORT, locale))
-                    }
-                }
-                selectedDays.joinToString(", ")
+                val selectedDays = AlarmDays.fromBitmask(daysOfWeek)
+                daysOrder.filter { it in selectedDays }
+                    .joinToString(", ") { it.getDisplayName(TextStyle.SHORT, locale) }
             }
         }
     }
 
     fun getDayChipsState(selectedDaysBitmask: Int, locale: Locale): List<DayChipState> {
+        val selectedDays = AlarmDays.fromBitmask(selectedDaysBitmask)
         return daysOrder.map { dayOfWeek ->
-            val shift = getShiftForDay(dayOfWeek)
             DayChipState(
                 label = dayOfWeek.getDisplayName(TextStyle.SHORT, locale),
-                shift = shift,
-                isSelected = (selectedDaysBitmask and (1 shl shift)) != 0
+                shift = if (dayOfWeek == DayOfWeek.SUNDAY) 0 else dayOfWeek.value,
+                isSelected = dayOfWeek in selectedDays
             )
         }
     }
 
     fun toggleDayInBitmask(currentBitmask: Int, shift: Int): Int {
-        return currentBitmask xor (1 shl shift)
-    }
-
-    private fun getShiftForDay(dayOfWeek: DayOfWeek): Int {
-        return if (dayOfWeek == DayOfWeek.SUNDAY) 0 else dayOfWeek.value
+        val day = DayOfWeek.entries.find { (if (it == DayOfWeek.SUNDAY) 0 else it.value) == shift }
+        return if (day != null) AlarmDays.toggleDay(currentBitmask, day) else currentBitmask
     }
 }
