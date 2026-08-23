@@ -17,8 +17,10 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -103,25 +105,40 @@ private fun TimerSetupLayout(
     onBackspace: () -> Unit,
     onStartClick: () -> Unit
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(48.dp)
+    ) {
         Text(
             text = TimerUtils.formatInputTime(uiState.inputTime),
-            style = MaterialTheme.typography.displayLarge
+            style = MaterialTheme.typography.displayLarge.copy(
+                fontFeatureSettings = "tnum"
+            ),
+            color = if (uiState.canStart) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            }
         )
-        Spacer(modifier = Modifier.height(32.dp))
+
         TimerKeypad(
             onDigitClick = onDigitClick,
             onBackspace = onBackspace
         )
-        Spacer(modifier = Modifier.height(32.dp))
-        Button(
+
+        FilledTonalIconButton(
             onClick = onStartClick,
-            modifier = Modifier.size(80.dp),
-            enabled = uiState.canStart
+            enabled = uiState.canStart,
+            modifier = Modifier.size(84.dp),
+            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         ) {
             Icon(
                 imageVector = Icons.Outlined.PlayArrow,
-                contentDescription = stringResource(R.string.start)
+                contentDescription = stringResource(R.string.start),
+                modifier = Modifier.size(40.dp)
             )
         }
     }
