@@ -20,9 +20,6 @@ object Constants {
     const val REQUEST_CODE_TIMER = 100
     const val REQUEST_CODE_STOPWATCH = 200
 
-    const val COMPOSE_LABEL_THUMB_COLOR = "thumbColor"
-    const val COMPOSE_LABEL_THEME_TRANSITION = "ThemeTransition"
-
     object Alarm {
         const val ACTION_FIRE_ALARM = "ALARM_FIRED"
         const val EXTRA_INSTANCE_ID = "INSTANCE_ID"

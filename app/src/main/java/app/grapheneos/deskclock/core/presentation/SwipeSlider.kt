@@ -47,7 +47,6 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import app.grapheneos.deskclock.core.util.Constants
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -61,6 +60,8 @@ data class SwipeAction(
     val color: @Composable () -> Color,
     val onTrigger: () -> Unit
 )
+
+private const val ANIMATION_LABEL_THUMB_COLOR = "thumbColor"
 
 @Composable
 fun SwipeSlider(
@@ -166,7 +167,7 @@ private fun SwipeSliderContent(
     }
     val thumbColor by animateColorAsState(
         targetValue = targetColor,
-        label = Constants.COMPOSE_LABEL_THUMB_COLOR
+        label = ANIMATION_LABEL_THUMB_COLOR
     )
 
     SwipeBackgroundIcons(leftAction, rightAction, offsetX)

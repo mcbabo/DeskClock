@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.WindowCompat
-import app.grapheneos.deskclock.core.util.Constants
 import com.google.android.material.color.MaterialColors
 
 private val darkScheme = darkColorScheme(
@@ -44,6 +43,8 @@ fun Color.harmonizeWith(other: Color) =
 @ReadOnlyComposable
 fun Color.harmonizeWithPrimary(): Color =
     this.harmonizeWith(other = MaterialTheme.colorScheme.primary)
+
+private const val ANIMATION_LABEL_THEME_TRANSITION = "ThemeTransition"
 
 @Composable
 fun DeskClockTheme(
@@ -71,7 +72,7 @@ fun DeskClockTheme(
 
     Crossfade(
         targetState = targetColorScheme,
-        label = Constants.COMPOSE_LABEL_THEME_TRANSITION
+        label = ANIMATION_LABEL_THEME_TRANSITION
     ) { colorScheme ->
         MaterialTheme(
             colorScheme = colorScheme,
