@@ -14,17 +14,28 @@ jobs:
       contents: read
     timeout-minutes: 5
     outputs:
-      versionCode: ${{ steps.versioncode.outputs.versionCode }}
-      versionName: ${{ steps.versionname.outputs.versionName }}
+      versionCode: ${{ steps.version.outputs.versionCode }}
+      versionName: ${{ steps.version.outputs.versionName }}
       shortSha: ${{ steps.sha.outputs.shortSha }}
     steps:
       - uses: actions/checkout@v7.0.1
-      - name: Get versionCode
-        id: versioncode
-        run: echo "versionCode=$(grep -E '^\s+versionCode\s*=' app/build.gradle.kts | awk '{ print $3 }' | head -n 1)" >> $GITHUB_OUTPUT
-      - name: Get versionName
-        id: versionname
-        run: echo "versionName=$(grep -E '^\s+versionName\s*=' app/build.gradle.kts | head -1 | awk -F\" '{ print $2 }')" >> $GITHUB_OUTPUT
+      - name: Extract version info
+        id: version
+        run: |
+          IS_NIGHTLY=$(grep "val isNightly =" app/build.gradle.kts | awk '{print $4}')
+          BASE_VERSION=$(grep "val baseVersion =" app/build.gradle.kts | awk -F'"' '{print $2}')
+          BASE_CODE=$(grep "val baseCode =" app/build.gradle.kts | awk '{print $4}' | sed 's/_//g')
+
+          if [ "$IS_NIGHTLY" = "true" ]; then
+            VERSION_NAME="${BASE_VERSION}-nightly"
+            VERSION_CODE=$((BASE_CODE + 50))
+          else
+            VERSION_NAME="${BASE_VERSION}"
+            VERSION_CODE=$BASE_CODE
+          fi
+
+          echo "versionCode=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "versionName=$VERSION_NAME" >> $GITHUB_OUTPUT
       - name: Get Short Commit Hash
         id: sha
         run: echo "shortSha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
