@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class TimerViewModel(
     private val timerRepository: TimerRepository
@@ -15,34 +16,30 @@ class TimerViewModel(
 
     val uiState: StateFlow<TimerUiState> = timerRepository.state
         .map { data ->
-            if (data.isStarted || data.isFinished) {
-                TimerUiState.Active(
-                    totalTime = data.totalMillis,
-                    isRunning = data.isRunning,
-                    isFinished = data.isFinished,
-                    progress = data.progress
-                )
-            } else {
-                TimerUiState.Idle(
-                    inputTime = data.inputTime
-                )
-            }
-        }
-        .stateIn(
+            TimerUiState(
+                inputTime = data.inputTime,
+                totalTime = data.totalMillis,
+                isRunning = data.isRunning,
+                isStarted = data.isStarted,
+                isFinished = data.isFinished
+            )
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = TimerUiState.Idle()
+            initialValue = TimerUiState()
         )
 
     val remainingMillis: Flow<Long> = timerRepository.remainingMillis
 
     fun handleIntent(intent: TimerIntent) {
-        when (intent) {
-            is TimerIntent.EnterDigit -> timerRepository.enterDigit(intent.digit)
-            TimerIntent.Backspace -> timerRepository.backspace()
-            TimerIntent.Start -> timerRepository.start()
-            TimerIntent.TogglePauseResume -> timerRepository.togglePauseResume()
-            TimerIntent.Reset -> timerRepository.reset()
+        viewModelScope.launch {
+            when (intent) {
+                is TimerIntent.EnterDigit -> timerRepository.enterDigit(intent.digit)
+                TimerIntent.Backspace -> timerRepository.backspace()
+                TimerIntent.Start -> timerRepository.start()
+                TimerIntent.TogglePauseResume -> timerRepository.togglePauseResume()
+                TimerIntent.Reset -> timerRepository.reset()
+            }
         }
     }
 }

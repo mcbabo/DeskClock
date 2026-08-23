@@ -24,7 +24,6 @@ data class AlarmUiModel(
     val ringtoneUri: Uri,
     val vibrate: Boolean,
     val snoozeDurationMinutes: Int,
-    val hasInstance: Boolean = false,
     val timeText: String = "",
     val daysOfWeekText: String = ""
 )
@@ -80,7 +79,6 @@ fun AlarmWithInstance.toUiModel(context: Context): AlarmUiModel {
         ringtoneUri = alarm.ringtoneUri,
         vibrate = alarm.vibrate,
         snoozeDurationMinutes = alarm.snoozeDurationMinutes,
-        hasInstance = instance != null,
         timeText = formatSystemTime(context, alarm.hour, alarm.minute),
         daysOfWeekText = AlarmDayFormatter.formatDaysOfWeek(context, alarm.daysOfWeek)
     )

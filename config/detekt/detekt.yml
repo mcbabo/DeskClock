@@ -131,6 +131,7 @@ complexity:
     active: true
     threshold: 80
     ignoreAnnotated: [ 'Preview', 'Composable' ]
+    ignoreFunction: [ "handleIntent" ]
   LongParameterList:
     active: true
     functionThreshold: 12

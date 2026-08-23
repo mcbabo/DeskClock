@@ -1,7 +1,14 @@
 package app.grapheneos.deskclock.settings.presentation
 
 import android.net.Uri
+import androidx.annotation.StringRes
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.vector.ImageVector
+import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.settings.data.AppSettings
 import app.grapheneos.deskclock.settings.data.PopUpStyle
@@ -48,7 +55,6 @@ data class SettingsUiState(
     val settings: AppSettingsUiModel? = null,
     val ringtones: List<RingtoneItem> = emptyList(),
     val internalRingtones: List<RingtoneItem> = emptyList(),
-    val isLoading: Boolean = false,
     val visibleDialog: SettingsDialog = SettingsDialog.NONE
 )
 
@@ -83,6 +89,7 @@ sealed interface SettingsIntent {
 
     data class SetGraduallyIncreaseVolume(val enabled: Boolean) : SettingsIntent
     data class SetGraduallyIncreaseVolumeDuration(val duration: Int) : SettingsIntent
+    data class SetStopwatchShowMilliseconds(val enabled: Boolean) : SettingsIntent
     data class SetVisibleDialog(val dialog: SettingsDialog) : SettingsIntent
 }
 
@@ -102,4 +109,24 @@ fun AppSettings.toUiModel(): AppSettingsUiModel {
         graduallyIncreaseVolume = graduallyIncreaseVolume,
         graduallyIncreaseVolumeDuration = graduallyIncreaseVolumeDuration
     )
+}
+
+@StringRes
+fun ThemeMode.getDisplayNameRes(): Int = when (this) {
+    ThemeMode.LIGHT -> R.string.settings_light_mode
+    ThemeMode.DARK -> R.string.settings_dark_mode
+    ThemeMode.SYSTEM -> R.string.settings_system_mode
+}
+
+fun ThemeMode.getIcon(): ImageVector = when (this) {
+    ThemeMode.LIGHT -> Icons.Outlined.LightMode
+    ThemeMode.DARK -> Icons.Outlined.DarkMode
+    ThemeMode.SYSTEM -> Icons.Outlined.Smartphone
+}
+
+@StringRes
+fun PopUpStyle.getTitleRes(): Int = when (this) {
+    PopUpStyle.DEFAULT -> R.string.style_default
+    PopUpStyle.VARIANT -> R.string.style_variant
+    PopUpStyle.TERTIARY -> R.string.style_tertiary
 }

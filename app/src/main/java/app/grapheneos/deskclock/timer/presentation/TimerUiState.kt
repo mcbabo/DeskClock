@@ -6,19 +6,14 @@ import androidx.compose.runtime.Immutable
  * UI state for the Timer screen.
  */
 @Immutable
-sealed interface TimerUiState {
-    data class Idle(
-        val inputTime: String = "000000"
-    ) : TimerUiState {
-        val canStart: Boolean get() = inputTime.toLong() > 0
-    }
-
-    data class Active(
-        val totalTime: Long,
-        val isRunning: Boolean,
-        val isFinished: Boolean,
-        val progress: Float
-    ) : TimerUiState
+data class TimerUiState(
+    val inputTime: String = "000000",
+    val totalTime: Long = 0L,
+    val isRunning: Boolean = false,
+    val isStarted: Boolean = false,
+    val isFinished: Boolean = false
+) {
+    val canStart: Boolean get() = inputTime.replace("0", "").isNotEmpty()
 }
 
 /**

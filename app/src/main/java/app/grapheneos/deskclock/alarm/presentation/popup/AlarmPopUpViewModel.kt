@@ -17,10 +17,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -32,8 +30,12 @@ class AlarmPopUpViewModel(
     settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(AlarmPopUpUiState())
-    val uiState: StateFlow<AlarmPopUpUiState> = _uiState.asStateFlow()
+    private data class InternalState(
+        val alarm: AlarmUiModel? = null,
+        val isLoading: Boolean = true
+    )
+
+    private val internalState = MutableStateFlow(InternalState())
 
     val settings: StateFlow<AppSettingsUiModel?> = settingsRepository.settings
         .map { it.toUiModel() }
@@ -43,18 +45,25 @@ class AlarmPopUpViewModel(
             initialValue = null
         )
 
+    val uiState: StateFlow<AlarmPopUpUiState> = combine(
+        internalState,
+        settingsRepository.settings
+    ) { internal, settings ->
+        AlarmPopUpUiState(
+            alarm = internal.alarm,
+            isLoading = internal.isLoading,
+            style = settings.alarmPopUpStyle
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AlarmPopUpUiState()
+    )
+
     private val _effect = Channel<AlarmPopUpEffect>(Channel.BUFFERED)
     val effect = _effect.receiveAsFlow()
 
     private var currentInstanceId: Long = -1L
-
-    init {
-        settingsRepository.settings
-            .onEach { settings ->
-                _uiState.update { it.copy(style = settings.alarmPopUpStyle) }
-            }
-            .launchIn(viewModelScope)
-    }
 
     fun handleIntent(intent: AlarmPopUpIntent) {
         when (intent) {
@@ -75,7 +84,7 @@ class AlarmPopUpViewModel(
                         timeText = formatSystemTime(application, intent.hour, intent.minute),
                         daysOfWeekText = formatDaysOfWeek(application, 0)
                     )
-                    _uiState.update {
+                    internalState.update {
                         it.copy(
                             alarm = initialAlarm,
                             isLoading = false
@@ -92,15 +101,16 @@ class AlarmPopUpViewModel(
 
     private fun loadAlarmData() {
         if (currentInstanceId == -1L) {
-            _uiState.update { it.copy(isLoading = false) }
+            internalState.update { it.copy(isLoading = false) }
             return
         }
         viewModelScope.launch {
             val data = alarmRepository.getAlarmByInstanceId(currentInstanceId)
-            if (data != null) {
-                _uiState.update { it.copy(alarm = data.toUiModel(application), isLoading = false) }
-            } else {
-                _uiState.update { it.copy(isLoading = false) }
+            internalState.update {
+                it.copy(
+                    alarm = data?.toUiModel(application) ?: it.alarm,
+                    isLoading = false
+                )
             }
         }
     }
