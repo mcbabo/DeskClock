@@ -50,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.settings.data.PopUpStyle
+import app.grapheneos.deskclock.settings.presentation.getTitleRes
 
 const val PREVIEW_SCALE = 0.7f
 
@@ -192,7 +193,7 @@ fun StylePickerScreen(
                         }
 
                         Text(
-                            text = stringResource(style.titleRes),
+                            text = stringResource(style.getTitleRes()),
                             style = MaterialTheme.typography.headlineSmall,
                             color = if (isSelected) {
                                 MaterialTheme.colorScheme.primary

@@ -37,6 +37,8 @@ import app.grapheneos.deskclock.core.presentation.components.groupitems.ListGrou
 import app.grapheneos.deskclock.core.presentation.components.groupitems.SwitchGroupRow
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.settings.data.ThemeMode
+import app.grapheneos.deskclock.settings.presentation.getDisplayNameRes
+import app.grapheneos.deskclock.settings.presentation.getIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,8 +67,8 @@ fun ThemeDrawer(
                     GroupRow(
                         leadingContent = {
                             Icon(
-                                imageVector = themeMode.icon,
-                                contentDescription = stringResource(themeMode.displayNameRes)
+                                imageVector = themeMode.getIcon(),
+                                contentDescription = stringResource(themeMode.getDisplayNameRes())
                             )
                         },
                         trailingContent = {
@@ -78,7 +80,7 @@ fun ThemeDrawer(
                             }
                         },
                         content = {
-                            Text(text = stringResource(themeMode.displayNameRes))
+                            Text(text = stringResource(themeMode.getDisplayNameRes()))
                         },
                     )
                 }

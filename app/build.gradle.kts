@@ -155,6 +155,7 @@ dependencies {
     implementation(libs.bundles.navigation)
     implementation(libs.bundles.room)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.preferences)
 
     ksp(libs.androidx.room.compiler)

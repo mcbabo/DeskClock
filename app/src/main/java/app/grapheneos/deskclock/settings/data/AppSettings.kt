@@ -1,13 +1,6 @@
 package app.grapheneos.deskclock.settings.data
 
-import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.LightMode
-import androidx.compose.material.icons.outlined.Smartphone
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.net.toUri
-import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.core.util.Constants
 import kotlinx.serialization.Serializable
@@ -40,15 +33,15 @@ data class AppSettings(
 )
 
 @Serializable
-enum class ThemeMode(@StringRes val displayNameRes: Int, val icon: ImageVector) {
-    LIGHT(R.string.settings_light_mode, Icons.Outlined.LightMode),
-    DARK(R.string.settings_dark_mode, Icons.Outlined.DarkMode),
-    SYSTEM(R.string.settings_system_mode, Icons.Outlined.Smartphone)
+enum class ThemeMode {
+    LIGHT,
+    DARK,
+    SYSTEM
 }
 
 @Serializable
-enum class PopUpStyle(@StringRes val titleRes: Int) {
-    DEFAULT(R.string.style_default),
-    VARIANT(R.string.style_variant),
-    TERTIARY(R.string.style_tertiary)
+enum class PopUpStyle {
+    DEFAULT,
+    VARIANT,
+    TERTIARY
 }
