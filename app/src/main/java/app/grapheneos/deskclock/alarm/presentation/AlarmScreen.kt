@@ -101,13 +101,8 @@ fun AlarmScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                text = { Text(text = stringResource(R.string.add_alarm)) },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.add_alarm)
-                    )
-                },
+                text = stringResource(R.string.add_alarm),
+                icon = Icons.Default.Add,
                 onClick = { onIntent(AlarmIntent.SetTimePickerVisible(true)) }
             )
         }

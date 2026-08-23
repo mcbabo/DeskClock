@@ -139,13 +139,8 @@ fun ClockScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                text = { Text(text = stringResource(R.string.add_clock)) },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Add,
-                        contentDescription = stringResource(R.string.add_alarm)
-                    )
-                },
+                text = stringResource(R.string.add_clock),
+                icon = Icons.Outlined.Add,
                 onClick = { onIntent(ClockIntent.ToggleSearch(true)) },
             )
         }

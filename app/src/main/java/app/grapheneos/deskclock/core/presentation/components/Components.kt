@@ -38,12 +38,12 @@ import app.grapheneos.deskclock.core.presentation.Layout
  */
 @Composable
 fun FloatingActionButton(
+    text: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    text: @Composable () -> Unit,
-    icon: @Composable () -> Unit,
     isExpanded: Boolean = true,
     isVisible: Boolean = true,
-    onClick: () -> Unit
 ) {
     AnimatedVisibility(
         visible = isVisible,
@@ -51,8 +51,8 @@ fun FloatingActionButton(
         exit = scaleOut() + fadeOut()
     ) {
         ExtendedFloatingActionButton(
-            text = text,
-            icon = icon,
+            text = { Text(text) },
+            icon = { Icon(icon, contentDescription = null) },
             onClick = onClick,
             modifier = modifier,
             expanded = isExpanded,
