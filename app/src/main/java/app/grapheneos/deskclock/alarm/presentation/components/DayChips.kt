@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLocale
 import app.grapheneos.deskclock.alarm.util.AlarmDayFormatter
+import app.grapheneos.deskclock.alarm.util.AlarmDays
 import app.grapheneos.deskclock.core.presentation.Layout
 
 @Composable
@@ -39,8 +40,7 @@ fun DayChips(
             FilterChip(
                 selected = chip.isSelected,
                 onClick = {
-                    val newBitmask =
-                        AlarmDayFormatter.toggleDayInBitmask(selectedDaysBitmask, chip.shift)
+                    val newBitmask = AlarmDays.toggleDay(selectedDaysBitmask, chip.day)
                     onBitmaskChange(newBitmask)
                 },
                 label = { Text(chip.label) },

@@ -10,7 +10,7 @@ import java.util.Locale
 @Immutable
 data class DayChipState(
     val label: String,
-    val shift: Int,
+    val day: DayOfWeek,
     val isSelected: Boolean
 )
 
@@ -45,14 +45,9 @@ object AlarmDayFormatter {
         return daysOrder.map { dayOfWeek ->
             DayChipState(
                 label = dayOfWeek.getDisplayName(TextStyle.SHORT, locale),
-                shift = if (dayOfWeek == DayOfWeek.SUNDAY) 0 else dayOfWeek.value,
+                day = dayOfWeek,
                 isSelected = dayOfWeek in selectedDays
             )
         }
-    }
-
-    fun toggleDayInBitmask(currentBitmask: Int, shift: Int): Int {
-        val day = DayOfWeek.entries.find { (if (it == DayOfWeek.SUNDAY) 0 else it.value) == shift }
-        return if (day != null) AlarmDays.toggleDay(currentBitmask, day) else currentBitmask
     }
 }
