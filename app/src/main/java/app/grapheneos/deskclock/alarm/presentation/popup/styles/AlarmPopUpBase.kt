@@ -40,8 +40,9 @@ import app.grapheneos.deskclock.core.presentation.Layout
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.util.formatSystemTime
 import kotlinx.coroutines.delay
-import java.util.Calendar
-import kotlin.time.Duration.Companion.milliseconds
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun AlarmPopUpBase(
@@ -50,19 +51,19 @@ fun AlarmPopUpBase(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val context = LocalContext.current
-    var currentCalendar by remember { mutableStateOf(Calendar.getInstance()) }
+    var currentTime by remember { mutableStateOf(ZonedDateTime.now()) }
 
     LaunchedEffect(Unit) {
         while (true) {
-            delay(1000.milliseconds)
-            currentCalendar = Calendar.getInstance()
+            delay(1.seconds)
+            currentTime = ZonedDateTime.now()
         }
     }
 
     val currentTimeText = formatSystemTime(
         context,
-        currentCalendar.get(Calendar.HOUR_OF_DAY),
-        currentCalendar.get(Calendar.MINUTE)
+        currentTime.hour,
+        currentTime.minute
     )
 
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
@@ -98,12 +99,9 @@ fun AlarmPopUpBase(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = currentCalendar.run {
+                    text = currentTime.run {
                         val locale = LocalLocale.current.platformLocale
-                        val day = get(Calendar.DAY_OF_MONTH)
-                        val month = getDisplayName(Calendar.MONTH, Calendar.LONG, locale)
-                        val weekday = getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, locale)
-                        "$weekday, $month $day"
+                        format(DateTimeFormatter.ofPattern("EEEE, MMMM d", locale))
                     },
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant

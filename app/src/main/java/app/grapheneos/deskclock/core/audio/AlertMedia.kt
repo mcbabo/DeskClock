@@ -17,6 +17,7 @@ import androidx.core.net.toUri
 import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.core.util.UriScheme
 import app.grapheneos.deskclock.core.util.uriScheme
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Handles audio playback for alerts (Alarms, Timers).
@@ -131,7 +132,7 @@ class AudioPlayer(private val context: Context) {
             if (graduallyIncreaseVolume) {
                 setVolume(0f, 0f)
                 volumeAnimator = ValueAnimator.ofFloat(0f, targetVolume).apply {
-                    duration = graduallyIncreaseVolumeDuration * 1000L
+                    duration = graduallyIncreaseVolumeDuration.seconds.inWholeMilliseconds
                     addUpdateListener { animator ->
                         val currentVolume = animator.animatedValue as Float
                         runCatching { mediaPlayer?.setVolume(currentVolume, currentVolume) }

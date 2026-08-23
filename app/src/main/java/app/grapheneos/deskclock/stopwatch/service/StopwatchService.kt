@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import java.time.Instant
 
 /**
  * Foreground service that keeps the stopwatch running and updates its persistent notification.
@@ -107,7 +108,7 @@ class StopwatchService : BaseAlertService(Constants.Stopwatch.PM_TAG) {
 
         if (state.isRunning) {
             builder.setUsesChronometer(true)
-            builder.setWhen(System.currentTimeMillis() - elapsed)
+            builder.setWhen(Instant.now().toEpochMilli() - elapsed)
             builder.setShowWhen(true)
         } else {
             builder.setUsesChronometer(false)

@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import java.io.File
+import java.time.Instant
 
 class RingtoneRepository(private val context: Context) {
     private val customRingtonesDir = File(context.filesDir, "custom_ringtones").apply { mkdirs() }
@@ -123,7 +124,7 @@ class RingtoneRepository(private val context: Context) {
         try {
             val extension = getExtension(sourceUri)
             val fileName =
-                getFileName(sourceUri) ?: "custom_${System.currentTimeMillis()}.$extension"
+                getFileName(sourceUri) ?: "custom_${Instant.now().toEpochMilli()}.$extension"
             val destFile = File(customRingtonesDir, fileName)
 
             context.contentResolver.openInputStream(sourceUri)?.use { input ->

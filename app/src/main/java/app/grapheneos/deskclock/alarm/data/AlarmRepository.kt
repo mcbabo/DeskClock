@@ -5,6 +5,8 @@ import app.grapheneos.deskclock.alarm.service.AlarmController
 import app.grapheneos.deskclock.alarm.util.AlarmTimeCalculator
 import app.grapheneos.deskclock.core.util.Constants
 import kotlinx.coroutines.flow.Flow
+import java.time.Instant
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Data layer for managing Alarms and their active instances.
@@ -74,7 +76,7 @@ class AlarmRepository(
         alarmController.cancelInstance(alarm.id)
         alarmDao.deleteInstancesForAlarm(alarm.id)
 
-        val snoozeTimeInMillis = System.currentTimeMillis() + (snoozeMinutes * 60 * 1000)
+        val snoozeTimeInMillis = Instant.now().toEpochMilli() + snoozeMinutes.minutes.inWholeMilliseconds
         val snoozeInstance = AlarmInstance(
             alarmId = alarm.id,
             timeInMillis = snoozeTimeInMillis,

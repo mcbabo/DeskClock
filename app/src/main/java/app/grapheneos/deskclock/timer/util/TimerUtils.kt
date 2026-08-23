@@ -1,6 +1,9 @@
 package app.grapheneos.deskclock.timer.util
 
 import kotlin.math.abs
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Utility for formatting and parsing timer-related time values.
@@ -44,7 +47,7 @@ object TimerUtils {
         val hours = clean.substring(0, 2).toIntOrNull() ?: 0
         val minutes = clean.substring(2, 4).toIntOrNull() ?: 0
         val seconds = clean.substring(4, 6).toIntOrNull() ?: 0
-        return ((hours * 3600L) + (minutes * 60L) + seconds) * 1000L
+        return (hours.hours + minutes.minutes + seconds.seconds).inWholeMilliseconds
     }
 
     /**

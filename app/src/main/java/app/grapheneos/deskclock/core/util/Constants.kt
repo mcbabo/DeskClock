@@ -1,5 +1,7 @@
 package app.grapheneos.deskclock.core.util
 
+import kotlin.time.Duration.Companion.minutes
+
 object Constants {
     const val METADATA_PERMISSIONS_REQUIRED = "permissions_required"
     const val ATTRIBUTION_TAG_DESKCLOCK_SERVICE = "deskclock_service"
@@ -54,7 +56,7 @@ object Constants {
     }
 
     object Notifications {
-        const val WAKE_LOCK_TIMEOUT = 10 * 60 * 1000L
+        val WAKE_LOCK_TIMEOUT = 10.minutes.inWholeMilliseconds
 
         object Alarm {
             const val CHANNEL_ID = "ALARM_CHANNEL"
