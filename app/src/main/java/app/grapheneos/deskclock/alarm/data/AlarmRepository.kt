@@ -78,7 +78,7 @@ class AlarmRepository(
         val snoozeInstance = AlarmInstance(
             alarmId = alarm.id,
             timeInMillis = snoozeTimeInMillis,
-            alarmState = 2
+            alarmState = AlarmState.SNOOZED
         )
 
         val newInstanceId = alarmDao.insertInstance(snoozeInstance)
@@ -93,7 +93,11 @@ class AlarmRepository(
             alarm.minute,
             alarm.daysOfWeek
         )
-        val instance = AlarmInstance(alarmId = alarm.id, timeInMillis = triggerTime, alarmState = 0)
+        val instance = AlarmInstance(
+            alarmId = alarm.id,
+            timeInMillis = triggerTime,
+            alarmState = AlarmState.SCHEDULED
+        )
         val instanceId = alarmDao.insertInstance(instance)
 
         alarmController.scheduleInstance(alarm, instanceId, triggerTime)
@@ -112,6 +116,12 @@ class AlarmRepository(
         val alarms = alarmDao.getAlarmsByRingtoneUri(oldUri)
         alarms.forEach { alarm ->
             updateAlarm(alarm.copy(ringtoneUri = newUri))
+        }
+    }
+
+    suspend fun setInstanceState(instanceId: Long, state: AlarmState) {
+        alarmDao.getInstanceById(instanceId)?.let {
+            alarmDao.updateInstance(it.copy(alarmState = state))
         }
     }
 }

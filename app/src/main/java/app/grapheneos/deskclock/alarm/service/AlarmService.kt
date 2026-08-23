@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmRepository
+import app.grapheneos.deskclock.alarm.data.AlarmState
 import app.grapheneos.deskclock.core.notification.baseNotificationBuilder
 import app.grapheneos.deskclock.core.service.BaseAlertService
 import app.grapheneos.deskclock.core.util.Constants
@@ -59,6 +60,7 @@ class AlarmService : BaseAlertService(Constants.Alarm.PM_TAG) {
         launchPopUp(instanceId, label, hour, minute)
 
         serviceScope.launch {
+            alarmRepository.setInstanceState(instanceId, AlarmState.FIRING)
             val appSettings = settingsRepository.settings.first()
             val ringtoneVolume = if (appSettings.useCustomRingtoneVolume) {
                 appSettings.ringtoneVolume

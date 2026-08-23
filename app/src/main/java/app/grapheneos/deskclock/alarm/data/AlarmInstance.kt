@@ -21,5 +21,11 @@ data class AlarmInstance(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val alarmId: Long,
     val timeInMillis: Long,
-    val alarmState: Int = 0
+    val alarmState: AlarmState = AlarmState.SCHEDULED
 )
+
+enum class AlarmState(val value: Int) {
+    SCHEDULED(0),
+    FIRING(1),
+    SNOOZED(2)
+}

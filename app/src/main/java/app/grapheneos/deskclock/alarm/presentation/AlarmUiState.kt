@@ -57,6 +57,7 @@ sealed interface AlarmIntent {
         val deleteAfterUse: Boolean,
         val label: String
     ) : AlarmIntent
+
     data class SetEditingAlarm(val id: Long?) : AlarmIntent
     data class SetTimePickerVisible(val visible: Boolean) : AlarmIntent
 

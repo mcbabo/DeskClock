@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import app.grapheneos.deskclock.alarm.data.AlarmConverters
 import app.grapheneos.deskclock.alarm.data.AlarmDao
 import app.grapheneos.deskclock.alarm.data.AlarmEntity
 import app.grapheneos.deskclock.alarm.data.AlarmInstance
@@ -23,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
     ],
     version = 2
 )
-@TypeConverters(ClockConverters::class, UriConverter::class)
+@TypeConverters(ClockConverters::class, UriConverter::class, AlarmConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
     abstract fun clockDao(): ClockDao
