@@ -32,9 +32,9 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val coreModule = module {
-    val deContext = named(Constants.DEVICE_PROTECTED_CONTEXT)
+private val deContext = named(Constants.DEVICE_PROTECTED_CONTEXT)
 
+val coreModule = module {
     single(deContext) {
         androidContext().createDeviceProtectedStorageContext()
     }
@@ -44,8 +44,9 @@ val coreModule = module {
 
     single(named(Constants.ATTRIBUTED_CONTEXT)) {
         // Use DE context as base for attribution to ensure Direct Boot compatibility
-        val context = get<Context>(deContext)
-        context.createAttributionContext(Constants.ATTRIBUTION_TAG_DESKCLOCK_SERVICE)
+        get<Context>(deContext).createAttributionContext(
+            Constants.ATTRIBUTION_TAG_DESKCLOCK_SERVICE
+        )
     }
 
     single { ChannelManager(get(deContext)) }
@@ -57,7 +58,6 @@ val coreModule = module {
 }
 
 val settingsModule = module {
-    val deContext = named(Constants.DEVICE_PROTECTED_CONTEXT)
     single { SettingsDataStore(get(deContext)) }
     singleOf(::SettingsRepository)
 
@@ -65,8 +65,6 @@ val settingsModule = module {
 }
 
 val alarmModule = module {
-    val deContext = named(Constants.DEVICE_PROTECTED_CONTEXT)
-
     single { get<AppDatabase>().alarmDao() }
     single { AlarmController(get(deContext)) }
     singleOf(::AlarmRepository)
