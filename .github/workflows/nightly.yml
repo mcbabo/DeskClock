@@ -22,9 +22,9 @@ jobs:
       - name: Extract version info
         id: version
         run: |
-          IS_NIGHTLY=$(grep "val isNightly =" app/build.gradle.kts | awk '{print $4}')
-          BASE_VERSION=$(grep "val baseVersion =" app/build.gradle.kts | awk -F'"' '{print $2}')
-          BASE_CODE=$(grep "val baseCode =" app/build.gradle.kts | awk '{print $4}' | sed 's/_//g')
+          IS_NIGHTLY=$(sed -n 's/^\s*val isNightly\s*=\s*\(.*\)$/\1/p' app/build.gradle.kts)
+          BASE_VERSION=$(sed -n 's/^\s*val baseVersion\s*=\s*"\(.*\)"$/\1/p' app/build.gradle.kts)
+          BASE_CODE=$(sed -n 's/^\s*val baseCode\s*=\s*\(.*\)$/\1/p' app/build.gradle.kts | sed 's/_//g')
 
           if [ "$IS_NIGHTLY" = "true" ]; then
             VERSION_NAME="${BASE_VERSION}-nightly"
