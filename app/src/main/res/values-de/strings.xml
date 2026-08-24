@@ -115,4 +115,6 @@
     <string name="settings_source_code_desc">Der vollständige Quellcode ist auf GitHub verfügbar</string>
     <string name="settings_app_version">App-Version</string>
     <string name="settings_app_version_desc">Die aktuelle Version dieser App</string>
+    <string name="settings_appearance">Aussehen</string>
+    <string name="settings_stopwatch">Stoppuhr</string>
 </resources>
