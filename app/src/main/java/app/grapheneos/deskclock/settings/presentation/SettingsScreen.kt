@@ -9,8 +9,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.Colorize
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Snooze
@@ -27,10 +29,12 @@ import androidx.compose.material3.TopAppBarDefaults.exitUntilCollapsedScrollBeha
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
+import app.grapheneos.deskclock.BuildConfig
 import app.grapheneos.deskclock.R
 import app.grapheneos.deskclock.alarm.presentation.components.RingtonePickerDialog
 import app.grapheneos.deskclock.alarm.presentation.components.RingtonePickerUiState
@@ -40,6 +44,7 @@ import app.grapheneos.deskclock.core.presentation.components.groupitems.ValueGro
 import app.grapheneos.deskclock.core.presentation.screenPadding
 import app.grapheneos.deskclock.core.ringtone.RingtoneItem
 import app.grapheneos.deskclock.core.theme.DeskClockTheme
+import app.grapheneos.deskclock.core.util.Constants
 import app.grapheneos.deskclock.settings.data.PopUpStyle
 import app.grapheneos.deskclock.settings.data.ThemeMode
 import app.grapheneos.deskclock.settings.presentation.components.GraduallyIncreaseVolumeDrawer
@@ -59,6 +64,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     val view = LocalView.current
+    val uriHandler = LocalUriHandler.current
     val scrollBehavior = exitUntilCollapsedScrollBehavior()
 
     val settings = state.settings ?: return
@@ -116,6 +122,41 @@ fun SettingsScreen(
                     onIntent(SettingsIntent.SetVisibleDialog(SettingsDialog.GRADUALLY_INCREASE_VOLUME))
                 }
             )
+
+            ListGroup(title = stringResource(R.string.settings_information)) {
+                item {
+                    ValueGroupRow(
+                        label = stringResource(R.string.settings_source_code),
+                        value = "GitHub",
+                        supportingContent = {
+                            Text(text = stringResource(R.string.settings_source_code_desc))
+                        },
+                        onClick = { uriHandler.openUri(Constants.GITHUB_REPO) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Code,
+                                contentDescription = stringResource(R.string.settings_source_code)
+                            )
+                        }
+                    )
+                }
+
+                item {
+                    ValueGroupRow(
+                        label = stringResource(R.string.settings_app_version),
+                        value = BuildConfig.VERSION_NAME,
+                        supportingContent = {
+                            Text(text = stringResource(R.string.settings_app_version_desc))
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = stringResource(R.string.settings_app_version)
+                            )
+                        }
+                    )
+                }
+            }
         }
     }
 

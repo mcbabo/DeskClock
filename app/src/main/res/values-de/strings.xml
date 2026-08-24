@@ -110,4 +110,9 @@
     <string name="delete_ringtone">Klingelton löschen</string>
     <string name="delete_ringtone_confirmation">Bist du sicher, dass du \"%1$s\" löschen möchtest?</string>
     <string name="cancel">Abbrechen</string>
+    <string name="settings_information">Informationen</string>
+    <string name="settings_source_code">Quellcode</string>
+    <string name="settings_source_code_desc">Der vollständige Quellcode ist auf GitHub verfügbar</string>
+    <string name="settings_app_version">App-Version</string>
+    <string name="settings_app_version_desc">Die aktuelle Version dieser App</string>
 </resources>

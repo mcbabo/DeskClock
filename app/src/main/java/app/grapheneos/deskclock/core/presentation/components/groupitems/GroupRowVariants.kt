@@ -53,8 +53,8 @@ private const val MAX_LABEL_LENGTH = 30
 fun ValueGroupRow(
     label: String,
     value: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
     leadingIcon: (@Composable () -> Unit)? = null,
     supportingContent: (@Composable () -> Unit)? = null,
     enabled: Boolean = true,
@@ -63,7 +63,7 @@ fun ValueGroupRow(
 
     GroupRow(
         modifier = modifier,
-        onClick = if (enabled) {
+        onClick = if (enabled && onClick != null) {
             {
                 view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
                 onClick()
@@ -231,11 +231,10 @@ fun GroupedListPreview() {
                 verticalArrangement = Arrangement.spacedBy(Layout.SectionSpacing)
             ) {
                 ListGroup(title = "Alarm Configuration") {
-                    item(onClick = {}) {
+                    item {
                         ValueGroupRow(
                             label = "Alarm Label",
                             value = "Work",
-                            onClick = {},
                             leadingIcon = {
                                 Icon(Icons.AutoMirrored.Outlined.Label, contentDescription = null)
                             },
@@ -243,11 +242,10 @@ fun GroupedListPreview() {
                         )
                     }
 
-                    item(onClick = {}) {
+                    item {
                         ValueGroupRow(
                             label = "Ringtone",
                             value = "Cesium",
-                            onClick = {},
                             leadingIcon = {
                                 Icon(Icons.Outlined.NotificationsActive, contentDescription = null)
                             }
@@ -278,7 +276,7 @@ fun GroupedListPreview() {
                 }
 
                 ListGroup(title = "Actions") {
-                    item(onClick = {}) {
+                    item {
                         GroupRow(
                             content = { Text("Delete Alarm") },
                             leadingContent = {
@@ -294,7 +292,7 @@ fun GroupedListPreview() {
 
                 ListGroup(title = "Basic items") {
                     repeat(2) { i ->
-                        item(onClick = {}) {
+                        item {
                             GroupRow(content = { Text("Simple Item ${i + 1}") })
                         }
                     }
@@ -302,7 +300,7 @@ fun GroupedListPreview() {
 
                 ListGroup(title = "Items with avatar") {
                     repeat(2) { i ->
-                        item(onClick = {}) {
+                        item {
                             GroupRow(
                                 content = { Text("Simple Item ${i + 1}") },
                                 leadingContent = { Avatar("S") }
